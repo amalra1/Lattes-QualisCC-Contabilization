@@ -11,7 +11,7 @@ git add 'arquivo'
 git commit -m 'descrição'
 -> Adiciona uma descrição ao que foi feito mais recentemente, 'Adiciona o arquivo exemplo.txt'
  
-git push -u origin main
+git push -u origin main (FAZER GIT COMMIT -M ANTES SENÃO NÃO FUNCIONA)
 -> 'Empurra' tudo que foi alterado para o GitHub
 
 git clone 'link ssh github'
@@ -19,17 +19,3 @@ git clone 'link ssh github'
 
 git branch
 -> Mostra todas as branches do repositório do git, nesse caso ainda estou usando só a main
-a
-a
-a
-a
-
-
-
-b
-b
-b
-b
-b
-
-CC
