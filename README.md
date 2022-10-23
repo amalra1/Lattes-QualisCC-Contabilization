@@ -19,5 +19,10 @@ git clone 'link ssh github'
 
 git branch
 -> Mostra todas as branches do repositório do git, nesse caso ainda estou usando só a main
+a
+a
+a
+a
+
 
 
