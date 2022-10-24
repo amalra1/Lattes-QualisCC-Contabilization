@@ -8,7 +8,7 @@
     Data de finalização -> XX/XX/XXXX
     
     1 -> lê um arq .xml e imprime seu conteudo --FEITO--
-    2 -> imprimir na tela apenas o nome dos periodicos
+    2 -> imprimir na tela apenas o nome dos periodicos (vêm depois do 'TITULO-DO-ARTIGO=' e vai até 'ANO-DO-ARTIGO')
     3 -> imprimir na tela apenas o nome das conferencias
     4 -> catalogar periodico(s) e imprimi-lo(s) na tela
     5 -> mesma coisa com conferencia
