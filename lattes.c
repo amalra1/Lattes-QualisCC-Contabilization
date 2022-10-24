@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define BUFFER 40
+
 /*
     Contabilização da produção científica em termos de
     artigos científicos publicados em periódicos e 
@@ -8,21 +13,20 @@
     Data de finalização -> XX/XX/XXXX
     
     1 -> lê um arq .xml e imprime seu conteudo --FEITO--
-    2 -> imprimir na tela apenas o nome dos periodicos (vêm depois do 'TITULO-DO-ARTIGO=' e vai até 'ANO-DO-ARTIGO')
-         while !EOF (if 'TITULO-DO-ARTIGO=' ler e armazenar ate 'ANO-DO-ARTIGO')
+    2 -> imprimir na tela apenas o nome dos periodicos (vêm depois do 'TITULO-DO-PERIODICO-OU-REVISTA=' e vai até "")
+         while !EOF (if 'TITULO-DO-PERIODICO-OU-REVISTA=' armazenar até a última ")
          armazenar num vetor de strings (?)
     3 -> imprimir na tela apenas o nome das conferencias
     4 -> catalogar periodico(s) e imprimi-lo(s) na tela
     5 -> mesma coisa com conferencia
     6 -> abre um diretório, le todos os arquivos e imprime seus conteudos 
 */
-#include <stdio.h>
-#include <stdlib.h>
 
 int main ()
 {
     FILE* arq;
     int c;
+    char linha[BUFFER], *tok;
    
     arq = fopen("curriculoCASTILHO.xml", "r");
 
@@ -33,13 +37,19 @@ int main ()
         exit(1);  // Fecha o programa com status 1
     }
 
-    c = fgetc(arq);
-    // Pega char a char ate o fim do arquivo
-    while (c != EOF)
+    //printf("%s", linha);
+
+    fgets(linha, BUFFER, arq);
+
+
+    tok = strtok(linha, ">");
+    /*while (tok != NULL)
     {
-        printf("%c", c);
-        c = fgetc(arq);
-    }
+        printf("%s\n\n", tok);
+        tok = strtok(NULL, "<");
+    }*/
+
+    //printf("%s\n\n", tok);
 
     fclose(arq);
     
