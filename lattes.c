@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define BUFFER 40
+#define BUFFER 400000
 
 /*
     Contabilização da produção científica em termos de
@@ -37,8 +37,7 @@ int main ()
         exit(1);  // Fecha o programa com status 1
     }
 
-    //printf("%s", linha);
-
+    
     fgets(linha, BUFFER, arq);
 
 
@@ -49,7 +48,7 @@ int main ()
         tok = strtok(NULL, "<");
     }*/
 
-    //printf("%s\n\n", tok);
+    printf("%s\n\n", tok);
 
     fclose(arq);
     
