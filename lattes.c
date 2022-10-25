@@ -23,6 +23,12 @@
     6 -> abre um diretório, le todos os arquivos e imprime seus conteudos 
 */
 
+/*
+ Funcao que verifica os caracteres anteriores dos titulos dos artigos
+ 'TITULO-DO-PERIODICO-OU-REVISTA=' sao eles, mas somente eh necessario
+ testar o fim, 'STA=', em seguida vem os nomes.
+ retorna 1 se todos foram encontrados, e 0 senao 
+*/
 int titulo_artigo(char c, FILE* arq)
 {
     // Verificacoes para ver se esta na parte anterior ao nome do periodico buscado
