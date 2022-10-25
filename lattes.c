@@ -24,7 +24,7 @@
 */
 
 /*
- Funcao que verifica os caracteres anteriores dos titulos dos artigos
+ Funcao que verifica os caracteres anteriores dos titulos dos artigosaaaaaaaaaaa
  'TITULO-DO-PERIODICO-OU-REVISTA=' sao eles, mas somente eh necessario
  testar o fim, 'STA=', em seguida vem os nomes.
  retorna 1 se todos foram encontrados, e 0 senao 
