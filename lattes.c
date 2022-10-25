@@ -53,7 +53,7 @@ int main ()
     FILE* arq;
     char c;
     int achou, tamv_per = 1, tamstr = 0;
-    char** v_per = malloc(sizeof(char*));  // Aloca vetor de strings para 1 string
+    char** v_per = malloc(sizeof(char*) * 256);  // Aloca vetor de strings para 256 strings
     char *str;  // String para armazenar cada nome de periodico
    
     // Abre o arquivo
@@ -74,7 +74,7 @@ int main ()
         if (titulo_artigo(c, arq))  // Se passou da verificacao, armazena o periodico
         {
             c = fgetc(arq);
-            str = malloc(sizeof(char));  // Aloca para um char
+            str = malloc(sizeof(char) * 512);  // Aloca para 512 char
             while (c != '\"')
             {
                 //printf("%c", c);
@@ -82,9 +82,9 @@ int main ()
                 // Concatenando um caracter a mais na string do vetor de strings
                 strncat(str, &c, 1);
 
-                // Incrementa o tamanho da string e realoca memoria da mesma
+                /*// Incrementa o tamanho da string e realoca memoria da mesma
                 tamstr++;
-                str = realloc(str, sizeof(char) * tamstr);
+                str = realloc(str, sizeof(char) * tamstr);*/
 
                 // Pega o proximo caracter
                 c = fgetc(arq);
@@ -92,11 +92,12 @@ int main ()
 
             printf("%s", str);
 
-            // Incrementa o tamanho do vetor de titulos e realoca memoria do mesmo
+            /*// Incrementa o tamanho do vetor de titulos e realoca memoria do mesmo
             tamv_per++; 
-            v_per = realloc(v_per, sizeof(char*) * tamv_per);
+            v_per = realloc(v_per, sizeof(char*) * tamv_per);*/
 
             printf("\n\n");
+
             // Zera a string
             strcpy(str, "");
             free(str);
