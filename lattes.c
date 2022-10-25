@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define BUFFER 400000
+#define ARQUIVO "curriculoCASTILHO.xml"
 
 /*
     Contabilização da produção científica em termos de
@@ -25,10 +25,13 @@
 int main ()
 {
     FILE* arq;
-    int c;
-    char linha[BUFFER], *tok;
+    char c;
+    int achou, n_per = 0, i = 0, tamstr = 0;
+    char** v_per;
+    char str[1000] = "";  // String para armazenar cada nome de periodico
    
-    arq = fopen("curriculoCASTILHO.xml", "r");
+    // Abre o arquivo
+    arq = fopen(ARQUIVO, "r");
 
     // Testa se o arquivo abre
     if (arq == NULL)
@@ -36,19 +39,51 @@ int main ()
         printf("Impossivel abrir arquivo\n");
         exit(1);  // Fecha o programa com status 1
     }
-
     
-    fgets(linha, BUFFER, arq);
+    c = fgetc(arq);
 
-
-    tok = strtok(linha, ">");
-    /*while (tok != NULL)
+    // Enquanto nao chegou no final do arquivo, faz 
+    while (c != EOF)
     {
-        printf("%s\n\n", tok);
-        tok = strtok(NULL, "<");
-    }*/
+        achou = 0;
 
-    printf("%s\n\n", tok);
+        if (c == 'S')  // Verificacoes para ver se esta na parte anterior ao nome do periodico buscado
+        {
+            c = fgetc(arq);
+            if (c == 'T')
+            {
+                c = fgetc(arq);
+                if (c == 'A')
+                {
+                    c = fgetc(arq);
+                    if (c == '=')
+                    {
+                        achou = 1;
+                        n_per++;  // Incrementa o numero de periodicos encontrados
+                        c = fgetc(arq);
+                    }
+                }
+            }
+        }
+
+        if (achou == 1)  // Se passou da verificacao, armazena o periodico
+        {
+            c = fgetc(arq);
+            while (c != '\"')
+            {
+                //printf("%c", c);
+                strncat(str, &c, 1);  // Concatenando um caracter a mais na string do vetor de strings
+                tamstr++;
+                c = fgetc(arq);
+            }
+            
+            printf("%s", str);
+            printf("\n\n");
+            strcpy(str, "");  // Zera a string
+        }
+
+        c = fgetc(arq);
+    }
 
     fclose(arq);
     
