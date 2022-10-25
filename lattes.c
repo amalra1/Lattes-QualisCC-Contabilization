@@ -22,7 +22,7 @@
     6 -> abre um diretório, le todos os arquivos e imprime seus conteudos 
 */
 
-int titulo_artigo(char c; FILE* arq)
+int titulo_artigo(char c; FILE* arq; int *tamv_per)
 {
     // Verificacoes para ver se esta na parte anterior ao nome do periodico buscado
     if (c != 'S')
@@ -52,9 +52,9 @@ int main ()
 {
     FILE* arq;
     char c;
-    int achou, tamv_per = 1, tamstr = 0;
+    int tamv_per = 0;
     char** v_per = malloc(sizeof(char*) * 256);  // Aloca vetor de strings para 256 strings
-    char *str;  // String para armazenar cada nome de periodico
+    char *str = malloc(sizeof(char) * 512);  // String para armazenar cada nome de periodico
    
     // Abre o arquivo
     arq = fopen(ARQUIVO, "r");
@@ -71,10 +71,11 @@ int main ()
     // Enquanto nao chegou no final do arquivo, faz 
     while (c != EOF)
     {
-        if (titulo_artigo(c, arq))  // Se passou da verificacao, armazena o periodico
+         // Se passou da verificacao, armazena o periodico
+        if (titulo_artigo(c, arq))
         {
             c = fgetc(arq);
-            str = malloc(sizeof(char) * 512);  // Aloca para 512 char
+
             while (c != '\"')
             {
                 //printf("%c", c);
@@ -82,30 +83,28 @@ int main ()
                 // Concatenando um caracter a mais na string do vetor de strings
                 strncat(str, &c, 1);
 
-                /*// Incrementa o tamanho da string e realoca memoria da mesma
-                tamstr++;
-                str = realloc(str, sizeof(char) * tamstr);*/
-
                 // Pega o proximo caracter
                 c = fgetc(arq);
             }
 
             printf("%s", str);
-
-            /*// Incrementa o tamanho do vetor de titulos e realoca memoria do mesmo
-            tamv_per++; 
-            v_per = realloc(v_per, sizeof(char*) * tamv_per);*/
-
             printf("\n\n");
+            
+            // Adiciona o nome do periodico no vetor e incrementa seu tamanho
+            strcpy(v_per[tamv_per], str);
+            tamv_per++;
 
             // Zera a string
             strcpy(str, "");
-            free(str);
         }
 
         c = fgetc(arq);
     }
 
+    for (i = 0; i < tamv_per; i++)
+        printf("%s\n\n", v_per[i]);
+
+    free(str);
     free(v_per);
     fclose(arq);
     
