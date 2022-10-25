@@ -22,12 +22,38 @@
     6 -> abre um diretório, le todos os arquivos e imprime seus conteudos 
 */
 
+int titulo_artigo(char c; FILE* arq)
+{
+    // Verificacoes para ver se esta na parte anterior ao nome do periodico buscado
+    if (c != 'S')
+        return 0;
+    
+    c = fgetc(arq);
+
+    if (c != 'T')
+        return 0;
+
+    c = fgetc(arq);
+
+    if (c != 'A')
+        return 0;
+
+    c = fgetc(arq);
+
+    if (c != '=')
+        return 0;
+
+    // Se chegou ate aqui, eh porque achou o titulo do artigo             
+    c = fgetc(arq);
+    return 1;
+}
+
 int main ()
 {
     FILE* arq;
     char c;
-    int achou, n_per = 0, i = 0, tamstr = 0;
-    char** v_per;
+    int achou, tamv_per = 1, tamstr = 0;
+    char** v_per = malloc(sizeof(char*));  // Aloca vetor de strings para 1 string
     char str[1000] = "";  // String para armazenar cada nome de periodico
    
     // Abre o arquivo
@@ -45,39 +71,31 @@ int main ()
     // Enquanto nao chegou no final do arquivo, faz 
     while (c != EOF)
     {
-        achou = 0;
-
-        if (c == 'S')  // Verificacoes para ver se esta na parte anterior ao nome do periodico buscado
+        if (titulo_artigo(c, arq))  // Se passou da verificacao, armazena o periodico
         {
             c = fgetc(arq);
-            if (c == 'T')
-            {
-                c = fgetc(arq);
-                if (c == 'A')
-                {
-                    c = fgetc(arq);
-                    if (c == '=')
-                    {
-                        achou = 1;
-                        n_per++;  // Incrementa o numero de periodicos encontrados
-                        c = fgetc(arq);
-                    }
-                }
-            }
-        }
-
-        if (achou == 1)  // Se passou da verificacao, armazena o periodico
-        {
-            c = fgetc(arq);
+            str = malloc(sizeof(char));  // Aloca para um char
             while (c != '\"')
             {
                 //printf("%c", c);
-                strncat(str, &c, 1);  // Concatenando um caracter a mais na string do vetor de strings
+
+                // Concatenando um caracter a mais na string do vetor de strings
+                strncat(str, &c, 1);
+
+                // Incrementa o tamanho da string e realoca memoria da mesma
                 tamstr++;
+                str = realloc(str, sizeof(char) * tamstr);
+
+                // Pega o proximo caracter
                 c = fgetc(arq);
             }
-            
+
             printf("%s", str);
+
+            // Incrementa o tamanho do vetor de titulos e realoca memoria do mesmo
+            tamv_per++; 
+            v_per = realloc(v_per, sizeof(char*) * tamv_per);
+
             printf("\n\n");
             strcpy(str, "");  // Zera a string
         }
