@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #define ARQUIVO "curriculoCASTILHO.xml"
+#define TAMSTRING 512
 
 /*
     Contabilização da produção científica em termos de
@@ -22,7 +23,7 @@
     6 -> abre um diretório, le todos os arquivos e imprime seus conteudos 
 */
 
-int titulo_artigo(char c; FILE* arq; int *tamv_per)
+int titulo_artigo(char c, FILE* arq)
 {
     // Verificacoes para ver se esta na parte anterior ao nome do periodico buscado
     if (c != 'S')
@@ -52,9 +53,9 @@ int main ()
 {
     FILE* arq;
     char c;
-    int tamv_per = 0;
-    char** v_per = malloc(sizeof(char*) * 256);  // Aloca vetor de strings para 256 strings
-    char *str = malloc(sizeof(char) * 512);  // String para armazenar cada nome de periodico
+    int tamv_per = 0, i;
+    char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome de periodico
+    char** v_per = malloc(sizeof(str) * 100);  // Aloca vetor de strings para 100 strings
    
     // Abre o arquivo
     arq = fopen(ARQUIVO, "r");
@@ -66,7 +67,11 @@ int main ()
         exit(1);  // Fecha o programa com status 1
     }
     
+    // Pega o primeiro caracter do arquivo
     c = fgetc(arq);
+
+    // Zera a string 'str'
+    strcpy(str, "");
 
     // Enquanto nao chegou no final do arquivo, faz 
     while (c != EOF)
@@ -78,19 +83,15 @@ int main ()
 
             while (c != '\"')
             {
-                //printf("%c", c);
-
                 // Concatenando um caracter a mais na string do vetor de strings
                 strncat(str, &c, 1);
 
                 // Pega o proximo caracter
                 c = fgetc(arq);
             }
-
-            printf("%s", str);
-            printf("\n\n");
             
             // Adiciona o nome do periodico no vetor e incrementa seu tamanho
+            v_per[tamv_per] = malloc(sizeof(char) * TAMSTRING);
             strcpy(v_per[tamv_per], str);
             tamv_per++;
 
@@ -101,8 +102,13 @@ int main ()
         c = fgetc(arq);
     }
 
+    // Printa a string 'v_per'
     for (i = 0; i < tamv_per; i++)
         printf("%s\n\n", v_per[i]);
+
+    // Da free em todos os espacos alocados da string 'v_per'
+    for (i = 0; i < tamv_per; i++)
+        free(v_per[i]);
 
     free(str);
     free(v_per);
