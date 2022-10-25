@@ -54,7 +54,7 @@ int main ()
     char c;
     int achou, tamv_per = 1, tamstr = 0;
     char** v_per = malloc(sizeof(char*));  // Aloca vetor de strings para 1 string
-    char str[1000] = "";  // String para armazenar cada nome de periodico
+    char *str;  // String para armazenar cada nome de periodico
    
     // Abre o arquivo
     arq = fopen(ARQUIVO, "r");
@@ -97,12 +97,15 @@ int main ()
             v_per = realloc(v_per, sizeof(char*) * tamv_per);
 
             printf("\n\n");
-            strcpy(str, "");  // Zera a string
+            // Zera a string
+            strcpy(str, "");
+            free(str);
         }
 
         c = fgetc(arq);
     }
 
+    free(v_per);
     fclose(arq);
     
     return 0;
