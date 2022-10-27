@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #define ARQUIVO "curriculoCASTILHO.xml"
+#define ARQUIVO2 "qualis-periodicos.txt"
+#define ARQUIVO3 "qualis-conf.txt"
 #define TAMSTRING 512
 
 /*
@@ -55,24 +57,114 @@ int titulo_artigo(char c, FILE* arq)
     return 1;
 }
 
-int main ()
+// Funcao que imprime o menu de operacoes
+void imprimir_menu()
 {
-    FILE* arq;
+    printf("[1] -> Apresentar periodicos de todos, catalogados pelos niveis;\n");
+    printf("[2] -> Apresentar conferencias de todos, catalogadas pelos niveis;\n");
+    printf("[3] -> Apresentar periodicos separados por autores, catalogados pelos niveis;\n");
+    printf("[4] -> Apresentar conferencias separadas por autores, catalogadas pelos niveis;\n");
+    printf("[5] -> Apresentar periodicos sumarizados do grupo por ano, catalogados pelos niveis;\n");
+    printf("[6] -> Apresentar conferencias sumarizadas do grupo por ano, catalogadas pelos niveis;\n");
+    printf("[7] -> Listar aqueles periódicos e eventos(conferencias) classificados no nível C;\n");
+    printf("[8] -> Discriminar entre aqueles encontrados como nível C e não encontrados nas listas fornecidas.\n\n");
+
+    printf("Atualmente, o QUALIS está dividido em 8 níveis/estratos em ordem descrente de valor {A1, A2, A3, A4, B1, B2, B3 e B4}.\n");
+    printf("existe também o estrato C que é dedicado aos veículos de irrelevância ou sem classificação.\n\n\n");
+}
+
+// Funcao que imprime um vetor
+void imprime_vetor(char** v_per, int tamv_per)
+{
+    int i;
+
+    for (i = 0; i < tamv_per; i++)
+        printf("%s\n", v_per[i]);
+}
+
+// Funcao que le uma opcao do usuario
+int le_opt()
+{
+    int opt;
+
+    scanf("%d", &opt);
+
+    // Se nao for uma opcao valida, pede pra digitar de novo
+    while (opt < 1 || opt > 8)
+    {
+        printf("Opcao invalida, digite novamente: ");
+        scanf("%d", &opt);
+    }
+
+    return opt;
+}
+  
+// Funcao que substitui uma dada palavra de uma string por outra
+char* substitui_palavra(const char* str, const char* Pvelha, const char* Pnova) 
+{ 
+    char* stringf; 
+    int i, cnt = 0; 
+    int tam_Pnova = strlen(Pnova); 
+    int tam_Pvelha = strlen(Pvelha); 
+  
+    // Contando quantas vezes 'Pvelha' aparece na string 'str' 
+    for (i = 0; str[i] != '\0'; i++) 
+    { 
+        if (strstr(&s[i], oldW) == &str[i]) 
+        { 
+            cnt++; 
+  
+            // Indo para o indice logo apos 'Pvelha' 
+            i = i + tam_Pvelha - 1; 
+        } 
+    } 
+  
+    // Criando a string final 'stringf' com o tamanho adequado 
+    stringf = (char*)malloc(i + cnt * (tam_Pnova - tam_Pvelha) + 1); 
+  
+    i = 0; 
+    while (*s) 
+    { 
+        // compara a substring com o resultado 
+        if (strstr(str, Pvelha) == str) 
+        { 
+            strcpy(&stringf[i], Pnova); 
+            i = i + tam_Pnova; 
+            str = str + tam_Pvelha; 
+        } 
+        else
+            stringf[i++] = *str++; 
+    } 
+  
+    stringf[i] = '\0'; 
+    return stringf; 
+} 
+
+// Funcao que corrige nomes de alguns periodicos, caracteres especiais e etc
+// Por exemplo o caracter '&' eh escrito como '&amp'
+void corrigir_nomes(v_per, tamv_per)
+{
+    
+
+}
+
+// Funcao que imprime os periodicos de acordo com seus niveis
+// niveis: A1, A2, A3, A4, B1, B2, B3, B4 e C.
+void separar_e_imprimirPERIODICOS(char** v_per, FILE* arq2)
+{
+
+}
+
+
+// Funcao que imprime todos os periodicos na tela, separados por niveis
+void imprime_periodicos(FILE* arq)
+{
+    FILE* arq2;
     char c;
     int tamv_per = 0, i;
     char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome de periodico
     char** v_per = malloc(sizeof(str) * 100);  // Aloca vetor de strings para 100 strings
-   
-    // Abre o arquivo
-    arq = fopen(ARQUIVO, "r");
 
-    // Testa se o arquivo abre
-    if (arq == NULL)
-    {
-        printf("Impossivel abrir arquivo\n");
-        exit(1);  // Fecha o programa com status 1
-    }
-    
     // Pega o primeiro caracter do arquivo
     c = fgetc(arq);
 
@@ -108,9 +200,21 @@ int main ()
         c = fgetc(arq);
     }
 
-    // Printa a string 'v_per'
-    for (i = 0; i < tamv_per; i++)
-        printf("%s\n\n", v_per[i]);
+    corrigir_nomes(v_per, tamv_per);
+
+    imprime_vetor(v_per, tamv_per);
+
+    // Abre o arquivo contendo os periodicos classificados
+    arq2 = fopen(ARQUIVO2, "r");
+
+    // Testa se o arquivo abre
+    if (arq2 == NULL)
+    {
+        printf("Impossivel abrir arquivo\n");
+        exit(1);  // Fecha o programa com status 1
+    }
+
+    separar_e_imprimirPERIODICOS(v_per, arq2);
 
     // Da free em todos os espacos alocados da string 'v_per'
     for (i = 0; i < tamv_per; i++)
@@ -118,7 +222,95 @@ int main ()
 
     free(str);
     free(v_per);
+}
+
+// Funcao que imprime todas as conferencias na tela, separadas por niveis
+void imprime_conferencias(FILE* arq)
+{
+
+}
+
+// Funcao que imprime todos os periodicos na tela, separados por autores
+void imprime_periodicosAUTORES(FILE* arq)
+{
+
+}
+
+// Funcao que imprime todas as conferencias na tela, separados por autores
+void imprime_conferenciasAUTORES(FILE* arq)
+{
+
+}
+
+// Funcao que imprime todos os periodicos na tela, separados por ano
+void imprime_periodicosANO(FILE* arq)
+{
+
+}
+
+// Funcao que imprime todas as conferencias na tela, separadas por ano
+void imprime_conferenciasANO(FILE* arq)
+{
+
+}
+
+// Funcao que imprime conferencias e periodicos catalogados no nivel C
+void imprime_tudoC(FILE* arq)
+{
+
+}
+
+// Funcao que imprime conferencias e periodicos catalogados no nivel C e os que nao foram encontrados
+void imprime_tudoC_e_nao_encontrados(FILE* arq)
+{
+
+}
+
+
+int main ()
+{
+    FILE* arq;
+    int opt;
+   
+    printf("\n\nBem vindo! Digite a opcao que desejar:\n\n\n");
+
+    imprimir_menu();
+    opt = le_opt();
+
+    // Abre o arquivo
+    arq = fopen(ARQUIVO, "r");
+
+    // Testa se o arquivo abre
+    if (arq == NULL)
+    {
+        printf("Impossivel abrir arquivo\n");
+        exit(1);  // Fecha o programa com status 1
+    }
+
+    if (opt == 1)
+        imprime_periodicos(arq);
+
+    if (opt == 2)
+        imprime_conferencias(arq);
+
+    if (opt == 3)
+        imprime_periodicosAUTORES(arq);
+
+    if (opt == 4)
+        imprime_conferenciasAUTORES(arq);
+
+    if (opt == 5)
+        imprime_periodicosANO(arq);
+
+    if (opt == 6)
+        imprime_conferenciasANO(arq);
+
+    if (opt == 7)
+        imprime_tudoC(arq);
+
+    if (opt == 8)
+        imprime_tudoC_e_nao_encontrados(arq);
+
     fclose(arq);
-    
     return 0;
 }
