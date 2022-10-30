@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define ARQUIVO "curriculoCASTILHO.xml"
+#define ARQUIVO "curriculoMENOTTI.xml"
 #define ARQUIVO2 "qualis-periodicos.txt"
 #define ARQUIVO3 "qualis-conf.txt"
 #define TAMSTRING 512
@@ -16,14 +16,13 @@
     Desenvolvido por Pedro Amaral Chapelin
     Data de finalização -> XX/XX/XXXX
     
-    1 -> lê um arq .xml e imprime seu conteudo --FEITO--
-    2 -> imprimir na tela apenas o nome dos periodicos (vêm depois do 'TITULO-DO-PERIODICO-OU-REVISTA=' e vai até "")
-         while !EOF (if 'TITULO-DO-PERIODICO-OU-REVISTA=' armazenar até a última ")
-         armazenar num vetor de strings (?)
-    3 -> imprimir na tela apenas o nome das conferencias
-    4 -> catalogar periodico(s) e imprimi-lo(s) na tela
-    5 -> mesma coisa com conferencia
-    6 -> abre um diretório, le todos os arquivos e imprime seus conteudos 
+    LIDAR COM CARACTERES ESPECIAIS QUE NAO FUNCIONAM NA FUNCAO TOUPPER (Ç, ^, ~ ETC)
+    //////////////
+    LIDAR COM PERIODICOS QUE SE REPETEM, FAZER ADICIONAR 1 SÓ NO VETOR
+    //////////////
+    RESOLVER O CASO DA REVISTA QUE TA COM DOIS NIVEIS NO CURRICULO DO MENOTTI
+    //////////////
+
 */
 
 /*
@@ -144,20 +143,6 @@ char* substitui_palavra(char** strf, const char* str, const char* Pvelha, const 
     return *strf;
 } 
 
-// Funcao que corrige nomes de alguns periodicos, caracteres especiais e etc
-// Por exemplo o caracter '&' eh escrito como '&amp;'
-void corrigir_nomes(char** v_per, int tamv_per)
-{   
-    int i;
-
-    for (i = 0; i < tamv_per; i++)
-    {
-        // Se tiver um '&amp', substitui por '&'
-        if (strstr(v_per[i], "&amp;"))
-            substitui_palavra(&v_per[i], v_per[i], "&amp;", "&");
-    }
-}
-
 // Funcao que transforma todas as strings do vetor em letras maiusculas
 void para_maiusculo(char** v_per, int tamv_per)
 {
@@ -189,15 +174,29 @@ void para_maiusculo(char** v_per, int tamv_per)
     free(straux);
 }
 
+// Funcao que corrige nomes de alguns periodicos, caracteres especiais e etc
+// Por exemplo o caracter '&' eh escrito como '&amp;'
+void corrigir_nomes(char** v_per, int tamv_per)
+{   
+    int i;
+
+    for (i = 0; i < tamv_per; i++)
+    {
+        // Se tiver um '&amp', substitui por '&'
+        if (strstr(v_per[i], "&amp;"))
+            substitui_palavra(&v_per[i], v_per[i], "&amp;", "&");
+    }
+
+    para_maiusculo(v_per, tamv_per);
+}
+
 // Funcao que imprime os periodicos de acordo com seus niveis
 // niveis: A1, A2, A3, A4, B1, B2, B3, B4 e C.
-void separar_e_imprimirPERIODICOS(char** v_per, int tamv_per, FILE* arq2)
+void separarPERIODICOS(char** v_per, int tamv_per, FILE* arq2)
 {
     int ind_vper;
     int ind;
     char linha[TAMSTRING];
-
-    para_maiusculo(v_per, tamv_per);
 
     fgets(linha, TAMSTRING, arq2);
 
@@ -229,7 +228,10 @@ void separar_e_imprimirPERIODICOS(char** v_per, int tamv_per, FILE* arq2)
                 else {
 
                     // Concatenando o espaço e um caracter na string
-                    strncat(v_per[ind_vper], &linha[ind - 3], 1); 
+                    strncat(v_per[ind_vper], &linha[ind - 3], 1);
+
+                    // Aqui precisamos fazer '[ind - 2]' porque a linha alem de conter
+                    // o '\0', tambem contem o '\n' 
                     strncat(v_per[ind_vper], &linha[ind - 2], 1);
                 }
             }
@@ -239,7 +241,89 @@ void separar_e_imprimirPERIODICOS(char** v_per, int tamv_per, FILE* arq2)
 
         rewind(arq2);
     }
+
+    //imprime_vetor(v_per, tamv_per);
+
     //free(linha);
+}
+
+// Funcao que imprime os periodicos de acordo com seus niveis
+void imprime_periodicos_catalogados(char**v_per, int tamv_per)
+{
+    int i, j, k, ind = 0;
+    char niveis[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" ,"B4"};
+    char* straux = malloc(sizeof(char) * TAMSTRING);
+
+    /*for (i = 0; i < 9; i++)
+        char[i] = malloc(sizeof(char) * 3);*/
+
+    // Loop com todos os niveis menos o 'C', pois eh preciso um teste mais elaborado
+    // devido a ser um caracter so, todas os periodicos podem apresentar a letra 'C'
+    for (j = 0; j < 8; j++)
+    {
+        printf("\n%s:\n", niveis[j]);
+        for (i = 0; i < tamv_per; i++)
+        {
+            // Copia o nome do periodico para uma string auxiliar
+            strcpy(straux, v_per[i]);
+
+            // Pega o indice do fim da string
+            while (straux[ind] != '\0')
+                ind++;
+
+            // Se estiver com o nivel no fim da string, imprima
+            if (strstr(v_per[i], niveis[j]))
+            {
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito
+                while (k < (ind - 2))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+                printf("\n");
+            }
+
+            ind = 0;
+        }
+    }
+
+    printf("\nC:\n");
+    for (i = 0; i < tamv_per; i++)
+    {
+        // Copia o nome do periodico para uma string auxiliar
+        strcpy(straux, v_per[i]);
+
+        // Pega o indice do fim da string
+        while (straux[ind] != '\0')
+            ind++;
+
+        // Verifica se tem o nivel C na string
+        // Neste caso, nao temos o '\n', entao '[ind - 1]' eh o C
+        if (straux[ind - 1] == 'C')
+        {
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito
+                while (k < (ind - 1))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+                printf("\n");
+        }
+
+        ind = 0;
+    }
+
+    printf("\n");
+
+    /*for (i = 0; i < 9; i++)
+        free(niveis[i]);
+
+    free(niveis);*/
+    free(straux);
 }
 
 
@@ -266,6 +350,7 @@ void imprime_periodicos(FILE* arq)
         {
             c = fgetc(arq);
 
+            // Le ate chegar no fim das aspas duplas
             while (c != '\"')
             {
                 // Concatenando um caracter a mais na string do vetor de strings
@@ -287,6 +372,8 @@ void imprime_periodicos(FILE* arq)
         c = fgetc(arq);
     }
 
+    //imprime_vetor(v_per, tamv_per);
+
     corrigir_nomes(v_per, tamv_per);
 
     //imprime_vetor(v_per, tamv_per);
@@ -301,9 +388,11 @@ void imprime_periodicos(FILE* arq)
         exit(1);  // Fecha o programa com status 1
     }
 
-    separar_e_imprimirPERIODICOS(v_per, tamv_per, arq2);
+    separarPERIODICOS(v_per, tamv_per, arq2);
 
-    imprime_vetor(v_per, tamv_per);
+    imprime_periodicos_catalogados(v_per, tamv_per);
+
+    //imprime_vetor(v_per, tamv_per);
 
     // Da free em todos os espacos alocados da string 'v_per'
     for (i = 0; i < tamv_per; i++)
