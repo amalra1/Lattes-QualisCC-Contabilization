@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define ARQUIVO "curriculoMENOTTI.xml"
+#define ARQUIVO "curriculoCASTILHO.xml"
 #define ARQUIVO2 "qualis-periodicos.txt"
 #define ARQUIVO3 "qualis-conf.txt"
 #define TAMSTRING 512
@@ -101,7 +101,7 @@ int le_opt()
   
 // Funcao que substitui uma dada palavra de uma string por outra
 // MUDAR PARAMETROS, FAZER ENTRAR UMA STRING POR REFERENCIA SO AO INVES DE UMA DE ENTRADA E UMA DE SAIDA
-char* substitui_palavra(char** strf, const char* str, const char* Pvelha, const char* Pnova) 
+char* substituiPalavra(char** strf, const char* str, const char* Pvelha, const char* Pnova) 
 { 
     char* stringf; 
     int i, cnt = 0; 
@@ -126,7 +126,7 @@ char* substitui_palavra(char** strf, const char* str, const char* Pvelha, const 
     i = 0; 
     while (*str) 
     { 
-        // compara a substring com o resultado 
+        // Compara a substring com o resultado 
         if (strstr(str, Pvelha) == str) 
         { 
             strcpy(&stringf[i], Pnova); 
@@ -144,7 +144,7 @@ char* substitui_palavra(char** strf, const char* str, const char* Pvelha, const 
 } 
 
 // Funcao que transforma todas as strings do vetor em letras maiusculas
-void para_maiusculo(char** v_per, int tamv_per)
+void paraMaiusculo(char** v_per, int tamv_per)
 {
     int ind, ind_vper; 
     char* straux = malloc (sizeof(char) * TAMSTRING);
@@ -176,7 +176,7 @@ void para_maiusculo(char** v_per, int tamv_per)
 
 // Funcao que corrige nomes de alguns periodicos, caracteres especiais e etc
 // Por exemplo o caracter '&' eh escrito como '&amp;'
-void corrigir_nomes(char** v_per, int tamv_per)
+void corrigirNomes(char** v_per, int tamv_per)
 {   
     int i;
 
@@ -184,10 +184,10 @@ void corrigir_nomes(char** v_per, int tamv_per)
     {
         // Se tiver um '&amp', substitui por '&'
         if (strstr(v_per[i], "&amp;"))
-            substitui_palavra(&v_per[i], v_per[i], "&amp;", "&");
+            substituiPalavra(&v_per[i], v_per[i], "&amp;", "&");
     }
 
-    para_maiusculo(v_per, tamv_per);
+    paraMaiusculo(v_per, tamv_per);
 }
 
 // Funcao que imprime os periodicos de acordo com seus niveis
@@ -326,9 +326,58 @@ void imprime_periodicos_catalogados(char**v_per, int tamv_per)
     free(straux);
 }
 
+// Funcao que imprime quantos periodicos o autor possui de cada nivel
+void imprimeQuantPeriodicos(char** v_per, int tamv_per)
+{
+    // Indices do vetor niveis:
+    // [0] - A1 / [1] - A2 / [2] - A3 / [3] - A4 / [4] - B1 / [5] - B2 / [6] - B3 / [7] - B4 / [8] - C  
+    char niveis[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" , "B4", "C"};
+    char* straux = malloc(sizeof(char) * TAMSTRING);
+    int* quantlvl = malloc(sizeof(int) * 9);
+    int i, j, ind = 0;
 
-// Funcao que imprime todos os periodicos na tela, separados por niveis
-void imprime_periodicos(FILE* arq)
+    // Inicializando vetor de quantidade de periodicos com tais niveis
+    for (i = 0; i < 9; i++)
+        quantlvl[i] = 0;
+
+    for (i = 0; i < tamv_per; i++)
+    {
+        for (j = 0; j < 8; j++)
+        {
+            if (strstr(v_per[i], niveis[j]))
+                quantlvl[j]++;
+        }
+
+        // Copia o nome do periodico para uma string auxiliar
+        strcpy(straux, v_per[i]);
+
+        // Pega o indice do fim da string
+        while (straux[ind] != '\0')
+            ind++;
+
+        if (straux[ind - 1] == 'C')
+            quantlvl[j]++;
+
+        ind = 0;  
+    }
+
+    printf("O pesquisador x possui:\n\n");
+
+    for (i = 0; i < 9; i++)
+    {
+        if (quantlvl[i] == 1)
+            printf("--> %d periodico catalogado em %s\n", quantlvl[i], niveis[i]);
+        else
+            printf("--> %d periodicos catalogados em %s\n", quantlvl[i], niveis[i]);
+    }   
+
+    free(straux);
+    free(quantlvl);
+}
+
+
+// Funcao que imprime a quantidade de periodicos na tela, separados por niveis
+void sumarizacaoPeriodicos(FILE* arq)
 {
     FILE* arq2;
     char c;
@@ -339,13 +388,13 @@ void imprime_periodicos(FILE* arq)
     // Pega o primeiro caracter do arquivo
     c = fgetc(arq);
 
-    // Zera a string 'str'
+    // Inicializa a string 'str'
     strcpy(str, "");
 
     // Enquanto nao chegou no final do arquivo, faz 
     while (c != EOF)
     {
-         // Se passou da verificacao, armazena o periodico
+         // Se estamos perto de um titulo, armazena o periodico
         if (titulo_artigo(c, arq))
         {
             c = fgetc(arq);
@@ -353,7 +402,7 @@ void imprime_periodicos(FILE* arq)
             // Le ate chegar no fim das aspas duplas
             while (c != '\"')
             {
-                // Concatenando um caracter a mais na string do vetor de strings
+                // Concatenando caracter por caracter na string do vetor de strings
                 strncat(str, &c, 1);
 
                 // Pega o proximo caracter
@@ -374,7 +423,7 @@ void imprime_periodicos(FILE* arq)
 
     //imprime_vetor(v_per, tamv_per);
 
-    corrigir_nomes(v_per, tamv_per);
+    corrigirNomes(v_per, tamv_per);
 
     //imprime_vetor(v_per, tamv_per);
 
@@ -390,7 +439,9 @@ void imprime_periodicos(FILE* arq)
 
     separarPERIODICOS(v_per, tamv_per, arq2);
 
-    imprime_periodicos_catalogados(v_per, tamv_per);
+    imprimeQuantPeriodicos(v_per, tamv_per);
+
+    //imprime_periodicos_catalogados(v_per, tamv_per);
 
     //imprime_vetor(v_per, tamv_per);
 
@@ -469,7 +520,7 @@ int main ()
     }
 
     if (opt == 1)
-        imprime_periodicos(arq);
+        sumarizacaoPeriodicos(arq);
 
     if (opt == 2)
         imprime_conferencias(arq);
