@@ -22,6 +22,8 @@
     //////////////
     RESOLVER O CASO DA REVISTA QUE TA COM DOIS NIVEIS NO CURRICULO DO MENOTTI
     //////////////
+    CONFERENCIAS ESTAO LOGO APOS 'NOME-DO-EVENTO='
+    //////////////
 
 */
 
