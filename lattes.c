@@ -23,6 +23,9 @@
     Data de finalização -> XX/XX/XXXX
     
 
+
+    os nao presentes na lista marquei como 'C-'
+
     FAZER A SAIDA FICAR IGUAL NO SITE
 
     Fazer um loop que imprimira os nomes de acordo com a ordem dos niveis.
@@ -76,38 +79,103 @@ void imprime_vetor(char** v, int tamv)
         printf("%s\n", v[i]);
 }
 
+// Funcao interna que verifica se uma string pertence a um vetor de strings
+// retorna 1 se achou e 0 se nao
+int achou(char** v, int tam, char* str)
+{
+    int i;
+
+    for (i = 0; i < tam; i++)
+    {
+        if (strstr(v[i], str))
+            return 1;
+    }
+
+    // Se chegou aqui eh porque nao achou
+    return 0;
+}
+
 // Funcao que imprime conferencias e periodicos catalogados no nivel C
 void imprime_tudoC(char** v, int tamv)
 {
-    int i, k;
-    int ind;
+    int i, k, ind, tamv_aux = 0;
     char* straux = malloc(sizeof(char) * TAMSTRING);
+    char** v_aux = malloc(sizeof(char*) * TAMSTRING);
 
-    printf("\n\n---------- Todos os periodicos e eventos classificados em nivel C ----------\n\n");
+    printf("\n---------- Todos os periodicos e eventos classificados em nivel C ----------\n\n");
 
     for (i = 0; i < tamv; i++)
     {
+        // Zera o indice
         ind = 0;
 
+        // Zera a string
+        strcpy(straux, "");
+
+        // Copia o nome para uma string auxiliar
         strcpy(straux, v[i]);
 
+        // Pega o ultimo indice
         while (straux[ind] != '\0')
             ind++;
 
+        // Se for 'C', imprime
         if (straux[ind - 1] == 'C')
         {
-            k = 0;
-
-            // Imprimindo a string toda menos o nivel nela escrito
-            while (k < (ind - 1))
+            if (!achou(v_aux, tamv_aux, straux))
             {
-                printf("%c", straux[k]);
-                k++;
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito
+                while (k < (ind - 1))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+
+                    // Adiciona o nome no v_aux e incrementa seu
+                    v_aux[tamv_aux] = malloc(sizeof(char) * TAMSTRING);
+                    strcpy(v_aux[tamv_aux], straux);
+                    tamv_aux++;
+
+                    // Zera a string
+                    strcpy(straux, "");
+                }
+
+                printf("\n");
             }
-            printf("\n");
+        }
+
+        if (straux[ind - 1] == '-')
+        {
+            if (!achou(v_aux, tamv_aux, straux))
+            {
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito
+                while (k < (ind - 2))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+
+                    // Adiciona o nome no v_aux e incrementa seu
+                    v_aux[tamv_aux] = malloc(sizeof(char) * TAMSTRING);
+                    strcpy(v_aux[tamv_aux], straux);
+                    tamv_aux++;
+
+                    // Zera a string
+                    strcpy(straux, "");
+                }
+
+                printf("\n");
+            }
         }
     }
 
+    // Da free em todos os espacos alocados da string 'v_aux'
+    for (i = 0; i < tamv_aux; i++)
+        free(v_aux[i]);
+
+    free(v_aux);
     free(straux);
 }
   
@@ -262,7 +330,7 @@ void separarSelecionados(char** v, int tamv, FILE* arq2)
 
         // Se o nome nao estiver na lista, cataloga como 'C'
         if (!NaLista)
-            strcat(v[indV], " C");
+            strcat(v[indV], " C-");
 
         rewind(arq2);
     }
@@ -281,6 +349,8 @@ void imprimeCatalogados(char** v, int tamv)
 
     /*for (i = 0; i < 9; i++)
         char[i] = malloc(sizeof(char) * 3);*/
+
+    printf("\n\n ---------- Ordem de periodicos, discriminando os estratos. ----------\n");
 
     // Loop com todos os niveis menos o 'C', pois eh preciso um teste mais elaborado
     // devido a ser um caracter so, todas os periodicos podem apresentar a letra 'C'
@@ -339,6 +409,20 @@ void imprimeCatalogados(char** v, int tamv)
                 printf("\n");
         }
 
+        // Se terminar com 'C-', eh porque eh nao presente na lista, tambem se encaixa
+        if (straux[ind - 1] == '-')
+        {
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito
+                while (k < (ind - 2))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+                printf("\n");
+        }
+
         ind = 0;
     }
 
@@ -351,7 +435,7 @@ void imprimeCatalogados(char** v, int tamv)
     free(straux);
 }
 
-// Funcao que imprime quantos periodicos o autor possui de cada nivel
+/*/ Funcao que imprime quantos periodicos o autor possui de cada nivel
 void imprimeQuantPeriodicos(char** v, int tamv)
 {
     // Indices do vetor niveis:
@@ -398,10 +482,10 @@ void imprimeQuantPeriodicos(char** v, int tamv)
 
     free(straux);
     free(quantlvl);
-}
+}*/
 
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
-void sumPeriodicosNiveis(FILE* arq)
+void pegaDados(FILE* arq)
 {
     FILE* arq2;
     char c;
@@ -473,11 +557,13 @@ void sumPeriodicosNiveis(FILE* arq)
 
     //imprimeQuantPeriodicos(v, tamv);
 
-    //imprimeCatalogados(v, tamv);
+    imprimeCatalogados(v, tamv);
 
     //imprime_vetor(v, tamv);
 
     imprime_tudoC(v, tamv);
+
+    //imprime_NaoClassificados(v, tamv);
 
     // Da free em todos os espacos alocados da string 'v'
     for (i = 0; i < tamv; i++)
@@ -489,49 +575,6 @@ void sumPeriodicosNiveis(FILE* arq)
     // Fecha o segundo arquivo
     fclose(arq2);
 }
-
-// Funcao que imprime todas as conferencias na tela, separadas por niveis
-void sumConferenciasNiveis(FILE* arq)
-{
-
-}
-
-// Funcao que imprime todos os periodicos na tela, separados por autores
-void sumPeriodicosAutores(FILE* arq)
-{
-
-}
-
-// Funcao que imprime todas as conferencias na tela, separados por autores
-void sumConferenciasAutores(FILE* arq)
-{
-
-}
-
-// Funcao que imprime todos os periodicos na tela, separados por ano
-void sumPeriodicosANO(FILE* arq)
-{
-
-}
-
-// Funcao que imprime todas as conferencias na tela, separadas por ano
-void sumConferenciasANO(FILE* arq)
-{
-
-}
-
-/*/ Funcao que imprime conferencias e periodicos catalogados no nivel C
-void sumTudoC(FILE* arq)
-{
-
-}*/
-
-// Funcao que imprime conferencias e periodicos catalogados no nivel C e os que nao foram encontrados
-void sumTudoNaoClassificados(FILE* arq)
-{
-
-}
-
 
 int main ()
 {
@@ -546,32 +589,8 @@ int main ()
         printf("Impossivel abrir arquivo\n");
         exit(1);  // Fecha o programa com status 1
     }
-
-    // [1]
-    printf("\n\n ---------- Ordem de periodicos, discriminando os estratos. ----------\n\n");
-    sumPeriodicosNiveis(arq);
-
-    // [2]
-    printf("\n\n ---------- Ordem de conferencias, discriminando os estratos. ----------\n\n");
-    sumConferenciasNiveis(arq);
-
-    // [3]
-    sumPeriodicosAutores(arq);
-
-    // [4]
-    sumConferenciasAutores(arq);
-
-    // [5]
-    sumPeriodicosANO(arq);
-
-    // [6]
-    sumConferenciasANO(arq);
-
-    // [7]
-    //sumTudoC(arq);
-
-    // [8]
-    sumTudoNaoClassificados(arq);
+    
+    pegaDados(arq);
 
     fclose(arq);
     return 0;
