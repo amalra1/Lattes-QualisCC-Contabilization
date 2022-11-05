@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define ARQUIVO "curriculoCASTILHO.xml"
+#define ARQUIVO "curriculoMENOTTI.xml"
 #define ARQUIVO2 "qualis-periodicos.txt"
-#define TAMSTRING 512
+#define TAMSTRING 700
 #define CHAVE "STA="
 
 // "qualis-conf.txt"
@@ -24,12 +24,21 @@
     
 
     FAZER A SAIDA FICAR IGUAL NO SITE
+
+    Fazer um loop que imprimira os nomes de acordo com a ordem dos niveis.
+    primeiro a1
+    depois a2
+    .
+    .
+    .
+    C
+    Dentro do loop, fazer outro loop que vai percorrer o vetor geral, um a um nome,
+    verificar seu nivel, se for o certo, se ja nao estiver la, copiar seu nome para
+    outro vetor, imprimir o nome, e dai contar quantas vezes apareceu no vetor geral.
+
+    
     //////////////
     LIDAR COM CARACTERES ESPECIAIS QUE NAO FUNCIONAM NA FUNCAO TOUPPER (Ç, ^, ~ ETC)
-    //////////////
-    LIDAR COM PERIODICOS QUE SE REPETEM, FAZER ADICIONAR 1 SÓ NO VETOR
-    //////////////
-    RESOLVER O CASO DA REVISTA QUE TA COM DOIS NIVEIS NO CURRICULO DO MENOTTI
     //////////////
 
 */
@@ -59,12 +68,47 @@ int eh_titulo(char c, FILE* arq, char* chave)
 }
 
 // Funcao que imprime um vetor
-void imprime_vetor(char** v_per, int tamv_per)
+void imprime_vetor(char** v, int tamv)
 {
     int i;
 
-    for (i = 0; i < tamv_per; i++)
-        printf("%s\n", v_per[i]);
+    for (i = 0; i < tamv; i++)
+        printf("%s\n", v[i]);
+}
+
+// Funcao que imprime conferencias e periodicos catalogados no nivel C
+void imprime_tudoC(char** v, int tamv)
+{
+    int i, k;
+    int ind;
+    char* straux = malloc(sizeof(char) * TAMSTRING);
+
+    printf("\n\n---------- Todos os periodicos e eventos classificados em nivel C ----------\n\n");
+
+    for (i = 0; i < tamv; i++)
+    {
+        ind = 0;
+
+        strcpy(straux, v[i]);
+
+        while (straux[ind] != '\0')
+            ind++;
+
+        if (straux[ind - 1] == 'C')
+        {
+            k = 0;
+
+            // Imprimindo a string toda menos o nivel nela escrito
+            while (k < (ind - 1))
+            {
+                printf("%c", straux[k]);
+                k++;
+            }
+            printf("\n");
+        }
+    }
+
+    free(straux);
 }
   
 // Funcao que substitui uma dada palavra de uma string por outra
@@ -112,16 +156,16 @@ char* substituiPalavra(char** strf, const char* str, const char* Pvelha, const c
 } 
 
 // Funcao que transforma todas as strings do vetor em letras maiusculas
-void paraMaiusculo(char** v_per, int tamv_per)
+void paraMaiusculo(char** v, int tamv)
 {
-    int ind, ind_vper; 
+    int ind, indV; 
     char* straux = malloc (sizeof(char) * TAMSTRING);
 
     // Necessario passar os nomes das strings para letras maiusculas
-    for (ind_vper = 0; ind_vper < tamv_per; ind_vper++)
+    for (indV = 0; indV < tamv; indV++)
     { 
         // Copia o nome do periodico para uma string auxiliar
-        strcpy(straux, v_per[ind_vper]);
+        strcpy(straux, v[indV]);
 
         // Zera o indice que apontara para os caracteres da string
         ind = 0;
@@ -135,7 +179,7 @@ void paraMaiusculo(char** v_per, int tamv_per)
         }
 
         // Transfere o auxiliar de volta para o vetor de strings
-        strcpy(v_per[ind_vper], straux);
+        strcpy(v[indV], straux);
         strcpy(straux, "");
     }
 
@@ -144,79 +188,92 @@ void paraMaiusculo(char** v_per, int tamv_per)
 
 // Funcao que corrige nomes de alguns periodicos, caracteres especiais e etc
 // Por exemplo o caracter '&' eh escrito como '&amp;'
-void corrigirNomes(char** v_per, int tamv_per)
+void corrigirNomes(char** v, int tamv)
 {   
     int i;
 
-    for (i = 0; i < tamv_per; i++)
+    for (i = 0; i < tamv; i++)
     {
         // Se tiver um '&amp', substitui por '&'
-        if (strstr(v_per[i], "&amp;"))
-            substituiPalavra(&v_per[i], v_per[i], "&amp;", "&");
+        if (strstr(v[i], "&amp;"))
+            substituiPalavra(&v[i], v[i], "&amp;", "&");
     }
 
-    paraMaiusculo(v_per, tamv_per);
+    paraMaiusculo(v, tamv);
 }
 
 // Funcao que imprime os periodicos de acordo com seus niveis
 // niveis: A1, A2, A3, A4, B1, B2, B3, B4 e C.
-void separarSelecionados(char** v_per, int tamv_per, FILE* arq2)
+void separarSelecionados(char** v, int tamv, FILE* arq2)
 {
-    int ind_vper;
+    int indV;
     int ind;
     char linha[TAMSTRING];
+    int NaLista;
 
     fgets(linha, TAMSTRING, arq2);
 
     // Varrendo todos os periodicos encontrados
-    for (ind_vper = 0; ind_vper < tamv_per; ind_vper++)
+    for (indV = 0; indV < tamv; indV++)
     {
+        // Zera a flag NaLista
+        NaLista = 0;
+
         // Zera o indice
         ind = 0;
 
         // Varrendo todo o arquivo com os periodicos
         while (!feof(arq2))
         {
-            // Se os nomes forem iguais, adiciona o nivel no final de 'v_per[i]'
-            if (strstr(linha, v_per[ind_vper]))
+            // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
+            if (strstr(linha, v[indV]))
             {
                 while (linha[ind] != '\0')
                     ind++;
 
                 // Se o nivel nao for C, armazena dois caracteres
-                if (linha[ind - 2] != 'C') {
-
+                if (linha[ind - 2] != 'C' && linha[ind - 3] != ' ') 
+                {
                     // Concatenando o espaço em branco e os dois caracteres na string
-                    strncat(v_per[ind_vper], &linha[ind - 4], 1);
-                    strncat(v_per[ind_vper], &linha[ind - 3], 1);
-                    strncat(v_per[ind_vper], &linha[ind - 2], 1);
+                    strncat(v[indV], &linha[ind - 4], 1);
+                    strncat(v[indV], &linha[ind - 3], 1);
+                    strncat(v[indV], &linha[ind - 2], 1);
+                    NaLista = 1;
                 }
 
                 // Se for, armazena um
-                else {
-
-                    // Concatenando o espaço e um caracter na string
-                    strncat(v_per[ind_vper], &linha[ind - 3], 1);
+                else 
+                {
+                    // Concatenando o espaço
+                    strncat(v[indV], &linha[ind - 3], 1);
 
                     // Aqui precisamos fazer '[ind - 2]' porque a linha alem de conter
                     // o '\0', tambem contem o '\n' 
-                    strncat(v_per[ind_vper], &linha[ind - 2], 1);
+                    strncat(v[indV], &linha[ind - 2], 1);
+
+                    NaLista = 1;
                 }
+
+                break;
             }
 
             fgets(linha, TAMSTRING, arq2);
         }
 
+        // Se o nome nao estiver na lista, cataloga como 'C'
+        if (!NaLista)
+            strcat(v[indV], " C");
+
         rewind(arq2);
     }
 
-    //imprime_vetor(v_per, tamv_per);
+    imprime_vetor(v, tamv);
 
     //free(linha);
 }
 
 // Funcao que imprime os periodicos de acordo com seus niveis
-void imprime_periodicos_catalogados(char** v_per, int tamv_per)
+void imprimeCatalogados(char** v, int tamv)
 {
     int i, j, k, ind = 0;
     char niveis[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" ,"B4"};
@@ -230,17 +287,17 @@ void imprime_periodicos_catalogados(char** v_per, int tamv_per)
     for (j = 0; j < 8; j++)
     {
         printf("\nEstrato %s:\n", niveis[j]);
-        for (i = 0; i < tamv_per; i++)
+        for (i = 0; i < tamv; i++)
         {
             // Copia o nome do periodico para uma string auxiliar
-            strcpy(straux, v_per[i]);
+            strcpy(straux, v[i]);
 
             // Pega o indice do fim da string
             while (straux[ind] != '\0')
                 ind++;
 
             // Se estiver com o nivel no fim da string, imprima
-            if (strstr(v_per[i], niveis[j]))
+            if (strstr(v[i], niveis[j]))
             {
                 k = 0;
 
@@ -258,10 +315,10 @@ void imprime_periodicos_catalogados(char** v_per, int tamv_per)
     }
 
     printf("\nEstrato C:\n");
-    for (i = 0; i < tamv_per; i++)
+    for (i = 0; i < tamv; i++)
     {
         // Copia o nome do periodico para uma string auxiliar
-        strcpy(straux, v_per[i]);
+        strcpy(straux, v[i]);
 
         // Pega o indice do fim da string
         while (straux[ind] != '\0')
@@ -295,7 +352,7 @@ void imprime_periodicos_catalogados(char** v_per, int tamv_per)
 }
 
 // Funcao que imprime quantos periodicos o autor possui de cada nivel
-void imprimeQuantPeriodicos(char** v_per, int tamv_per)
+void imprimeQuantPeriodicos(char** v, int tamv)
 {
     // Indices do vetor niveis:
     // [0] - A1 / [1] - A2 / [2] - A3 / [3] - A4 / [4] - B1 / [5] - B2 / [6] - B3 / [7] - B4 / [8] - C  
@@ -308,16 +365,16 @@ void imprimeQuantPeriodicos(char** v_per, int tamv_per)
     for (i = 0; i < 9; i++)
         quantlvl[i] = 0;
 
-    for (i = 0; i < tamv_per; i++)
+    for (i = 0; i < tamv; i++)
     {
         for (j = 0; j < 8; j++)
         {
-            if (strstr(v_per[i], niveis[j]))
+            if (strstr(v[i], niveis[j]))
                 quantlvl[j]++;
         }
 
         // Copia o nome do periodico para uma string auxiliar
-        strcpy(straux, v_per[i]);
+        strcpy(straux, v[i]);
 
         // Pega o indice do fim da string
         while (straux[ind] != '\0')
@@ -343,15 +400,14 @@ void imprimeQuantPeriodicos(char** v_per, int tamv_per)
     free(quantlvl);
 }
 
-
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
 void sumPeriodicosNiveis(FILE* arq)
 {
     FILE* arq2;
     char c;
-    int tamv_per = 0, i;
+    int tamv = 0, i;
     char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome de periodico
-    char** v_per = malloc(sizeof(str) * 512);  // Aloca vetor de strings para 100 strings
+    char** v = malloc(sizeof(str) * 512);  // Aloca vetor de strings para 100 strings
 
     // Pega o primeiro caracter do arquivo
     c = fgetc(arq);
@@ -378,9 +434,9 @@ void sumPeriodicosNiveis(FILE* arq)
             }
             
             // Adiciona o nome do periodico no vetor e incrementa seu tamanho
-            v_per[tamv_per] = malloc(sizeof(char) * TAMSTRING);
-            strcpy(v_per[tamv_per], str);
-            tamv_per++;
+            v[tamv] = malloc(sizeof(char) * TAMSTRING);
+            strcpy(v[tamv], str);
+            tamv++;
 
             // Zera a string
             strcpy(str, "");
@@ -389,11 +445,15 @@ void sumPeriodicosNiveis(FILE* arq)
         c = fgetc(arq);
     }
 
-    //imprime_vetor(v_per, tamv_per);
+    //imprime_vetor(v, tamv);
 
-    corrigirNomes(v_per, tamv_per);
+    //printf("\n\n\n\n");
 
-    //imprime_vetor(v_per, tamv_per);
+    corrigirNomes(v, tamv);
+
+    imprime_vetor(v, tamv);
+
+    printf("\n\n\n\n");
 
     // Abre o arquivo contendo os periodicos classificados
     arq2 = fopen(ARQUIVO2, "r");
@@ -405,20 +465,26 @@ void sumPeriodicosNiveis(FILE* arq)
         exit(1);  // Fecha o programa com status 1
     }
 
-    separarSelecionados(v_per, tamv_per, arq2);
+    //verificaLVL_e_imprime(v, tamv, arq2);
 
-    //imprimeQuantPeriodicos(v_per, tamv_per);
+    separarSelecionados(v, tamv, arq2);
 
-    imprime_periodicos_catalogados(v_per, tamv_per);
+    //imprime_vetor(v, tamv);
 
-    //imprime_vetor(v_per, tamv_per);
+    //imprimeQuantPeriodicos(v, tamv);
 
-    // Da free em todos os espacos alocados da string 'v_per'
-    for (i = 0; i < tamv_per; i++)
-        free(v_per[i]);
+    //imprimeCatalogados(v, tamv);
+
+    //imprime_vetor(v, tamv);
+
+    imprime_tudoC(v, tamv);
+
+    // Da free em todos os espacos alocados da string 'v'
+    for (i = 0; i < tamv; i++)
+        free(v[i]);
 
     free(str);
-    free(v_per);
+    free(v);
 
     // Fecha o segundo arquivo
     fclose(arq2);
@@ -454,11 +520,11 @@ void sumConferenciasANO(FILE* arq)
 
 }
 
-// Funcao que imprime conferencias e periodicos catalogados no nivel C
+/*/ Funcao que imprime conferencias e periodicos catalogados no nivel C
 void sumTudoC(FILE* arq)
 {
 
-}
+}*/
 
 // Funcao que imprime conferencias e periodicos catalogados no nivel C e os que nao foram encontrados
 void sumTudoNaoClassificados(FILE* arq)
@@ -502,7 +568,7 @@ int main ()
     sumConferenciasANO(arq);
 
     // [7]
-    sumTudoC(arq);
+    //sumTudoC(arq);
 
     // [8]
     sumTudoNaoClassificados(arq);
