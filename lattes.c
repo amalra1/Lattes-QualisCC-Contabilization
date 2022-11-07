@@ -492,6 +492,7 @@ void pegaDados(FILE* arq)
     int tamv = 0, i;
     char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome de periodico
     char** v = malloc(sizeof(str) * 512);  // Aloca vetor de strings para 100 strings
+    char *pesquisador = malloc(sizeof(char) * TAMSTRING); // String para armazenar o nome do pesquisador
 
     // Pega o primeiro caracter do arquivo
     c = fgetc(arq);
@@ -499,10 +500,29 @@ void pegaDados(FILE* arq)
     // Inicializa a string 'str'
     strcpy(str, "");
 
+    // Inicializa a string 'pesquisador'
+    strcpy(pesquisador, "");
+
     // Enquanto nao chegou no final do arquivo, faz 
     while (c != EOF)
-    {
-         // Se estamos perto de um titulo, armazena o periodico
+    {   
+        // Se estamos perto do nome do pesquisador, o armazena
+        if (eh_titulo(c, arq, "S NOME-COMPLETO="))
+        {
+            c = fgetc(arq);
+
+            // Le ate chegar no fim das aspas duplas
+            while (c != '\"')
+            {
+                // Concatenando caracter por caracter na string 'pesquisador'
+                strncat(pesquisador, &c, 1);
+
+                // Pega o proximo caracter
+                c = fgetc(arq);
+            }
+        }
+
+        // Se estamos perto de um titulo, armazena o periodico
         if (eh_titulo(c, arq, CHAVE))
         {
             c = fgetc(arq);
@@ -557,6 +577,9 @@ void pegaDados(FILE* arq)
 
     //imprimeQuantPeriodicos(v, tamv);
 
+    printf("Pesquisador: %s\n", pesquisador);
+    printf("------------------------------------------\n\n");
+
     imprimeCatalogados(v, tamv);
 
     //imprime_vetor(v, tamv);
@@ -571,27 +594,62 @@ void pegaDados(FILE* arq)
 
     free(str);
     free(v);
+    free(pesquisador);
 
     // Fecha o segundo arquivo
     fclose(arq2);
 }
 
-int main ()
+int main (int argc, char** argv)
 {
-    FILE* arq;
+    FILE* arqXML, arqPER, arqCONF;
+    DIR* dir;
+    char* nome_arqPER, nome_arqCONF, nome_dir;
+    int opt;
+
+    while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
+    {
+        switch (opt) 
+        {
+         case 'd':
+            printf("opcao d tem arg: %s\n", optarg);
+            nome_dir = malloc(sizeof(char) * strlen(optarg));
+            strcpy(nome_dir, "");
+            strcpy(nome_dir, optarg);            
+            break;
+
+         case 'c':
+            printf("opcao c tem arg: %s\n", optarg);
+            nome_arqCONF = malloc(sizeof(char) * strlen(optarg));
+            strcpy(nome_arqCONF, "");
+            strcpy(nome_arqCONF, optarg);
+            break;
+
+         case 'p':
+            printf("opcao p tem arg: %s\n", optarg);
+            nome_arqPER = malloc(sizeof(char) * strlen(optarg));
+            strcpy(nome_arqPER, "");
+            strcpy(nome_arqPER, optarg);
+            break;
+        }
+    }
 
     // Abre o arquivo
-    arq = fopen(ARQUIVO, "r");
+    arqXML = fopen(ARQUIVO, "r");
 
     // Testa se o arquivo abre
-    if (arq == NULL)
+    if (arqXML == NULL)
     {
         printf("Impossivel abrir arquivo\n");
         exit(1);  // Fecha o programa com status 1
     }
     
-    pegaDados(arq);
+    pegaDados(arqXML);
 
-    fclose(arq);
+    fclose(arqXML);
+
+    free(nome_dir);
+    free(nome_arqCONF);
+    free(nome_arqPER);
     return 0;
 }
