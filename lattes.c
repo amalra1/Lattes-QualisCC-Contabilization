@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#define ARQUIVO "curriculoMENOTTI.xml"
+#include <unistd.h>
+#include <getopt.h>
+#include <dirent.h>
+#define ARQUIVO "curriculoCASTILHO.xml"
 #define ARQUIVO2 "qualis-periodicos.txt"
 #define TAMSTRING 700
 #define CHAVE "STA="
@@ -578,7 +581,7 @@ void pegaDados(FILE* arq)
     //imprimeQuantPeriodicos(v, tamv);
 
     printf("Pesquisador: %s\n", pesquisador);
-    printf("------------------------------------------\n\n");
+    printf("---------------------------------------------------------------------------\n\n");
 
     imprimeCatalogados(v, tamv);
 
@@ -602,12 +605,14 @@ void pegaDados(FILE* arq)
 
 int main (int argc, char** argv)
 {
-    FILE* arqXML, arqPER, arqCONF;
+    FILE* arqXML, *arqPER, *arqCONF;
     DIR* dir;
-    char* nome_arqPER, nome_arqCONF, nome_dir;
+    char* nome_arqPER;
+    char* nome_arqCONF;
+    char* nome_dir;
     int opt;
 
-    while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
+    /*while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
     {
         switch (opt) 
         {
@@ -632,7 +637,7 @@ int main (int argc, char** argv)
             strcpy(nome_arqPER, optarg);
             break;
         }
-    }
+    }*/
 
     // Abre o arquivo
     arqXML = fopen(ARQUIVO, "r");
@@ -648,8 +653,8 @@ int main (int argc, char** argv)
 
     fclose(arqXML);
 
-    free(nome_dir);
-    free(nome_arqCONF);
-    free(nome_arqPER);
+    //free(nome_dir);
+    //free(nome_arqCONF);
+    //free(nome_arqPER);
     return 0;
 }
