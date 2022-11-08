@@ -7,6 +7,7 @@
 #include <dirent.h>
 #define ARQUIVO "curriculoMENOTTI.xml"
 #define ARQUIVO2 "qualis-periodicos.txt"
+#define ARQUIVO3 "qualis-conf.txt"
 #define TAMSTRING 700
 #define CHAVE "STA="
 
@@ -98,6 +99,42 @@ int achou(char** v, int tam, char* str)
     return 0;
 }
 
+// Funcao que pega o nome do pesquisador e armazena na string
+void nomePesquisador(FILE* arq, char* str)
+{
+    char c;
+    int achou = 0;
+
+    c = fgetc(arq);
+
+    // Enquanto nao chegou no final do arquivo, faz 
+    while (!achou)
+    {
+        // Se estamos perto do nome do pesquisador, o armazena
+        if (eh_titulo(c, arq, "S NOME-COMPLETO="))
+        {
+            c = fgetc(arq);
+
+            // Le ate chegar no fim das aspas duplas
+            while (c != '\"')
+            {
+                // Concatenando caracter por caracter na string 'pesquisador'
+                strncat(str, &c, 1);
+
+                // Pega o proximo caracter
+                c = fgetc(arq);
+            }
+
+            achou = 1;
+        }
+
+        c = fgetc(arq);
+    }
+
+    // Depois de armazenado o nome do pesquisador, volta do inicio
+    rewind(arq);
+}
+
 // Funcao que imprime conferencias e periodicos catalogados no nivel C
 void imprime_tudoC(char** v, int tamv)
 {
@@ -138,6 +175,64 @@ void imprime_tudoC(char** v, int tamv)
 
                 // Imprimindo a string toda menos o nivel nela escrito
                 while (k < (ind - ult))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+
+                // Adiciona o nome no v_aux e incrementa seu
+                v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(v_aux[tamv_aux], straux);
+                tamv_aux++;
+
+                // Zera a string
+                strcpy(straux, "");
+
+                printf("\n");
+            }
+        }
+    }
+
+    // Da free em todos os espacos alocados da string 'v_aux'
+    for (i = 0; i < tamv_aux; i++)
+        free(v_aux[i]);
+
+    free(v_aux);
+    free(straux);
+}
+
+void imprime_NaoClassificados(char** v, int tam)
+{
+    int i, k, ind, tamv_aux = 0;
+    char* straux = malloc(sizeof(char) * 512);
+    char** v_aux = malloc(sizeof(char*) * TAMSTRING);
+
+    printf("\n---------- Todos os periodicos/eventos nao classificados ----------\n\n");
+
+    for (i = 0; i < tam; i++)
+    {
+        // Zera o indice
+        ind = 0;
+
+        // Zera a string
+        strcpy(straux, "");
+
+        // Copia o nome para uma string auxiliar
+        strcpy(straux, v[i]);
+
+        // Pega o ultimo indice
+        while (straux[ind] != '\0')
+            ind++;
+
+        // Se for 'C', imprime
+        if (straux[ind - 1] == '-')
+        {
+            if (!achou(v_aux, tamv_aux, straux))
+            {
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito, neste caso, 'C-'
+                while (k < (ind - 2))
                 {
                     printf("%c", straux[k]);
                     k++;
@@ -410,37 +505,124 @@ void imprimeCatalogados(char** v, int tamv)
     free(straux);
 }
 
-// Funcao que pega o nome do pesquisador e armazena na string
-void nomePesquisador(FILE* arq, char* str)
+// Funcao que retorna quantas vezes uma string se repete 
+// em um vetor de strings
+int seRepete(char* str, char** v, int tam)
 {
-    char c;
+    int i = 0;
+    int cont = 0;
 
-    c = fgetc(arq);
-
-    // Enquanto nao chegou no final do arquivo, faz 
-    while (c != EOF)
+    for (i = 0; i < tam; i++)
     {
-        // Se estamos perto do nome do pesquisador, o armazena
-        if (eh_titulo(c, arq, "S NOME-COMPLETO="))
-        {
-            c = fgetc(arq);
-
-            // Le ate chegar no fim das aspas duplas
-            while (c != '\"')
-            {
-                // Concatenando caracter por caracter na string 'pesquisador'
-                strncat(str, &c, 1);
-
-                // Pega o proximo caracter
-                c = fgetc(arq);
-            }
-        }
-
-        c = fgetc(arq);
+        if(!strcmp(str, v[i]))
+            cont++;     
     }
 
-    // Depois de armazenado o nome do pesquisador, volta do inicio
-    rewind(arq);
+    return cont;
+}
+
+// Funcao que imprime a quantidade de titulos de acordo com o vetor de strings passado
+void imprimeSumarizada(char** v, int tam)
+{
+    int i, j, k, ind = 0;
+    int tamlvl = 8, tamv_aux = 0, cont = 0;
+    char vlvl[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
+    char* straux = malloc(sizeof(char) * 512);
+    char** v_aux = malloc(sizeof(char*) * TAMSTRING);
+
+    // Zera a string auxiliar
+    strcpy(straux, "");
+
+    // Percorrendo de nivel a nivel
+    for (i = 0; i < 8; i++)
+    {
+        printf("Estrato %s\n:", vlvl[i]);
+
+        for (j = 0; j < tam; j++)
+        {
+            // Se o titulo corresponde ao nivel da vez
+            if (strstr(vlvl[i], v[j]))
+            {
+                if (!achou(v_aux, tamv_aux, v[j]))
+                {
+                    // Copia o nome para a string auxiliar
+                    strcpy(straux, v[j]);
+
+                    k = 0;
+
+                    // Imprimindo a string toda menos o nivel nela escrito, nesse caso 'vlvl[i]'
+                    while (k < (ind - 2))
+                    {
+                        printf("%c", straux[k]);
+                        k++;
+                    }
+
+                    // Adiciona o nome no v_aux e incrementa seu tamanho
+                    v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
+                    strcpy(v_aux[tamv_aux], straux);
+                    tamv_aux++;
+
+                    cont = seRepete(straux, v, tam);
+
+                    printf(": %d\n", cont);
+
+                    // Zera a string
+                    strcpy(straux, "");
+                }
+            }
+        }
+    }
+
+    printf("Estrato C:\n");
+
+    for (i = 0; i < tam; i++)
+    {
+        // Copia o nome para a string auxiliar
+        strcpy(straux, v[i]);
+
+        // Pega o indice do ultimo caracter
+        while(straux[ind] != '\0')
+            ind++;
+
+        if(straux[ind - 1] == '-' || straux[ind - 1] == 'C')
+        {
+            if (!achou(v_aux, tamv_aux, v[i]))
+            {
+                 if (straux[ind - 1] == '-')
+                    ult = 2;
+                
+                if (straux[ind - 1] == 'C')
+                    ult = 1;
+
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito, nesse caso ou 'C' ou 'C-'
+                while (k < (ind - ult))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+
+                // Adiciona o nome no v_aux e incrementa seu tamanho
+                v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(v_aux[tamv_aux], straux);
+                tamv_aux++;
+
+                cont = seRepete(straux, v, tam);
+
+                printf(": %d\n", cont);
+
+                // Zera a string
+                strcpy(straux, "");
+            }
+        }
+    }
+
+    free(straux);
+
+    // Da free em todos os espacos alocados da string 'v_aux'
+    for (i = 0; i < tamv_aux; i++)
+        free(v_aux[i]);
 }
 
 // Funcao que preenche um vetor de strings com os dados escolhidos
@@ -500,69 +682,59 @@ void coletarTitulos(FILE* arq, char** v, int *tam, char* opt)
 }
 
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
-void pegaDados(FILE* arq)
+void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 {
-    FILE* arq2;
-    int tamv = 0, i;
+    int tamv_per = 0, i;
     char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
-    char** v = malloc(sizeof(str) * 512);  // Aloca vetor de strings para X strings
+    char** v_per = malloc(sizeof(str) * 512);  // Aloca vetor de strings para X titulos de periodicos
     char *pesquisador = malloc(sizeof(char) * TAMSTRING); // String para armazenar o nome do pesquisador
 
     // Inicializa a string 'pesquisador'
     strcpy(pesquisador, "");
 
-    nomePesquisador(arq, pesquisador);
+    nomePesquisador(arqXML, pesquisador);
 
-    coletarTitulos(arq, v, &tamv, "periodicos");
+    coletarTitulos(arqXML, v_per, &tamv_per, "periodicos"); // PER
 
-    //imprime_vetor(v, tamv);
+    //coletarTitulos(arqXML, v_per, &tamv_per, "conferencias"); // CONF
 
-    //printf("\n\n\n\n");
-
-    corrigirNomes(v, tamv);
-
-    //imprime_vetor(v, tamv);
+    //imprime_vetor(v_per, tamv_per);
 
     //printf("\n\n\n\n");
 
-    // Abre o arquivo contendo os periodicos classificados
-    arq2 = fopen(ARQUIVO2, "r");
+    corrigirNomes(v_per, tamv_per);
 
-    // Testa se o arquivo abre
-    if (arq2 == NULL)
-    {
-        printf("Impossivel abrir arquivo\n");
-        exit(1);  // Fecha o programa com status 1
-    }
+    //imprime_vetor(v_per, tamv_per);
 
-    //verificaLVL_e_imprime(v, tamv, arq2);
+    //printf("\n\n\n\n");
 
-    separarSelecionados(v, tamv, arq2);
+    separarSelecionados(v_per, tamv_per, arqPER); // PER
 
-    //imprime_vetor(v, tamv);
+    //separarSelecionados(v_conf, tamv-conf, arqCONF); //CONF
 
-    //imprimeQuantPeriodicos(v, tamv);
+    //imprime_vetor(v_per, tamv_per);
 
     printf("\nPesquisador: %s\n", pesquisador);
 
-    imprimeCatalogados(v, tamv);
+    //imprimeCatalogados(v_per, tamv_per);
 
-    //imprime_vetor(v, tamv);
+    imprimeSumarizada(v_per, tamv_per); //(1)
 
-    imprime_tudoC(v, tamv);
+    //imprimeSumarizada(v_conf, tamv_conf); //(2)
 
-    //imprime_NaoClassificados(v, tamv);
+    //imprime_vetor(v_per, tamv_per);
+
+    imprime_tudoC(v_per, tamv_per); //(5)
+
+    imprime_NaoClassificados(v_per, tamv_per); //(6)
 
     // Da free em todos os espacos alocados da string 'v'
-    for (i = 0; i < tamv; i++)
-        free(v[i]);
+    for (i = 0; i < tamv_per; i++)
+        free(v_per[i]);
 
     free(str);
-    free(v);
+    free(v_per);
     free(pesquisador);
-
-    // Fecha o segundo arquivo
-    fclose(arq2);
 }
 
 int main (int argc, char** argv)
@@ -574,6 +746,11 @@ int main (int argc, char** argv)
     char* nome_dir;
     int opt;*/
 
+    // Inicializa as strings
+    /*strcpy(nome_dir, "");
+    strcpy(nome_arqCONF, "");
+    strcpy(nome_arqPER, "");*/
+
     /*while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
     {
         switch (opt) 
@@ -581,21 +758,18 @@ int main (int argc, char** argv)
          case 'd':
             printf("opcao d tem arg: %s\n", optarg);
             nome_dir = malloc(sizeof(char) * strlen(optarg));
-            strcpy(nome_dir, "");
             strcpy(nome_dir, optarg);            
             break;
 
          case 'c':
             printf("opcao c tem arg: %s\n", optarg);
             nome_arqCONF = malloc(sizeof(char) * strlen(optarg));
-            strcpy(nome_arqCONF, "");
             strcpy(nome_arqCONF, optarg);
             break;
 
          case 'p':
             printf("opcao p tem arg: %s\n", optarg);
             nome_arqPER = malloc(sizeof(char) * strlen(optarg));
-            strcpy(nome_arqPER, "");
             strcpy(nome_arqPER, optarg);
             break;
         }
@@ -610,10 +784,32 @@ int main (int argc, char** argv)
         printf("Impossivel abrir arquivo\n");
         exit(1);  // Fecha o programa com status 1
     }
+
+    // Abre o arquivo contendo os periodicos classificados
+    arqPER = fopen(ARQUIVO2, "r");
+
+    // Testa se o arquivo abre
+    if (arqPER == NULL)
+    {
+        printf("Impossivel abrir arquivo\n");
+        exit(1);  // Fecha o programa com status 1
+    }
+
+    // Abre o arquivo contendo as conferencias classificadas
+    arqCONF = fopen(ARQUIVO3, "r");
+
+    // Testa se o arquivo abre
+    if (arqCONF == NULL)
+    {
+        printf("Impossivel abrir arquivo\n");
+        exit(1);  // Fecha o programa com status 1
+    }
     
-    pegaDados(arqXML);
+    pegaDados(arqXML, arqPER, arqCONF);
 
     fclose(arqXML);
+    fclose(arqPER);
+    fclose(arqCONF);
 
     //free(nome_dir);
     //free(nome_arqCONF);
