@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <dirent.h>
-#define ARQUIVO "curriculoCASTILHO.xml"
+#define ARQUIVO "curriculoMENOTTI.xml"
 #define ARQUIVO2 "qualis-periodicos.txt"
 #define TAMSTRING 700
 #define CHAVE "STA="
@@ -102,8 +102,9 @@ int achou(char** v, int tam, char* str)
 void imprime_tudoC(char** v, int tamv)
 {
     int i, k, ind, tamv_aux = 0;
-    char* straux = malloc(sizeof(char) * TAMSTRING);
+    char* straux = malloc(sizeof(char) * 512);
     char** v_aux = malloc(sizeof(char*) * TAMSTRING);
+    int ult = 0;
 
     printf("\n---------- Todos os periodicos e eventos classificados em nivel C ----------\n\n");
 
@@ -123,51 +124,32 @@ void imprime_tudoC(char** v, int tamv)
             ind++;
 
         // Se for 'C', imprime
-        if (straux[ind - 1] == 'C')
+        if (straux[ind - 1] == '-' || straux[ind - 1] == 'C')
         {
             if (!achou(v_aux, tamv_aux, straux))
             {
                 k = 0;
 
+                if (straux[ind - 1] == '-')
+                    ult = 2;
+                
+                if (straux[ind - 1] == 'C')
+                    ult = 1;
+
                 // Imprimindo a string toda menos o nivel nela escrito
-                while (k < (ind - 1))
+                while (k < (ind - ult))
                 {
                     printf("%c", straux[k]);
                     k++;
-
-                    // Adiciona o nome no v_aux e incrementa seu
-                    v_aux[tamv_aux] = malloc(sizeof(char) * TAMSTRING);
-                    strcpy(v_aux[tamv_aux], straux);
-                    tamv_aux++;
-
-                    // Zera a string
-                    strcpy(straux, "");
                 }
 
-                printf("\n");
-            }
-        }
+                // Adiciona o nome no v_aux e incrementa seu
+                v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(v_aux[tamv_aux], straux);
+                tamv_aux++;
 
-        if (straux[ind - 1] == '-')
-        {
-            if (!achou(v_aux, tamv_aux, straux))
-            {
-                k = 0;
-
-                // Imprimindo a string toda menos o nivel nela escrito
-                while (k < (ind - 2))
-                {
-                    printf("%c", straux[k]);
-                    k++;
-
-                    // Adiciona o nome no v_aux e incrementa seu
-                    v_aux[tamv_aux] = malloc(sizeof(char) * TAMSTRING);
-                    strcpy(v_aux[tamv_aux], straux);
-                    tamv_aux++;
-
-                    // Zera a string
-                    strcpy(straux, "");
-                }
+                // Zera a string
+                strcpy(straux, "");
 
                 printf("\n");
             }
@@ -338,9 +320,7 @@ void separarSelecionados(char** v, int tamv, FILE* arq2)
         rewind(arq2);
     }
 
-    imprime_vetor(v, tamv);
-
-    //free(linha);
+    //imprime_vetor(v, tamv);
 }
 
 // Funcao que imprime os periodicos de acordo com seus niveis
@@ -349,9 +329,6 @@ void imprimeCatalogados(char** v, int tamv)
     int i, j, k, ind = 0;
     char niveis[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" ,"B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
-
-    /*for (i = 0; i < 9; i++)
-        char[i] = malloc(sizeof(char) * 3);*/
 
     printf("\n\n ---------- Ordem de periodicos, discriminando os estratos. ----------\n");
 
@@ -430,85 +407,19 @@ void imprimeCatalogados(char** v, int tamv)
     }
 
     printf("\n");
-
-    /*for (i = 0; i < 9; i++)
-        free(niveis[i]);
-
-    free(niveis);*/
     free(straux);
 }
 
-/*/ Funcao que imprime quantos periodicos o autor possui de cada nivel
-void imprimeQuantPeriodicos(char** v, int tamv)
+// Funcao que pega o nome do pesquisador e armazena na string
+void nomePesquisador(FILE* arq, char* str)
 {
-    // Indices do vetor niveis:
-    // [0] - A1 / [1] - A2 / [2] - A3 / [3] - A4 / [4] - B1 / [5] - B2 / [6] - B3 / [7] - B4 / [8] - C  
-    char niveis[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" , "B4", "C"};
-    char* straux = malloc(sizeof(char) * TAMSTRING);
-    int* quantlvl = malloc(sizeof(int) * 9);
-    int i, j, ind = 0;
-
-    // Inicializando vetor de quantidade de periodicos com tais niveis
-    for (i = 0; i < 9; i++)
-        quantlvl[i] = 0;
-
-    for (i = 0; i < tamv; i++)
-    {
-        for (j = 0; j < 8; j++)
-        {
-            if (strstr(v[i], niveis[j]))
-                quantlvl[j]++;
-        }
-
-        // Copia o nome do periodico para uma string auxiliar
-        strcpy(straux, v[i]);
-
-        // Pega o indice do fim da string
-        while (straux[ind] != '\0')
-            ind++;
-
-        if (straux[ind - 1] == 'C')
-            quantlvl[j]++;
-
-        ind = 0;  
-    }
-
-    printf("O pesquisador x possui:\n\n");
-
-    for (i = 0; i < 9; i++)
-    {
-        if (quantlvl[i] == 1)
-            printf("--> %d periodico catalogado em %s\n", quantlvl[i], niveis[i]);
-        else
-            printf("--> %d periodicos catalogados em %s\n", quantlvl[i], niveis[i]);
-    }   
-
-    free(straux);
-    free(quantlvl);
-}*/
-
-// Funcao que imprime a quantidade de periodicos na tela, separados por niveis
-void pegaDados(FILE* arq)
-{
-    FILE* arq2;
     char c;
-    int tamv = 0, i;
-    char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome de periodico
-    char** v = malloc(sizeof(str) * 512);  // Aloca vetor de strings para 100 strings
-    char *pesquisador = malloc(sizeof(char) * TAMSTRING); // String para armazenar o nome do pesquisador
 
-    // Pega o primeiro caracter do arquivo
     c = fgetc(arq);
-
-    // Inicializa a string 'str'
-    strcpy(str, "");
-
-    // Inicializa a string 'pesquisador'
-    strcpy(pesquisador, "");
 
     // Enquanto nao chegou no final do arquivo, faz 
     while (c != EOF)
-    {   
+    {
         // Se estamos perto do nome do pesquisador, o armazena
         if (eh_titulo(c, arq, "S NOME-COMPLETO="))
         {
@@ -518,15 +429,47 @@ void pegaDados(FILE* arq)
             while (c != '\"')
             {
                 // Concatenando caracter por caracter na string 'pesquisador'
-                strncat(pesquisador, &c, 1);
+                strncat(str, &c, 1);
 
                 // Pega o proximo caracter
                 c = fgetc(arq);
             }
         }
 
-        // Se estamos perto de um titulo, armazena o periodico
-        if (eh_titulo(c, arq, CHAVE))
+        c = fgetc(arq);
+    }
+
+    // Depois de armazenado o nome do pesquisador, volta do inicio
+    rewind(arq);
+}
+
+// Funcao que preenche um vetor de strings com os dados escolhidos
+void coletarTitulos(FILE* arq, char** v, int *tam, char* opt)
+{
+    char c;
+    char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
+    char *chave = malloc(sizeof(char) * TAMSTRING);
+
+    // Inicializa a string 'chave'
+    strcpy(chave, "");
+    
+    // Ajustando a chave de busca conforme o que foi digitado
+    if (!strcmp(opt, "periodicos"))
+        strcpy(chave, "STA=");
+
+    if (!strcmp(opt, "conferencias"))
+        strcpy(chave, "NOME-DO-EVENTO=");
+
+    // Inicializa a string 'str'
+    strcpy(str, "");
+
+    c = fgetc(arq);
+
+    while (c != EOF)
+    {   
+        //printf("%d\n\n", eh_titulo(c, arq, chave));
+        // Se estamos perto de um titulo, armazena o nome no vetor
+        if (eh_titulo(c, arq, chave))
         {
             c = fgetc(arq);
 
@@ -541,9 +484,9 @@ void pegaDados(FILE* arq)
             }
             
             // Adiciona o nome do periodico no vetor e incrementa seu tamanho
-            v[tamv] = malloc(sizeof(char) * TAMSTRING);
-            strcpy(v[tamv], str);
-            tamv++;
+            v[*tam] = malloc(sizeof(char) * TAMSTRING);
+            strcpy(v[*tam], str);
+            (*tam)++;
 
             // Zera a string
             strcpy(str, "");
@@ -552,15 +495,35 @@ void pegaDados(FILE* arq)
         c = fgetc(arq);
     }
 
+    free(str);
+    free(chave);
+}
+
+// Funcao que imprime a quantidade de periodicos na tela, separados por niveis
+void pegaDados(FILE* arq)
+{
+    FILE* arq2;
+    int tamv = 0, i;
+    char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
+    char** v = malloc(sizeof(str) * 512);  // Aloca vetor de strings para X strings
+    char *pesquisador = malloc(sizeof(char) * TAMSTRING); // String para armazenar o nome do pesquisador
+
+    // Inicializa a string 'pesquisador'
+    strcpy(pesquisador, "");
+
+    nomePesquisador(arq, pesquisador);
+
+    coletarTitulos(arq, v, &tamv, "periodicos");
+
     //imprime_vetor(v, tamv);
 
     //printf("\n\n\n\n");
 
     corrigirNomes(v, tamv);
 
-    imprime_vetor(v, tamv);
+    //imprime_vetor(v, tamv);
 
-    printf("\n\n\n\n");
+    //printf("\n\n\n\n");
 
     // Abre o arquivo contendo os periodicos classificados
     arq2 = fopen(ARQUIVO2, "r");
@@ -580,8 +543,7 @@ void pegaDados(FILE* arq)
 
     //imprimeQuantPeriodicos(v, tamv);
 
-    printf("Pesquisador: %s\n", pesquisador);
-    printf("---------------------------------------------------------------------------\n\n");
+    printf("\nPesquisador: %s\n", pesquisador);
 
     imprimeCatalogados(v, tamv);
 
@@ -605,12 +567,12 @@ void pegaDados(FILE* arq)
 
 int main (int argc, char** argv)
 {
-    FILE* arqXML, *arqPER, *arqCONF;
+    FILE* arqXML;/*, *arqPER, *arqCONF;
     DIR* dir;
     char* nome_arqPER;
     char* nome_arqCONF;
     char* nome_dir;
-    int opt;
+    int opt;*/
 
     /*while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
     {
