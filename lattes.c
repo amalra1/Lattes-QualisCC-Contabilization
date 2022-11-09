@@ -143,8 +143,6 @@ void imprime_tudoC(char** v, int tamv)
     char** v_aux = malloc(sizeof(char*) * TAMSTRING);
     int ult = 0;
 
-    printf("\n---------- Todos os periodicos e eventos classificados em nivel C ----------\n\n");
-
     for (i = 0; i < tamv; i++)
     {
         // Zera o indice
@@ -206,8 +204,6 @@ void imprime_NaoClassificados(char** v, int tam)
     int i, k, ind, tamv_aux = 0;
     char* straux = malloc(sizeof(char) * 512);
     char** v_aux = malloc(sizeof(char*) * TAMSTRING);
-
-    printf("\n---------- Todos os periodicos/eventos nao classificados ----------\n\n");
 
     for (i = 0; i < tam; i++)
     {
@@ -425,8 +421,6 @@ void imprimeCatalogados(char** v, int tamv)
     char niveis[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" ,"B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
 
-    printf("\n\n ---------- Ordem de periodicos, discriminando os estratos. ----------\n");
-
     // Loop com todos os niveis menos o 'C', pois eh preciso um teste mais elaborado
     // devido a ser um caracter so, todas os periodicos podem apresentar a letra 'C'
     for (j = 0; j < 8; j++)
@@ -524,7 +518,7 @@ int seRepete(char* str, char** v, int tam)
 // Funcao que imprime a quantidade de titulos de acordo com o vetor de strings passado
 void imprimeSumarizada(char** v, int tam)
 {
-    int i, j, k, ind = 0;
+    int i, j, k, ult, ind = 0;
     int tamlvl = 8, tamv_aux = 0, cont = 0;
     char vlvl[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * 512);
@@ -534,19 +528,23 @@ void imprimeSumarizada(char** v, int tam)
     strcpy(straux, "");
 
     // Percorrendo de nivel a nivel
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < tamlvl; i++)
     {
-        printf("Estrato %s\n:", vlvl[i]);
+        printf("\nEstrato %s:\n\n", vlvl[i]);
 
         for (j = 0; j < tam; j++)
         {
             // Se o titulo corresponde ao nivel da vez
-            if (strstr(vlvl[i], v[j]))
+            if (strstr(v[j], vlvl[i]))
             {
                 if (!achou(v_aux, tamv_aux, v[j]))
                 {
                     // Copia o nome para a string auxiliar
                     strcpy(straux, v[j]);
+
+                    // Pega o indice do ultimo caracter
+                    while(straux[ind] != '\0')
+                        ind++;
 
                     k = 0;
 
@@ -568,12 +566,15 @@ void imprimeSumarizada(char** v, int tam)
 
                     // Zera a string
                     strcpy(straux, "");
+
+                    // Zera o indice
+                    ind = 0;
                 }
             }
         }
     }
 
-    printf("Estrato C:\n");
+    printf("\nEstrato C:\n\n");
 
     for (i = 0; i < tam; i++)
     {
@@ -611,10 +612,13 @@ void imprimeSumarizada(char** v, int tam)
                 cont = seRepete(straux, v, tam);
 
                 printf(": %d\n", cont);
-
-                // Zera a string
-                strcpy(straux, "");
             }
+
+            // Zera a string
+            strcpy(straux, "");
+
+            // Zera o indice
+            ind = 0;
         }
     }
 
@@ -623,6 +627,8 @@ void imprimeSumarizada(char** v, int tam)
     // Da free em todos os espacos alocados da string 'v_aux'
     for (i = 0; i < tamv_aux; i++)
         free(v_aux[i]);
+
+    free(v_aux);
 }
 
 // Funcao que preenche um vetor de strings com os dados escolhidos
@@ -712,19 +718,29 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //separarSelecionados(v_conf, tamv-conf, arqCONF); //CONF
 
-    //imprime_vetor(v_per, tamv_per);
+    imprime_vetor(v_per, tamv_per);
+
+    printf("\n\n\n\n");
 
     printf("\nPesquisador: %s\n", pesquisador);
 
     //imprimeCatalogados(v_per, tamv_per);
 
+    printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
+
     imprimeSumarizada(v_per, tamv_per); //(1)
+
+    printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
     //imprimeSumarizada(v_conf, tamv_conf); //(2)
 
     //imprime_vetor(v_per, tamv_per);
 
+    printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
+
     imprime_tudoC(v_per, tamv_per); //(5)
+
+    printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
     imprime_NaoClassificados(v_per, tamv_per); //(6)
 
@@ -739,12 +755,12 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
 int main (int argc, char** argv)
 {
-    FILE* arqXML;/*, *arqPER, *arqCONF;
+    FILE* arqXML, *arqPER, *arqCONF;
     DIR* dir;
     char* nome_arqPER;
     char* nome_arqCONF;
     char* nome_dir;
-    int opt;*/
+    int opt;
 
     // Inicializa as strings
     /*strcpy(nome_dir, "");
