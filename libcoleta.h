@@ -1,6 +1,8 @@
 #ifndef __LIBCOLETA__
 #define __LIBCOLETA__
 
+//#define TAMSTRING 700
+
 /* 
     Biblioteca feita para funcoes especificas sobre coleta de 
     dados de um curriculoXML

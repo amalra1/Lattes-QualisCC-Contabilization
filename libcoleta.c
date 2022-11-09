@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
+#define TAMSTRING 700
 
 // Funcao que verifica os caracteres anteriores aos titulos de acordo com a chave passada.
 // Retorna 1 se os caracteres sao a chave, e 0 senao 
@@ -194,10 +197,10 @@ void corrigirNomes(char** vPER, int tamvPER)
     {
         // Se tiver um '&amp;', substitui por '&'
         if (strstr(vPER[i], "&amp;"))
-            substituiPalavra(&vPER[i], vper[i], "&amp;", "&");
+            substituiPalavra(&vPER[i], vPER[i], "&amp;", "&");
     }
 
-    paraMaiusculo(v, tamv);
+    paraMaiusculo(vPER, tamvPER);
 }
 
 void separarSelecionados(FILE* arq2, char** v, int tamv)

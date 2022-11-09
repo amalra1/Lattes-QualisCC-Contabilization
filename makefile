@@ -1,14 +1,17 @@
-HEADERS = program.h headers.h
-OBJECTS = program.o
+CC = gcc
+CFLAGS = -Wall -std=c99
 
-default: program
+lattes: lattes.o libcoleta.o libescrita.o
+	$(CC) $(CFLAGS) lattes.o libcoleta.o libescrita.o -o lattes
 
-%.o: %.c $(HEADERS)
-    gcc -c $< -o $@
+lattes.o: lattes.c
+	$(CC) $(CFLAGS) -c lattes.c
 
-program: $(OBJECTS)
-    gcc $(OBJECTS) -o $@
+libcoleta.o: libcoleta.c libcoleta.h
+	$(CC) $(CFLAGS) -c libcoleta.c 
+
+libescrita.o: libescrita.c libescrita.h
+	$(CC) $(CFLAGS) -c libescrita.c
 
 clean:
-    -rm -f $(OBJECTS)
-    -rm -f program
+	rm *.o

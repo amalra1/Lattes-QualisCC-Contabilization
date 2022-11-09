@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TAMSTRING 700
+
 void imprime_vetor(char** v, int tamv)
 {
     int i;
