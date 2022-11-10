@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TAMSTRING 700
+#define TAMSTRING 128
 
 void imprime_vetor(char** v, int tamv)
 {
@@ -15,7 +15,7 @@ void imprime_vetor(char** v, int tamv)
 void imprimeCatalogados(char** v, int tamv)
 {
     int i, j, k, ind = 0;
-    char niveis[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" ,"B4"};
+    char niveis[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" ,"B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
 
     // Loop com todos os niveis menos o 'C', pois eh preciso um teste mais elaborado
@@ -104,7 +104,7 @@ int seRepete(char* str, char** v, int tam)
 
     for (i = 0; i < tam; i++)
     {
-        if(!strcmp(str, v[i]))
+        if(strstr(v[i], str))
             cont++;     
     }
 
@@ -112,32 +112,13 @@ int seRepete(char* str, char** v, int tam)
     return cont;
 }
 
-// Funcao que verifica se uma string pertence a um vetor de strings.
-// Retorna 1 se achou e 0 se nao
-int achou(char** v, int tam, char* str)
-{
-    int i;
-
-    for (i = 0; i < tam; i++)
-    {
-        if (strstr(v[i], str))
-            return 1;
-    }
-
-    // Se chegou aqui eh porque nao achou
-    return 0;
-}
-
 void imprimeSumarizada(char** v, int tam)
 {
     int i, j, k, ult, ind = 0;
     int tamlvl = 8, tamv_aux = 0, cont = 0;
-    char vlvl[20][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
-    char* straux = malloc(sizeof(char) * 512);
-    char** v_aux = malloc(sizeof(char*) * TAMSTRING);
-
-    // Zera a string auxiliar
-    strcpy(straux, "");
+    char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
+    char* straux = malloc(sizeof(char) * TAMSTRING);
+    char** v_aux = malloc(sizeof(char*) * 100);
 
     // Percorrendo de nivel a nivel
     for (i = 0; i < tamlvl; i++)
@@ -149,7 +130,7 @@ void imprimeSumarizada(char** v, int tam)
             // Se o titulo corresponde ao nivel da vez
             if (strstr(v[j], vlvl[i]))
             {
-                if (!achou(v_aux, tamv_aux, v[j]))
+                if (!seRepete(v[j], v_aux, tamv_aux))
                 {
                     // Copia o nome para a string auxiliar
                     strcpy(straux, v[j]);
@@ -176,9 +157,6 @@ void imprimeSumarizada(char** v, int tam)
 
                     printf(": %d\n", cont);
 
-                    // Zera a string
-                    strcpy(straux, "");
-
                     // Zera o indice
                     ind = 0;
                 }
@@ -199,7 +177,7 @@ void imprimeSumarizada(char** v, int tam)
 
         if(straux[ind - 1] == '-' || straux[ind - 1] == 'C')
         {
-            if (!achou(v_aux, tamv_aux, v[i]))
+            if (!seRepete(v[i], v_aux, tamv_aux))
             {
                  if (straux[ind - 1] == '-')
                     ult = 2;
@@ -226,9 +204,6 @@ void imprimeSumarizada(char** v, int tam)
                 printf(": %d\n", cont);
             }
 
-            // Zera a string
-            strcpy(straux, "");
-
             // Zera o indice
             ind = 0;
         }
@@ -246,17 +221,14 @@ void imprimeSumarizada(char** v, int tam)
 void imprime_tudoC(char** v, int tamv)
 {
     int i, k, ind, tamv_aux = 0;
-    char* straux = malloc(sizeof(char) * 512);
-    char** v_aux = malloc(sizeof(char*) * TAMSTRING);
+    char* straux = malloc(sizeof(char) * TAMSTRING);
+    char** v_aux = malloc(sizeof(char*) * 100);
     int ult = 0;
 
     for (i = 0; i < tamv; i++)
     {
         // Zera o indice
         ind = 0;
-
-        // Zera a string
-        strcpy(straux, "");
 
         // Copia o nome para uma string auxiliar
         strcpy(straux, v[i]);
@@ -268,8 +240,7 @@ void imprime_tudoC(char** v, int tamv)
         // Se for 'C', imprime
         if (straux[ind - 1] == '-' || straux[ind - 1] == 'C')
         {
-            //if (!seRepete(straux, v_aux, tamv_aux))
-            if (!achou(v_aux, tamv_aux, straux))
+            if (!seRepete(straux, v_aux, tamv_aux))
             {
                 k = 0;
 
@@ -291,9 +262,6 @@ void imprime_tudoC(char** v, int tamv)
                 strcpy(v_aux[tamv_aux], straux);
                 tamv_aux++;
 
-                // Zera a string
-                strcpy(straux, "");
-
                 printf("\n");
             }
         }
@@ -310,16 +278,13 @@ void imprime_tudoC(char** v, int tamv)
 void imprime_NaoClassificados(char** v, int tam)
 {
     int i, k, ind, tamv_aux = 0;
-    char* straux = malloc(sizeof(char) * 512);
-    char** v_aux = malloc(sizeof(char*) * TAMSTRING);
+    char* straux = malloc(sizeof(char) * TAMSTRING);
+    char** v_aux = malloc(sizeof(char*) * 100);
 
     for (i = 0; i < tam; i++)
     {
         // Zera o indice
         ind = 0;
-
-        // Zera a string
-        strcpy(straux, "");
 
         // Copia o nome para uma string auxiliar
         strcpy(straux, v[i]);
@@ -331,8 +296,7 @@ void imprime_NaoClassificados(char** v, int tam)
         // Se for 'C', imprime
         if (straux[ind - 1] == '-')
         {
-            //if (!seRepete(straux, v_aux, tamv_aux))
-            if (!achou(v_aux, tamv_aux, straux))
+            if (!seRepete(straux, v_aux, tamv_aux))
             {
                 k = 0;
 
@@ -347,9 +311,6 @@ void imprime_NaoClassificados(char** v, int tam)
                 v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
                 strcpy(v_aux[tamv_aux], straux);
                 tamv_aux++;
-
-                // Zera a string
-                strcpy(straux, "");
 
                 printf("\n");
             }

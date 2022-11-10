@@ -1,21 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <dirent.h>
 #include "libcoleta.h"
 #include "libescrita.h"
 #define ARQUIVO "curriculoMENOTTI.xml"
-#define TAMSTRING 700
-#define CHAVE "STA="
-
-// "qualis-conf.txt"
-
-// CONFERENCIAS "NOME-DO-EVENTO="
-// PERIODICOS "STA="
-
 
 /*
     Contabilização da produção científica em termos de
@@ -26,7 +17,6 @@
     Desenvolvido por Pedro Amaral Chapelin
     Data de finalização -> XX/XX/XXXX
     
-
 
     os nao presentes na lista marquei como 'C-'
 
@@ -54,9 +44,9 @@
 void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 {
     int tamv_per = 0, i;
-    char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
-    char** v_per = malloc(sizeof(str) * 512);  // Aloca vetor de strings para X titulos de periodicos
-    char *pesquisador = malloc(sizeof(char) * TAMSTRING); // String para armazenar o nome do pesquisador
+    char** v_per = malloc(sizeof(char*) * 150);  // Aloca vetor de strings para X titulos de periodicos
+    //char** _conf = malloc(sizeof(str) * 512);  // Aloca vetor de strings para X titulos de conferencias
+    char *pesquisador = malloc(sizeof(char) * 64); // String para armazenar o nome do pesquisador
 
     // Inicializa a string 'pesquisador'
     strcpy(pesquisador, "");
@@ -111,7 +101,6 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
     for (i = 0; i < tamv_per; i++)
         free(v_per[i]);
 
-    free(str);
     free(v_per);
     free(pesquisador);
 }
@@ -130,19 +119,19 @@ int main (int argc, char** argv)
         switch (opt) 
         {
          case 'd':
-            printf("opcao d tem arg: %s\n", optarg);
+            //printf("opcao d tem arg: %s\n", optarg);
             nome_dir = malloc(sizeof(char) * (strlen(optarg) + 1));
             strcpy(nome_dir, optarg);            
             break;
 
          case 'c':
-            printf("opcao c tem arg: %s\n", optarg);
+            //printf("opcao c tem arg: %s\n", optarg);
             nome_arqCONF = malloc(sizeof(char) * (strlen(optarg) + 1));
             strcpy(nome_arqCONF, optarg);
             break;
 
          case 'p':
-            printf("opcao p tem arg: %s\n", optarg);
+            //printf("opcao p tem arg: %s\n", optarg);
             nome_arqPER = malloc(sizeof(char) * (strlen(optarg) + 1));
             strcpy(nome_arqPER, optarg);
             break;

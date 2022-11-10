@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define TAMSTRING 700
+#define TAMSTRING 128
 
 // Funcao que verifica os caracteres anteriores aos titulos de acordo com a chave passada.
 // Retorna 1 se os caracteres sao a chave, e 0 senao 
@@ -65,17 +65,20 @@ void coletarTitulos(FILE* arq, char** v, int *tam, char* opt)
 {
     char c;
     char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
-    char *chave = malloc(sizeof(char) * TAMSTRING);
-
-    // Inicializa a string 'chave'
-    strcpy(chave, "");
+    char *chave;
     
     // Ajustando a chave de busca conforme o que foi digitado
     if (!strcmp(opt, "periodicos"))
+    {
+        chave = malloc(sizeof(char) * (strlen("STA=") + 1));
         strcpy(chave, "STA=");
+    }
 
     if (!strcmp(opt, "conferencias"))
+    {
+        chave = malloc(sizeof(char) * (strlen("NOME-DO-EVENTO=") + 1));
         strcpy(chave, "NOME-DO-EVENTO=");
+    }
 
     // Inicializa a string 'str'
     strcpy(str, "");
