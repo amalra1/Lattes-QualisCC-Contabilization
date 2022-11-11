@@ -147,12 +147,10 @@ void paraMinusculo(char** v, int tam)
 void imprimeSumarizada(char** v, int tam)
 {
     int i, j, k, ult, ind = 0;
-    int tamlvl = 8, tamv_aux = 0, cont = 0;
+    int tamlvl = 8, tamvaux = 0, cont = 0;
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
-    char** v_aux = malloc(sizeof(char*) * 100);
-
-    //paraMinusculo(v, tam);
+    char** vAUX = malloc(sizeof(char*) * 512);
 
     // Percorrendo de nivel a nivel
     for (i = 0; i < tamlvl; i++)
@@ -164,7 +162,7 @@ void imprimeSumarizada(char** v, int tam)
             // Se o titulo corresponde ao nivel da vez
             if (strstr(v[j], vlvl[i]))
             {
-                if (!seRepete(v[j], v_aux, tamv_aux))
+                if (!seRepete(v[j], vAUX, tamvAUX))
                 {
                     // Copia o nome para a string auxiliar
                     strcpy(straux, v[j]);
@@ -183,9 +181,9 @@ void imprimeSumarizada(char** v, int tam)
                     }
 
                     // Adiciona o nome no v_aux e incrementa seu tamanho
-                    v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
-                    strcpy(v_aux[tamv_aux], straux);
-                    tamv_aux++;
+                    vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                    strcpy(vAUX[tamvAUX], straux);
+                    tamvAUX++;
 
                     cont = seRepete(straux, v, tam);
 
@@ -211,7 +209,7 @@ void imprimeSumarizada(char** v, int tam)
 
         if(straux[ind - 1] == '-' || straux[ind - 1] == 'C')
         {
-            if (!seRepete(v[i], v_aux, tamv_aux))
+            if (!seRepete(v[i], vAUX, tamvAUX))
             {
                  if (straux[ind - 1] == '-')
                     ult = 2;
@@ -229,9 +227,9 @@ void imprimeSumarizada(char** v, int tam)
                 }
 
                 // Adiciona o nome no v_aux e incrementa seu tamanho
-                v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
-                strcpy(v_aux[tamv_aux], straux);
-                tamv_aux++;
+                vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(vAUX[tamvAUX], straux);
+                tamvAUX++;
 
                 cont = seRepete(straux, v, tam);
 
@@ -243,21 +241,72 @@ void imprimeSumarizada(char** v, int tam)
         }
     }
 
+    // Da free em todos os espacos alocados da string 'vAUX'
+    for (i = 0; i < tamvAUX; i++)
+        free(vAUX[i]);
+
+    free(vAUX);
     free(straux);
-
-    // Da free em todos os espacos alocados da string 'v_aux'
-    for (i = 0; i < tamv_aux; i++)
-        free(v_aux[i]);
-
-    free(v_aux);
 }
 
-void imprime_tudoC(char** v, int tamv)
+void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char** vCONF, int tamvCONF)
 {
-    int i, k, ind, tamv_aux = 0;
+    int tamlvl = 9, ind, i, j;
+    int contlvlPER = 0, contlvlCONF = 0;
+    char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
+
+    printf("Pesquisador: %s\n", pesquisador);
+
+    printf("+------------+------------+\n
+            |Conferencias| Periódicos |\n
+            +------------+------------+\n");
+
+    for (i = 0; i < tamlvl; i++)
+    {
+        for (j = 0; j < tamvPER; j++)
+        {
+            // Se o titulo do periodico corresponde ao nivel da vez
+            if (strstr(vPER[j], vlvl[i]))
+                contlvlPER++;
+        }
+
+        for (j = 0; j < tamvCONF; j++)
+        {
+            // Se o titulo da conferencia corresponde ao nivel da vez
+            if (strstr(vCONF[j], vlvl[i]))
+                contlvlCONF++;
+        }
+
+        printf("| %s : %d    | %s : %d    |\n", vlvl[i], contlvlCONF, vlvl[i], contlvlPER);
+
+        // Zera as variaveis que armazenam quantidade de titulos
+        contlvlPER = 0;
+        contlvlCONF = 0;
+    }
+
+    for (j = 0; j < tamvPER; j++)
+    {
+        if (strstr(vPER[j], "C") || strstr(vPER[j], "C-"))
+            contlvlPER++;
+    }
+
+    for (j = 0; j < tamvCONF; j++)
+    {
+        if (strstr(vCONF[j], "C") || strstr(vCONF[j], "C-"))
+            contlvlCONF++;
+    }
+
+    printf("| %s : %d    | %s : %d    |\n", vlvl[i], contlvlCONF, vlvl[i], contlvlPER);
+}
+
+void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
+{
+    int i, k, ind, tamvAUX = 0;
     char* straux = malloc(sizeof(char) * TAMSTRING);
-    char** v_aux = malloc(sizeof(char*) * 100);
+    char** vAUX = malloc(sizeof(char*) * 512);
     int ult = 0;
+
+    printf("Periodicos:\n\n");
 
     for (i = 0; i < tamv; i++)
     {
@@ -274,7 +323,7 @@ void imprime_tudoC(char** v, int tamv)
         // Se for 'C', imprime
         if (straux[ind - 1] == '-' || straux[ind - 1] == 'C')
         {
-            if (!seRepete(straux, v_aux, tamv_aux))
+            if (!seRepete(straux, vAUX, tamvAUX))
             {
                 k = 0;
 
@@ -292,9 +341,9 @@ void imprime_tudoC(char** v, int tamv)
                 }
 
                 // Adiciona o nome no v_aux e incrementa seu
-                v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
-                strcpy(v_aux[tamv_aux], straux);
-                tamv_aux++;
+                vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(vAUX[tamvAUX], straux);
+                tamvAUX++;
 
                 printf("\n");
             }
@@ -302,10 +351,10 @@ void imprime_tudoC(char** v, int tamv)
     }
 
     // Da free em todos os espacos alocados da string 'v_aux'
-    for (i = 0; i < tamv_aux; i++)
-        free(v_aux[i]);
+    for (i = 0; i < tamvAUX; i++)
+        free(vAUX[i]);
 
-    free(v_aux);
+    free(vAUX);
     free(straux);
 }
 
