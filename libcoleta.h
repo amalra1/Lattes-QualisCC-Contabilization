@@ -13,7 +13,7 @@
 void nomePesquisador(FILE* arq, char* str);
 
 // Funcao que preenche um vetor de strings com os titulos escolhidos (periodicos/conferencias)
-void coletarTitulos(FILE* arq, char** v, int *tam, char* opt);
+void coletarTitulos(FILE* arq, char** vPER, int tamvPER, char** vCONF, int tamvCONF);
 
 // Funcao que corrige  os nomes de alguns titulos, caracteres especiais e etc
 // Por exemplo o caracter '&' eh escrito como '&amp;'
@@ -24,6 +24,6 @@ void corrigirNomes(char** v, int tamv);
 // Funcao que classifica os periodicos de acordo com seus niveis
 // niveis: A1, A2, A3, A4, B1, B2, B3, B4, C e C-.
 // A classificacao 'C-' eh para aqueles que nao foram encontrados na lista
-void separarSelecionados(FILE* arq2, char** v, int tamv);
+void separarSelecionados(FILE* arq, char** v, int tamv);
 
 #endif
