@@ -99,13 +99,18 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(vPER, tamvPER); //(6)
+    imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)
 
-    // Da free em todos os espacos alocados da string 'v'
+    // Da free em todos os espacos alocados da string 'vPER'
     for (i = 0; i < tamvPER; i++)
         free(vPER[i]);
 
+    // Da free em todos os espacos alocados da string 'vCONF'
+    for (i = 0; i < tamvCONF; i++)
+        free(vCONF[i]);
+
     free(vPER);
+    free(vCONF);
     free(pesquisador);
 }
 
