@@ -301,20 +301,18 @@ void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char*
 
 void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
 {
-    int i, k, ind, tamvAUX = 0;
+    int i, k, ind = 0, tamvAUX = 0;
     char* straux = malloc(sizeof(char) * TAMSTRING);
-    char** vAUX = malloc(sizeof(char*) * 512);
+    char** vperAUX = malloc(sizeof(char*) * 512);
+    char** vconfAUX = malloc(sizeof(char*) * 512);
     int ult = 0;
 
     printf("Periodicos:\n\n");
 
-    for (i = 0; i < tamv; i++)
+    for (i = 0; i < tamvPER; i++)
     {
-        // Zera o indice
-        ind = 0;
-
         // Copia o nome para uma string auxiliar
-        strcpy(straux, v[i]);
+        strcpy(straux, vPER[i]);
 
         // Pega o ultimo indice
         while (straux[ind] != '\0')
@@ -340,7 +338,7 @@ void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
                     k++;
                 }
 
-                // Adiciona o nome no v_aux e incrementa seu
+                // Adiciona o nome no vAUX e incrementa seu tamanho
                 vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
                 strcpy(vAUX[tamvAUX], straux);
                 tamvAUX++;
@@ -348,29 +346,82 @@ void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
                 printf("\n");
             }
         }
+
+        // Zera o indice
+        ind = 0;
     }
 
-    // Da free em todos os espacos alocados da string 'v_aux'
+    // Da free em todos os espacos alocados da string 'vperAUX'
     for (i = 0; i < tamvAUX; i++)
-        free(vAUX[i]);
+        free(vperAUX[i]);
+    free(vperAUX);
 
-    free(vAUX);
+    tamvAUX = 0;
+
+    printf("Conferencias:\n");
+
+    for (i = 0; i < tamvCONF; i++)
+    {
+        // Copia o nome para uma string auxiliar
+        strcpy(straux, vCONF[i]);
+
+        // Pega o ultimo indice
+        while (straux[ind] != '\0')
+            ind++;
+
+        // Se for 'C', imprime
+        if (straux[ind - 1] == '-' || straux[ind - 1] == 'C')
+        {
+            if (!seRepete(straux, vconfAUX, tamvAUX))
+            {
+                k = 0;
+
+                if (straux[ind - 1] == '-')
+                    ult = 2;
+                
+                if (straux[ind - 1] == 'C')
+                    ult = 1;
+
+                // Imprimindo a string toda menos o nivel nela escrito
+                while (k < (ind - ult))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+
+                // Adiciona o nome no vAUX e incrementa seu tamanho
+                vconfAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(vconfAUX[tamvAUX], straux);
+                tamvAUX++;
+
+                printf("\n");
+            }
+        }
+
+        // Zera o indice
+        ind = 0;
+    }
+
+    // Da free em todos os espacos alocados da string 'vconfAUX'
+    for (i = 0; i < tamvAUX; i++)
+        free(vconfAUX[i]);
+    free(vconfAUX);
     free(straux);
 }
 
-void imprime_NaoClassificados(char** v, int tam)
+void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
 {
-    int i, k, ind, tamv_aux = 0;
+    int i, k, ind = 0, tamvAUX = 0;
     char* straux = malloc(sizeof(char) * TAMSTRING);
-    char** v_aux = malloc(sizeof(char*) * 100);
+    char** vperAUX = malloc(sizeof(char*) * 512);
+    char** vconfAUX = malloc(sizeof(char*) * 512);
 
-    for (i = 0; i < tam; i++)
+    printf("Periodicos:\n\n");
+
+    for (i = 0; i < tamvPER; i++)
     {
-        // Zera o indice
-        ind = 0;
-
         // Copia o nome para uma string auxiliar
-        strcpy(straux, v[i]);
+        strcpy(straux, vPER[i]);
 
         // Pega o ultimo indice
         while (straux[ind] != '\0')
@@ -379,7 +430,7 @@ void imprime_NaoClassificados(char** v, int tam)
         // Se for 'C', imprime
         if (straux[ind - 1] == '-')
         {
-            if (!seRepete(straux, v_aux, tamv_aux))
+            if (!seRepete(straux, vperAUX, tamvAUX))
             {
                 k = 0;
 
@@ -391,19 +442,67 @@ void imprime_NaoClassificados(char** v, int tam)
                 }
 
                 // Adiciona o nome no v_aux e incrementa seu
-                v_aux[tamv_aux] = malloc(sizeof(char) * (strlen(straux) + 1));
-                strcpy(v_aux[tamv_aux], straux);
-                tamv_aux++;
+                vperAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(vperAUX[tamvAUX], straux);
+                tamvAUX++;
 
                 printf("\n");
             }
         }
+
+        // Zera o indice
+        ind = 0;
     }
 
-    // Da free em todos os espacos alocados da string 'v_aux'
-    for (i = 0; i < tamv_aux; i++)
-        free(v_aux[i]);
+    // Da free em todos os espacos alocados da string 'vperAUX'
+    for (i = 0; i < tamvAUX; i++)
+        free(vperAUX[i]);
+    free(vperAUX);
 
-    free(v_aux);
+    tamvAUX = 0;
+
+    printf("Conferencias:\n\n");
+
+    for (i = 0; i < tamvCONF; i++)
+    {
+        // Copia o nome para uma string auxiliar
+        strcpy(straux, v[i]);
+
+        // Pega o ultimo indice
+        while (straux[ind] != '\0')
+            ind++;
+
+        // Se for 'C', imprime
+        if (straux[ind - 1] == '-')
+        {
+            if (!seRepete(straux, vconfAUX, tamvAUX))
+            {
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito, neste caso, 'C-'
+                while (k < (ind - 2))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+
+                // Adiciona o nome no v_aux e incrementa seu
+                vconfAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(vconfAUX[tamvAUX], straux);
+                tamvAUX++;
+
+                printf("\n");
+            }
+        }
+
+        // Zera o indice
+        ind = 0;
+    }
+
+    // Da free em todos os espacos alocados da string 'vperAUX'
+    for (i = 0; i < tamvAUX; i++)
+        free(vconfAUX[i]);
+    free(vconfAUX);
+    
     free(straux);
 }
