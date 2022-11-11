@@ -19,8 +19,12 @@ void imprimeCatalogados(char** v, int tamv);
 // e tambem quantas vezes eles apareceram no arquivo do curriculo
 void imprimeSumarizada(char** v, int tam);
 
+// Funcao que imprime a quantidade periodicos e conferencias de cada autor
+// discrimanados pelos niveis
+void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char** vCONF, int tamvCONF);
+
 // Funcao que imprime todos os titulos catalogados no nivel C
-void imprime_tudoC(char** v, int tamv);
+void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF);
 
 // Funcao que imprime todos os titulos 
 // que nao estavam nas listas de classificacao
