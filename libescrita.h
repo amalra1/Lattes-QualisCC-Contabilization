@@ -28,6 +28,6 @@ void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF);
 
 // Funcao que imprime todos os titulos 
 // que nao estavam nas listas de classificacao
-void imprime_NaoClassificados(char** v, int tam);
+void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCONF);
 
 #endif
