@@ -6,7 +6,7 @@
 #include <dirent.h>
 #include "libcoleta.h"
 #include "libescrita.h"
-#define ARQUIVO "curriculoMENOTTI.xml"
+#define ARQUIVO "curriculoCASTILHO.xml"
 
 /*
     Contabilização da produção científica em termos de
@@ -16,6 +16,9 @@
     
     Desenvolvido por Pedro Amaral Chapelin
     Data de finalização -> XX/XX/XXXX
+
+    utilizei a funcao de distancia de edicao do algoritmo de Levenshtein,
+    peguei a implementacao do link: https://github.com/wooorm/levenshtein.c
     
 
     os nao presentes na lista marquei como 'C-'
@@ -43,7 +46,7 @@
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
 void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 {
-    int tamvPER = 0, /*tamvCONF = 0*/ i;
+    int tamvPER = 0, tamvCONF = 0,  i;
     char** vPER = malloc(sizeof(char*) * 150);  // Aloca vetor de strings para X titulos de periodicos
     char** vCONF = malloc(sizeof(char*) * 512);  // Aloca vetor de strings para X titulos de conferencias
     char *pesquisador = malloc(sizeof(char) * 64); // String para armazenar o nome do pesquisador
@@ -55,7 +58,7 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     coletarTitulos(arqXML, vPER, &tamvPER, vCONF, &tamvCONF); // PER
 
-    //imprime_vetor(vPER, tamvPER);
+    //imprime_vetor(vCONF, tamvCONF);
 
     //printf("\n\n\n\n");
 
@@ -71,7 +74,17 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     separarSelecionados(arqCONF, vCONF, tamvCONF);
 
-    imprime_vetor(vPER, tamvPER);
+    printf("\nSEM DISTANCIA DE EDICAO:\n\n");
+
+    imprime_vetor(vCONF, tamvCONF);
+
+    separarSelecionadosDIST(arqCONF, vCONF, tamvCONF);
+
+    printf("\nCOM DISTANCIA DE EDICAO:\n\n");
+
+    imprime_vetor(vCONF, tamvCONF);
+
+    //imprime_vetor(vPER, tamvPER);
 
     //printf("\n\n\n\n");
 
@@ -79,15 +92,15 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
 
-    imprimeSumarizada(vPER, tamvPER); //(1)
+    //imprimeSumarizada(vPER, tamvPER); //(1)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
-    imprimeSumarizada(vCONF, tamvCONF); //(2)
+    //imprimeSumarizada(vCONF, tamvCONF); //(2)
 
-    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n")
+    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
 
-    imprimeSumarizadaAutoria(pesquisador, vPER, tamvPER, vCONF, tamvCONF); //(3)
+    //imprimeSumarizadaAutoria(pesquisador, vPER, tamvPER, vCONF, tamvCONF); //(3)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
 
@@ -95,11 +108,15 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
 
-    imprime_tudoC(vPER, tamvPER, vCONF, tamvCONF); //(5)
+    //imprime_tudoC(vPER, tamvPER, vCONF, tamvCONF); //(5)
+
+    printf("\n\n\n\n\n");
+
+    printf("Depois de tentar com o distancia de edicao\n");
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)
+    //imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)
 
     // Da free em todos os espacos alocados da string 'vPER'
     for (i = 0; i < tamvPER; i++)

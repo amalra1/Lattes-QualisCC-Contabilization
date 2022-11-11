@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "levenshtein.h"
 #include <ctype.h>
 
 #define TAMSTRING 128
@@ -116,7 +117,7 @@ void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tam
             
             // Adiciona o nome da conferencia no vetor e incrementa seu tamanho
             vCONF[*tamvCONF] = malloc(sizeof(char) * TAMSTRING);
-            strcpy(v[*tamvCONF], str);
+            strcpy(vCONF[*tamvCONF], str);
             (*tamvCONF)++;
 
             // Zera a string
@@ -242,7 +243,10 @@ void separarSelecionados(FILE* arq, char** v, int tamv)
         while (!feof(arq))
         {
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
-            // Aqui que eu adicionaria a funcao edit dist (?)
+            // Aqui que eu adicionaria a funcao edit dist ---------------------------------------------------------------->
+            // Utilizar o tamanho da string tambem, se a do arquivo tiver tamanho 10,
+            // mas precisar de 10 edicoes, eh a string inteira, mas se ela tiver tamanho 100,
+            // e precisar de 10, ja sao poucas edicoes
             if (strstr(linha, v[indV]))
             {
                 while (linha[ind] != '\0')
@@ -284,4 +288,90 @@ void separarSelecionados(FILE* arq, char** v, int tamv)
 
         rewind(arq);
     }
+}
+
+// Funcao que divide o tamanho da string original pela distancia 
+// de edicao com sua abreviada
+int dist_relativaMIN(char* linha, int distEdit)
+{
+    // Tirando o '\0' e o '\n'
+    int tamstring = strlen(linha) - 2;
+
+    return (distEdit/tamstring);
+}
+
+void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
+{
+    int indV;
+    int ind;
+    int distEdit;
+    char linha[TAMSTRING];
+    int NaLista;
+    int dist_min = 15;
+
+    fgets(linha, TAMSTRING, arq);
+
+    // Varrendo todos os titulos encontrados
+    for (indV = 0; indV < tamv; indV++)
+    {
+        // Zera a flag 'NaLista'
+        NaLista = 0;
+
+        // Zera o indice
+        ind = 0;
+
+        // Varrendo todo o arquivo com os titulos
+        while (!feof(arq))
+        {
+            // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
+            // Aqui que eu adicionaria a funcao edit dist ---------------------------------------------------------------->
+            // Utilizar o tamanho da string tambem, se a do arquivo tiver tamanho 10,
+            // mas precisar de 10 edicoes, eh a string inteira, mas se ela tiver tamanho 100,
+            // e precisar de 10, ja sao poucas edicoes
+            //if (strstr(linha, v[indV]))
+            distEdit = levenshtein(linha, v[indV]);
+
+            if (dist_relativaMIN(linha, distEdit) < dist_min)
+            {
+                while (linha[ind] != '\0')
+                    ind++;
+
+                // Se o nivel nao for C, armazena dois caracteres
+                if (linha[ind - 2] != 'C' && linha[ind - 3] != ' ') 
+                {
+                    // Concatenando o espaço em branco e os dois caracteres na string
+                    strncat(v[indV], &linha[ind - 4], 1);
+                    strncat(v[indV], &linha[ind - 3], 1);
+                    strncat(v[indV], &linha[ind - 2], 1);
+                    NaLista = 1;
+                }
+
+                // Se for, armazena um
+                else 
+                {
+                    // Concatenando o espaço
+                    strncat(v[indV], &linha[ind - 3], 1);
+
+                    // Aqui precisamos fazer '[ind - 2]' porque a linha alem de conter
+                    // o '\0', tambem contem o '\n' 
+                    strncat(v[indV], &linha[ind - 2], 1);
+
+                    NaLista = 1;
+                }
+
+                // Se ja achou e catalogou, sai do loop
+                break;
+            }
+
+            fgets(linha, TAMSTRING, arq);
+        }
+
+        // Se o nome nao estiver na lista, cataloga como 'C'
+        if (!NaLista)
+            strcat(v[indV], " C-");
+
+        rewind(arq);
+    }
+
+
 }
