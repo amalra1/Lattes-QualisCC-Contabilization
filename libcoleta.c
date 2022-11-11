@@ -61,25 +61,13 @@ void nomePesquisador(FILE* arq, char* str)
     rewind(arq);
 }
 
-void coletarTitulos(FILE* arq, char** v, int *tam, char* opt)
+void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF)
 {
     char c;
     char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
-    char *chave;
+    char chavePER[5] = "STA=";
+    char chaveCONF[16] = "NOME-DO-EVENTO=";
     
-    // Ajustando a chave de busca conforme o que foi digitado
-    if (!strcmp(opt, "periodicos"))
-    {
-        chave = malloc(sizeof(char) * (strlen("STA=") + 1));
-        strcpy(chave, "STA=");
-    }
-
-    if (!strcmp(opt, "conferencias"))
-    {
-        chave = malloc(sizeof(char) * (strlen("NOME-DO-EVENTO=") + 1));
-        strcpy(chave, "NOME-DO-EVENTO=");
-    }
-
     // Inicializa a string 'str'
     strcpy(str, "");
 
@@ -87,8 +75,8 @@ void coletarTitulos(FILE* arq, char** v, int *tam, char* opt)
 
     while (c != EOF)
     {   
-        // Se estamos perto de um titulo, armazena o nome no vetor
-        if (eh_titulo(arq, c, chave))
+        // Se estamos perto de um periodico, armazena o nome no vetor
+        if (eh_titulo(arq, c, chavePER))
         {
             c = fgetc(arq);
 
@@ -103,19 +91,45 @@ void coletarTitulos(FILE* arq, char** v, int *tam, char* opt)
             }
             
             // Adiciona o nome do periodico no vetor e incrementa seu tamanho
-            v[*tam] = malloc(sizeof(char) * TAMSTRING);
-            strcpy(v[*tam], str);
-            (*tam)++;
+            vPER[*tamvPER] = malloc(sizeof(char) * TAMSTRING);
+            strcpy(vPER[*tamvPER], str);
+            (*tamvPER)++;
 
             // Zera a string
             strcpy(str, "");
         }
 
+        // Se estamos perto de uma conferencia, armazena o nome no vetor
+        else if (eh_titulo(arq, c, chaveCONF))
+        {
+            c = fgetc(arq);
+
+            // Le ate chegar no fim das aspas duplas
+            while (c != '\"')
+            {
+                // Concatenando caracter por caracter na string do vetor de strings
+                strncat(str, &c, 1);
+
+                // Pega o proximo caracter
+                c = fgetc(arq);
+            }
+            
+            // Adiciona o nome da conferencia no vetor e incrementa seu tamanho
+            vCONF[*tamvCONF] = malloc(sizeof(char) * TAMSTRING);
+            strcpy(v[*tamvCONF], str);
+            (*tamvCONF)++;
+
+            // Zera a string
+            strcpy(str, "");
+        }
+
+        // Se nao estamos perto de nada, so pega o proximo caracter
+        else
+
         c = fgetc(arq);
     }
 
     free(str);
-    free(chave);
 }
 
 // Funcao que transforma todas as strings do vetor em letras maiusculas
@@ -206,26 +220,26 @@ void corrigirNomes(char** vPER, int tamvPER)
     paraMaiusculo(vPER, tamvPER);
 }
 
-void separarSelecionados(FILE* arq2, char** v, int tamv)
+void separarSelecionados(FILE* arq, char** v, int tamv)
 {
     int indV;
     int ind;
     char linha[TAMSTRING];
     int NaLista;
 
-    fgets(linha, TAMSTRING, arq2);
+    fgets(linha, TAMSTRING, arq);
 
-    // Varrendo todos os periodicos encontrados
+    // Varrendo todos os titulos encontrados
     for (indV = 0; indV < tamv; indV++)
     {
-        // Zera a flag NaLista
+        // Zera a flag 'NaLista'
         NaLista = 0;
 
         // Zera o indice
         ind = 0;
 
-        // Varrendo todo o arquivo com os periodicos
-        while (!feof(arq2))
+        // Varrendo todo o arquivo com os titulos
+        while (!feof(arq))
         {
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
             // Aqui que eu adicionaria a funcao edit dist (?)
@@ -261,13 +275,13 @@ void separarSelecionados(FILE* arq2, char** v, int tamv)
                 break;
             }
 
-            fgets(linha, TAMSTRING, arq2);
+            fgets(linha, TAMSTRING, arq);
         }
 
         // Se o nome nao estiver na lista, cataloga como 'C'
         if (!NaLista)
             strcat(v[indV], " C-");
 
-        rewind(arq2);
+        rewind(arq);
     }
 }
