@@ -43,9 +43,9 @@
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
 void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 {
-    int tamv_per = 0, i;
-    char** v_per = malloc(sizeof(char*) * 150);  // Aloca vetor de strings para X titulos de periodicos
-    //char** _conf = malloc(sizeof(str) * 512);  // Aloca vetor de strings para X titulos de conferencias
+    int tamvPER = 0, /*tamvCONF = 0*/ i;
+    char** vPER = malloc(sizeof(char*) * 150);  // Aloca vetor de strings para X titulos de periodicos
+    char** vCONF = malloc(sizeof(char*) * 512);  // Aloca vetor de strings para X titulos de conferencias
     char *pesquisador = malloc(sizeof(char) * 64); // String para armazenar o nome do pesquisador
 
     // Inicializa a string 'pesquisador'
@@ -53,55 +53,59 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     nomePesquisador(arqXML, pesquisador);
 
-    coletarTitulos(arqXML, v_per, &tamv_per, "periodicos"); // PER
+    coletarTitulos(arqXML, vPER, &tamvPER, vCONF, &tamvCONF); // PER
 
-    //coletarTitulos(arqXML, v_per, &tamv_per, "conferencias"); // CONF
-
-    //imprime_vetor(v_per, tamv_per);
+    //imprime_vetor(vPER, tamvPER);
 
     //printf("\n\n\n\n");
 
-    corrigirNomes(v_per, tamv_per);
+    // Nao eh necessario passar o nome das conferencias para maiusculo
+    // pois no arquivo delas estao todas normais
+    corrigirNomes(vPER, tamvPER);
 
-    //imprime_vetor(v_per, tamv_per);
-
-    //printf("\n\n\n\n");
-
-    separarSelecionados(arqPER, v_per, tamv_per); // PER
-
-    //separarSelecionados(v_conf, tamv-conf, arqCONF); //CONF
-
-    imprime_vetor(v_per, tamv_per);
+    //imprime_vetor(vPER, tamvPER);
 
     //printf("\n\n\n\n");
 
-    printf("\nPesquisador: %s\n", pesquisador);
+    separarSelecionados(arqPER, vPER, tamvPER);
 
-    //imprimeCatalogados(v_per, tamv_per);
+    separarSelecionados(arqCONF, vCONF, tamvCONF);
+
+    imprime_vetor(vPER, tamvPER);
+
+    //printf("\n\n\n\n");
+
+    //imprimeCatalogados(vPER, tamvPER);
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
 
-    imprimeSumarizada(v_per, tamv_per); //(1)
+    imprimeSumarizada(vPER, tamvPER); //(1)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
-    //imprimeSumarizada(v_conf, tamv_conf); //(2)
+    imprimeSumarizada(vCONF, tamvCONF); //(2)
 
-    //imprime_vetor(v_per, tamv_per);
+    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n")
+
+    imprimeSumarizadaAutoria(pesquisador, vPER, tamvPER, vCONF, tamvCONF); //(3)
+
+    printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
+
+    //imprimeSumarizadaAno(); //(4)
 
     printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
 
-    imprime_tudoC(v_per, tamv_per); //(5)
+    imprime_tudoC(vPER, tamvPER, vCONF, tamvCONF); //(5)
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(v_per, tamv_per); //(6)
+    imprime_NaoClassificados(vPER, tamvPER); //(6)
 
     // Da free em todos os espacos alocados da string 'v'
-    for (i = 0; i < tamv_per; i++)
-        free(v_per[i]);
+    for (i = 0; i < tamvPER; i++)
+        free(vPER[i]);
 
-    free(v_per);
+    free(vPER);
     free(pesquisador);
 }
 
