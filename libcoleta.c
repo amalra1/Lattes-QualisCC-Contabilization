@@ -228,6 +228,7 @@ void separarSelecionados(FILE* arq2, char** v, int tamv)
         while (!feof(arq2))
         {
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
+            // Aqui que eu adicionaria a funcao edit dist (?)
             if (strstr(linha, v[indV]))
             {
                 while (linha[ind] != '\0')

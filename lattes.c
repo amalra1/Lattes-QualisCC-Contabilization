@@ -71,7 +71,7 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //separarSelecionados(v_conf, tamv-conf, arqCONF); //CONF
 
-    //imprime_vetor(v_per, tamv_per);
+    imprime_vetor(v_per, tamv_per);
 
     //printf("\n\n\n\n");
 

@@ -2,17 +2,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define STRING "jones"
+#define STRING2 "johnson"
+#define QUANT_CANDIDATOS 1
 
 int main(void)
 {
-    char      *candidates[] = { "hello", "hiz" };
-    uint32_t  candidates_lengths[] = { 5, 3 };
+    char      *candidates[] = { STRING };
+    uint32_t  candidates_lengths[] = {strlen(STRING)};
     uint32_t  exportable_model_size;
     uint32_t  nb_results;
+    uint32_t  tam_string2 = (strlen(STRING2));
+    
 
     // char_width = 1 ; nb_candidates = 2 ; nb_runtime_threads = 1
     void *exportable_model = bjw_build_exportable_model(
-      candidates, 1, candidates_lengths, 2, NULL, 1, &exportable_model_size
+      candidates, 1, candidates_lengths, QUANT_CANDIDATOS, NULL, 1, &exportable_model_size
     );
     if (!exportable_model)
         exit(1);
@@ -24,7 +29,7 @@ int main(void)
     // weight = 0.1 (default value for standard jaro winkler)
     // threshold = 0.7 (default value for standard jaro winkler)
     // n_best_results = 0 (deactivate)
-    bjw_result *res = bjw_jaro_winkler_distance(runtime_model, "hallo", 5, -1.0, 0.1, 0.7, 0, &nb_results);
+    bjw_result *res = bjw_jaro_winkler_distance(runtime_model, STRING2, tam_string2, -1.0, 0.1, 0.7, 0, &nb_results);
     if (!res)
         exit(1);
 

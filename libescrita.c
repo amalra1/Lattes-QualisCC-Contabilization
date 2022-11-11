@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define TAMSTRING 128
 
@@ -112,6 +113,37 @@ int seRepete(char* str, char** v, int tam)
     return cont;
 }
 
+// Funcao que converte todos os caracteres do vetor de strings para minusculo
+void paraMinusculo(char** v, int tam)
+{
+    int ind, indV; 
+    char* straux = malloc (sizeof(char) * TAMSTRING);
+
+    // Necessario passar os nomes das strings para letras minusculas
+    for (indV = 0; indV < tam; indV++)
+    { 
+        // Copia o nome do periodico para uma string auxiliar
+        strcpy(straux, v[indV]);
+
+        // Zera o indice que apontara para os caracteres da string
+        ind = 0;
+
+        // Varrendo a string ate ela chegar no final
+        while (straux[ind] != '\0')
+        {
+            // Rebaixando o caracter para caixa alta com 'tolower'
+            straux[ind] = tolower(straux[ind]);
+            ind++;
+        }
+
+        // Transfere o auxiliar de volta para o vetor de strings
+        strcpy(v[indV], straux);
+        strcpy(straux, "");
+    }
+
+    free(straux);
+}
+
 void imprimeSumarizada(char** v, int tam)
 {
     int i, j, k, ult, ind = 0;
@@ -119,6 +151,8 @@ void imprimeSumarizada(char** v, int tam)
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
     char** v_aux = malloc(sizeof(char*) * 100);
+
+    //paraMinusculo(v, tam);
 
     // Percorrendo de nivel a nivel
     for (i = 0; i < tamlvl; i++)
