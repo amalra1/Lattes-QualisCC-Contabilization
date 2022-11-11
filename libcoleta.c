@@ -115,13 +115,17 @@ void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tam
                 c = fgetc(arq);
             }
             
-            // Adiciona o nome da conferencia no vetor e incrementa seu tamanho
-            vCONF[*tamvCONF] = malloc(sizeof(char) * TAMSTRING);
-            strcpy(vCONF[*tamvCONF], str);
-            (*tamvCONF)++;
+            // Se a string nao for vazia
+            if (strcmp(str,""))
+            {
+                // Adiciona o nome da conferencia no vetor e incrementa seu tamanho
+                vCONF[*tamvCONF] = malloc(sizeof(char) * TAMSTRING);
+                strcpy(vCONF[*tamvCONF], str);
+                (*tamvCONF)++;
 
-            // Zera a string
-            strcpy(str, "");
+                // Zera a string
+                strcpy(str, "");
+            }
         }
 
         // Se nao estamos perto de nada, so pega o proximo caracter
@@ -207,18 +211,19 @@ char* substituiPalavra(char** strf, const char* str, const char* Pvelha, const c
     return *strf;
 }
 
-void corrigirNomes(char** vPER, int tamvPER)
+void corrigirNomes(char** v, int tamv, char* chave)
 {   
     int i;
 
-    for (i = 0; i < tamvPER; i++)
+    for (i = 0; i < tamv; i++)
     {
         // Se tiver um '&amp;', substitui por '&'
-        if (strstr(vPER[i], "&amp;"))
-            substituiPalavra(&vPER[i], vPER[i], "&amp;", "&");
+        if (strstr(v[i], "&amp;"))
+            substituiPalavra(&v[i], v[i], "&amp;", "&");
     }
 
-    paraMaiusculo(vPER, tamvPER);
+    if (!strcmp(chave, "per"))
+        paraMaiusculo(v, tamv);
 }
 
 void separarSelecionados(FILE* arq, char** v, int tamv)
@@ -242,6 +247,7 @@ void separarSelecionados(FILE* arq, char** v, int tamv)
         // Varrendo todo o arquivo com os titulos
         while (!feof(arq))
         {
+            //printf("%s\n", linha);
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
             // Aqui que eu adicionaria a funcao edit dist ---------------------------------------------------------------->
             // Utilizar o tamanho da string tambem, se a do arquivo tiver tamanho 10,
@@ -291,13 +297,14 @@ void separarSelecionados(FILE* arq, char** v, int tamv)
 }
 
 // Funcao que divide o tamanho da string original pela distancia 
-// de edicao com sua abreviada
-int dist_relativaMIN(char* linha, int distEdit)
+// de edicao com sua abreviada, retorna no minimo 0 (nenhuma edicao necessaria)
+double dist_relativaMIN(char* linha, int distEdit)
 {
     // Tirando o '\0' e o '\n'
-    int tamstring = strlen(linha) - 2;
+    int tamstr = strlen(linha) - 2;
+    double result = (double) distEdit / tamstr;
 
-    return (distEdit/tamstring);
+    return result;
 }
 
 void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
@@ -307,7 +314,7 @@ void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
     int distEdit;
     char linha[TAMSTRING];
     int NaLista;
-    int dist_min = 15;
+    double dist_min = 0.20;
 
     fgets(linha, TAMSTRING, arq);
 
@@ -323,15 +330,19 @@ void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
         // Varrendo todo o arquivo com os titulos
         while (!feof(arq))
         {
+            distEdit = levenshtein(linha, v[indV]);
+            dist_relativaMIN(linha, distEdit);
+
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
             // Aqui que eu adicionaria a funcao edit dist ---------------------------------------------------------------->
             // Utilizar o tamanho da string tambem, se a do arquivo tiver tamanho 10,
             // mas precisar de 10 edicoes, eh a string inteira, mas se ela tiver tamanho 100,
             // e precisar de 10, ja sao poucas edicoes
-            //if (strstr(linha, v[indV]))
-            distEdit = levenshtein(linha, v[indV]);
+
+            // Quanto menor dist_relativaMIN eh, mais proximo eh da string
 
             if (dist_relativaMIN(linha, distEdit) < dist_min)
+            //if (strstr(linha, v[indV]))
             {
                 while (linha[ind] != '\0')
                     ind++;

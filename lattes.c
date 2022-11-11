@@ -64,25 +64,23 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     // Nao eh necessario passar o nome das conferencias para maiusculo
     // pois no arquivo delas estao todas normais
-    corrigirNomes(vPER, tamvPER);
+    corrigirNomes(vPER, tamvPER, "per");
 
-    //imprime_vetor(vPER, tamvPER);
+    corrigirNomes(vCONF, tamvCONF, "conf");
 
-    //printf("\n\n\n\n");
+    //imprime_vetor(vCONF, tamvCONF);
+
+    printf("\n\n\n\n");
 
     separarSelecionados(arqPER, vPER, tamvPER);
 
-    separarSelecionados(arqCONF, vCONF, tamvCONF);
-
-    printf("\nSEM DISTANCIA DE EDICAO:\n\n");
-
-    imprime_vetor(vCONF, tamvCONF);
+    //separarSelecionados(arqCONF, vCONF, tamvCONF);
 
     separarSelecionadosDIST(arqCONF, vCONF, tamvCONF);
 
-    printf("\nCOM DISTANCIA DE EDICAO:\n\n");
+    //imprime_vetor(vCONF, tamvCONF);
 
-    imprime_vetor(vCONF, tamvCONF);
+    //printf("\n\n\nCOM DISTANCIA DE EDICAO:\n\n");
 
     //imprime_vetor(vPER, tamvPER);
 
@@ -92,11 +90,11 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
 
-    //imprimeSumarizada(vPER, tamvPER); //(1)
+    imprimeSumarizada(vPER, tamvPER); //(1)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
-    //imprimeSumarizada(vCONF, tamvCONF); //(2)
+    imprimeSumarizada(vCONF, tamvCONF); //(2)
 
     printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
 
@@ -109,10 +107,6 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
     printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
 
     //imprime_tudoC(vPER, tamvPER, vCONF, tamvCONF); //(5)
-
-    printf("\n\n\n\n\n");
-
-    printf("Depois de tentar com o distancia de edicao\n");
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 

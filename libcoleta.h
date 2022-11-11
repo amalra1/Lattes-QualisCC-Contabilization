@@ -19,7 +19,7 @@ void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tam
 // Por exemplo o caracter '&' eh escrito como '&amp;'
 // Tambem passa os nomes dos periodicos para maiusculo, pois no arquivo
 // 'qualis-periodicos.txt' estao em maiusculas
-void corrigirNomes(char** v, int tamv);
+void corrigirNomes(char** v, int tamv, char* chave);
 
 // Funcao que classifica os periodicos de acordo com seus niveis
 // niveis: A1, A2, A3, A4, B1, B2, B3, B4, C e C-.

@@ -7,17 +7,17 @@
 // MIT licensed.
 // Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com>
 
-// Returns a size_t, depicting the difference between `a` and `b`.
+// Returns a int, depicting the difference between `a` and `b`.
 // See <https://en.wikipedia.org/wiki/Levenshtein_distance> for more information.
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-size_t
+int
 levenshtein(const char *a, const char *b);
 
-size_t
-levenshtein_n (const char *a, const size_t length, const char *b, const size_t bLength);
+int
+levenshtein_n (const char *a, const int length, const char *b, const int bLength);
 
 #ifdef __cplusplus
 }
