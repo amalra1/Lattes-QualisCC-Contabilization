@@ -1,6 +1,8 @@
 # ProjLattes
 Trabalho Lattes (CNPq) e Qualis (CAPES) de Prog 2, http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
 
+https://github.com/tonytonyjan/jaro_winkler#compare-with-other-gems
+
 # Comandos GIT
 git status
 -> Mostra tudo que foi feito recentemente
