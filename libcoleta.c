@@ -300,9 +300,25 @@ void separarSelecionados(FILE* arq, char** v, int tamv)
 // de edicao com sua abreviada, retorna no minimo 0 (nenhuma edicao necessaria)
 double dist_relativaMIN(char* linha, int distEdit)
 {
-    // Tirando o '\0' e o '\n'
-    int tamstr = strlen(linha) - 2;
-    double result = (double) distEdit / tamstr;
+    // Tirando o '\n', '\0', e os caracteres de nivel
+    int ind = 0, i = 0;
+    int tamstr;
+    double result;
+
+    while(linha[ind] != '\0')
+        ind++;
+
+    // Se o ultimo nivel for C, para tirar o nivel da string, precisamos
+    // que i == 3
+    if (linha[ind - 2] != 'C' && linha[ind - 3] != ' ') 
+        i = 3;
+    // Se nao, i precisa ser == 4
+    else
+        i = 4;
+
+    tamstr = strlen(linha) - i;
+
+    result = (double) distEdit/tamstr;
 
     return result;
 }
@@ -334,13 +350,7 @@ void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
             dist_relativaMIN(linha, distEdit);
 
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
-            // Aqui que eu adicionaria a funcao edit dist ---------------------------------------------------------------->
-            // Utilizar o tamanho da string tambem, se a do arquivo tiver tamanho 10,
-            // mas precisar de 10 edicoes, eh a string inteira, mas se ela tiver tamanho 100,
-            // e precisar de 10, ja sao poucas edicoes
-
             // Quanto menor dist_relativaMIN eh, mais proximo eh da string
-
             if (dist_relativaMIN(linha, distEdit) < dist_min)
             //if (strstr(linha, v[indV]))
             {

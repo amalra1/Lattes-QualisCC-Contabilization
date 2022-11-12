@@ -56,23 +56,18 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     nomePesquisador(arqXML, pesquisador);
 
-    coletarTitulos(arqXML, vPER, &tamvPER, vCONF, &tamvCONF); // PER
-
-    //imprime_vetor(vCONF, tamvCONF);
-
-    //printf("\n\n\n\n");
+    coletarTitulos(arqXML, vPER, &tamvPER, vCONF, &tamvCONF);
 
     // Nao eh necessario passar o nome das conferencias para maiusculo
     // pois no arquivo delas estao todas normais
     corrigirNomes(vPER, tamvPER, "per");
-
     corrigirNomes(vCONF, tamvCONF, "conf");
 
-    //imprime_vetor(vCONF, tamvCONF);
+    imprime_vetor(vCONF, tamvCONF);
 
     printf("\n\n\n\n");
 
-    separarSelecionados(arqPER, vPER, tamvPER);
+    //separarSelecionados(arqPER, vPER, tamvPER);
 
     //separarSelecionados(arqCONF, vCONF, tamvCONF);
 
@@ -90,7 +85,7 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
 
-    imprimeSumarizada(vPER, tamvPER); //(1)
+    //imprimeSumarizada(vPER, tamvPER); //(1)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
