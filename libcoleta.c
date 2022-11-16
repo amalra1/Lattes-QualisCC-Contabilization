@@ -12,21 +12,29 @@
 // Retorna 1 se os caracteres sao a chave, e 0 senao 
 int eh_titulo(FILE* arq, char c, char* chave)
 {
-    int i = 0;
+    int i = 0, pos;
     int tam_chave = strlen(chave);
 
-    //printf("%s\n", chave);    
+    // Pega a posicao atual do arquivo
+    pos = ftell(arq);    
 
     // Verifica se os caracteres sao iguais aos da chave passada
     while (i < tam_chave)
     {
         if (c != chave[i])
+        {
+            // Volta para o inicio da frase e retorna
+            fseek(arq, pos, SEEK_SET);
+
             return 0;
+        }
 
         c = fgetc(arq);
-        //printf("%c", c);
         i++;
     }
+
+    // Volta para o inicio da frase
+    fseek(arq, pos, SEEK_SET);
 
     // Se chegou ate aqui, eh porque achou o titulo do artigo             
     return 1;
@@ -45,6 +53,10 @@ void nomePesquisador(FILE* arq, char* str)
         // Se estamos perto do nome do pesquisador, o armazena
         if (eh_titulo(arq, c, "S NOME-COMPLETO="))
         {
+            // Ate chegar no começo das aspas duplas
+            while (c != '\"')
+                c = fgetc(arq);
+
             c = fgetc(arq);
 
             // Le ate chegar no fim das aspas duplas
@@ -163,38 +175,11 @@ void nomePesquisador(FILE* arq, char* str)
     free(str);
 }*/
 
-// Funcao que armazena uma linha do XML e retorna uma string a contendo
-void armazena_linha(FILE* arq, char c, char* linha)
-{
-    char* str = malloc(sizeof(char) * 700);  // String para armazenar cada nome
-
-    // Inicializa a string 'str'
-    strcpy(str, "");
-    
-    while (c != '>')
-    {
-        // Armazena o caracter na string
-        strncat(str, &c, 1);
-
-        c = fgetc(arq);
-    }
-
-    // Armazena o '>' na string
-    strncat(str, &c, 1);
-
-    strcpy(linha, str);
-
-    free(str);
-}
-
 void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF, int* vANOper, int *tamvANOper, int* vANOconf, int *tamvANOconf)
 {
     int PegouDados;
     char c;
     char* str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
-    char* linha = malloc(sizeof(char) * 1024); // String reservada para o tamanho da linha (caracteres entre '<' e '>')
-    char chavePER[24] = "DADOS-BASICOS-DO-ARTIGO";
-    char chaveCONF[16] = "NOME-DO-EVENTO=";
     
     // Inicializa a string 'str'
     strcpy(str, "");
@@ -202,32 +187,17 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
     // Inicializa a string 'linha'
     strcpy(linha, "");
 
-    // FAZER AQUILO DE COLOCAR O ARQUIVO INTEIRO EM UMA STRING E DEPOIS IR FAZENDO AS LINHAS
+    // fazer do jeito que era antes mas deslocando o ponteiro do arquivo de volta toda vez
     ////////////////////////////////////////////////////////////////////////////////////////
 
-
     c = fgetc(arq);
-
-    /*armazena_linha(arq, c, linha);
-    c = fgetc(arq);
-
-    printf("%s\n", linha);
-    printf("%c\n", c);*/
 
     while (c != EOF)
     {
-        armazena_linha(arq, c, linha);
-        c = fgetc(arq);
-        printf("%s\n", linha);
-    }
-
-    /*while (c != EOF)
-    {
         // Se estamos perto de um periodico
-        if (strstr(linha, "DADOS-BASICOS-DO-ARTIGO"))
+        if (eh_titulo(arq, c, "DADOS-BASICOS-DO-ARTIGO"))
         {
-            printf("A\n");
-            /*PegouDados = 0;
+            PegouDados = 0;
             while(!PegouDados)
             {
                 c = fgetc(arq);
@@ -235,6 +205,11 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                 // Se estamos perto de um ano de periodico, armazena o nome no vetor
                 if(eh_titulo(arq, c, "ANO-DO-ARTIGO="))
                 {
+                    // Ate chegar no começo das aspas duplas
+                    while (c != '\"')
+                        c = fgetc(arq);
+
+                    // Pega o primeiro caracter dentro das aspas                        
                     c = fgetc(arq);
 
                     // Le ate chegar no fim das aspas duplas
@@ -256,8 +231,13 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                 }
 
                 // Esta perto do titulo do periodico
-                else if (eh_titulo(arq, c, "STA="))
+                if (eh_titulo(arq, c, "STA="))
                 {
+                    // Ate chegar no começo das aspas duplas
+                    while (c != '\"')
+                        c = fgetc(arq);
+
+                    // Pega o primeiro caracter dentro das aspas                        
                     c = fgetc(arq);
 
                     // Le ate chegar no fim das aspas duplas
@@ -281,10 +261,10 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                     PegouDados = 1;
                 }
             }
-        }*/
+        }
 
-        /*// Se estamos perto de uma conferencia
-        else if (eh_titulo(arq, c, "OS-DA-PARTICIPACAO-EM-C") || eh_titulo(arq, c, "OS-DA-PARTICIPACAO-EM-S") || eh_titulo(arq, c, "OS-DA-PARTICIPACAO-EM-E"))
+        // Se estamos perto de uma conferencia
+        else if (eh_titulo(arq, c, "DADOS-BASICOS-DA-PARTICIPACAO-EM-C") || eh_titulo(arq, c, "DADOS-BASICOS-DA-PARTICIPACAO-EM-S") || eh_titulo(arq, c, "DADOS-BASICOS-DA-PARTICIPACAO-EM-E"))
         {
             PegouDados = 0;
             while(!PegouDados)
@@ -294,6 +274,11 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                 // Se estamos perto de um ano de periodico, armazena o nome no vetor
                 if(eh_titulo(arq, c, "ANO="))
                 {
+                    // Ate chegar no começo das aspas duplas
+                    while (c != '\"')
+                        c = fgetc(arq);
+
+                    // Pega o primeiro caracter dentro das aspas                        
                     c = fgetc(arq);
 
                     // Le ate chegar no fim das aspas duplas
@@ -315,8 +300,13 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                 }
 
                 // Esta perto do titulo do periodico
-                else if (eh_titulo(arq, c, "NOME-DO-EVENTO="))
+                if (eh_titulo(arq, c, "NOME-DO-EVENTO="))
                 {
+                    // Ate chegar no começo das aspas duplas
+                    while (c != '\"')
+                        c = fgetc(arq);
+
+                    // Pega o primeiro caracter dentro das aspas                        
                     c = fgetc(arq);
 
                     // Le ate chegar no fim das aspas duplas
@@ -340,8 +330,8 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                     PegouDados = 1;
                 }
             }
-        }*/
-    //}
+        }
+    }
 
     free(str);
     free(linha);
