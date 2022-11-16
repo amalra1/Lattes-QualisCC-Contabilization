@@ -7,10 +7,10 @@
 #include <stdint.h>
 #include "levenshtein.h"
 
-// Returns a int, depicting the difference between `a` and `b`.
+// Returns a size_t, depicting the difference between `a` and `b`.
 // See <https://en.wikipedia.org/wiki/Levenshtein_distance> for more information.
-int
-levenshtein_n(const char *a, const int length, const char *b, const int bLength) {
+size_t
+levenshtein_n(const char *a, const size_t length, const char *b, const size_t bLength) {
   // Shortcut optimizations / degenerate cases.
   if (a == b) {
     return 0;
@@ -24,12 +24,12 @@ levenshtein_n(const char *a, const int length, const char *b, const int bLength)
     return length;
   }
 
-  int *cache = calloc(length, sizeof(int));
-  int index = 0;
-  int bIndex = 0;
-  int distance;
-  int bDistance;
-  int result;
+  size_t *cache = calloc(length, sizeof(size_t));
+  size_t index = 0;
+  size_t bIndex = 0;
+  size_t distance;
+  size_t bDistance;
+  size_t result;
   char code;
 
   // initialize the vector.
@@ -63,10 +63,10 @@ levenshtein_n(const char *a, const int length, const char *b, const int bLength)
   return result;
 }
 
-int
+size_t
 levenshtein(const char *a, const char *b) {
-  const int length = strlen(a);
-  const int bLength = strlen(b);
+  const size_t length = strlen(a);
+  const size_t bLength = strlen(b);
 
   return levenshtein_n(a, length, b, bLength);
 }

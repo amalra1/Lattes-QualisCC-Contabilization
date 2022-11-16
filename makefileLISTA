@@ -1,0 +1,14 @@
+CC = gcc
+CFLAGS = -Wall -std=c99
+
+testaLISTA: testaLISTA.o liblista.o
+	$(CC) $(CFLAGS) testaLISTA.o liblista.o -o testaLISTA
+
+testaLISTA.o: testaLISTA.c 
+	$(CC) $(CFLAGS) -c testaLISTA.c
+
+liblista.o: liblista.c liblista.h
+	$(CC) $(CFLAGS) -c liblista.c
+
+clean:
+	rm *.o

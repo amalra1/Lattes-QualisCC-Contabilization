@@ -30,4 +30,9 @@ void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF);
 // que nao estavam nas listas de classificacao
 void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCONF);
 
+
+// Funcao que imprime a quantidade de periodicos e conferencias
+// catalogadas por anos de publicacao
+void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, int* vANO, int tamvANO);
+
 #endif

@@ -13,7 +13,10 @@
 void nomePesquisador(FILE* arq, char* str);
 
 // Funcao que preenche um vetor de strings com os titulos escolhidos (periodicos/conferencias)
-void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF);
+void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF, int* vANOper, int *tamvANOper, int* vANOconf, int *tamvANOconf);
+
+// Coleta os titulos com strtok, ao inves de caracter por caracter
+void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF, int* vANOper, int *tamvANOper, int* vANOconf, int *tamvANOconf);
 
 // Funcao que corrige  os nomes de alguns titulos, caracteres especiais e etc
 // Por exemplo o caracter '&' eh escrito como '&amp;'

@@ -105,7 +105,7 @@ int seRepete(char* str, char** v, int tam)
 
     for (i = 0; i < tam; i++)
     {
-        if(strstr(v[i], str))
+        if(!strcmp(v[i], str))
             cont++;     
     }
 
@@ -146,7 +146,7 @@ void paraMinusculo(char** v, int tam)
 
 void imprimeSumarizada(char** v, int tam)
 {
-    int i, j, k, ult, ind = 0;
+    int i, j, k, ult, ind = 0, x = 0;
     int tamlvl = 8, tamvAUX = 0, cont = 0;
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
@@ -185,7 +185,7 @@ void imprimeSumarizada(char** v, int tam)
                     strcpy(vAUX[tamvAUX], straux);
                     tamvAUX++;
 
-                    cont = seRepete(straux, v, tam);
+                    cont = seRepete(v[j], v, tam);
 
                     printf(": %d\n", cont);
 
@@ -197,6 +197,7 @@ void imprimeSumarizada(char** v, int tam)
     }
 
     printf("\nEstrato C:\n\n");
+    ind = 0;
 
     for (i = 0; i < tam; i++)
     {
@@ -207,14 +208,14 @@ void imprimeSumarizada(char** v, int tam)
         while(straux[ind] != '\0')
             ind++;
 
-        if(straux[ind - 1] == '-' || straux[ind - 1] == 'C')
+        if(straux[ind - 1] == 'C' || strstr(straux, "C-"))
         {
             if (!seRepete(v[i], vAUX, tamvAUX))
             {
-                 if (straux[ind - 1] == '-')
+                if (strstr(straux, "C-"))
                     ult = 2;
                 
-                if (straux[ind - 1] == 'C')
+                else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
                     ult = 1;
 
                 k = 0;
@@ -226,12 +227,13 @@ void imprimeSumarizada(char** v, int tam)
                     k++;
                 }
 
-                // Adiciona o nome no v_aux e incrementa seu tamanho
+                // Adiciona o nome no vAUX e incrementa seu tamanho
                 vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
                 strcpy(vAUX[tamvAUX], straux);
                 tamvAUX++;
-
-                cont = seRepete(straux, v, tam);
+ 
+                cont = seRepete(v[i], v, tam);
+                x = x + cont;
 
                 printf(": %d\n", cont);
             }
@@ -240,6 +242,8 @@ void imprimeSumarizada(char** v, int tam)
             ind = 0;
         }
     }
+
+    //printf("\n%d\n", x);
 
     // Da free em todos os espacos alocados da string 'vAUX'
     for (i = 0; i < tamvAUX; i++)
@@ -294,7 +298,7 @@ void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char*
         while(straux[ind] != '\0')
             ind++;
 
-        if (straux[ind - 1] == '-')
+        if (strstr(straux, "C-"))
             contlvlPER++;
                 
         else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
@@ -312,7 +316,7 @@ void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char*
         while(straux[ind] != '\0')
             ind++;
 
-        if (straux[ind - 1] == '-')
+        if (strstr(straux, "C-"))
             contlvlCONF++;
                 
         else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
@@ -453,8 +457,8 @@ void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCO
         while (straux[ind] != '\0')
             ind++;
 
-        // Se for 'C', imprime
-        if (straux[ind - 1] == '-')
+        // Se for 'C-', imprime
+        if (strstr(straux, "C-"))
         {
             if (!seRepete(straux, vperAUX, tamvAUX))
             {
@@ -498,8 +502,8 @@ void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCO
         while (straux[ind] != '\0')
             ind++;
 
-        // Se for 'C', imprime
-        if (straux[ind - 1] == '-')
+        // Se for 'C-', imprime
+        if (strstr(straux, "C-"))
         {
             if (!seRepete(straux, vconfAUX, tamvAUX))
             {
@@ -530,5 +534,108 @@ void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCO
         free(vconfAUX[i]);
     free(vconfAUX);
     
+    free(straux);
+}
+
+int cmpfunc (const void * a, const void * b) 
+{
+   return (*(int*)a - *(int*)b);
+}
+
+void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, int* vANO, int tamvANO)
+{
+    int i, j, ind = 0;
+    int* vANOordem = malloc(sizeof(int) * tamvANO);
+    char* straux = malloc(sizeof(char) * 512);
+    int qntA1 = 0;
+    int qntA2 = 0;
+    int qntA3 = 0;
+    int qntA4 = 0;
+    int qntB1 = 0;
+    int qntB2 = 0;
+    int qntB3 = 0;
+    int qntB4 = 0;
+    int qntC = 0;
+
+    for (i = 0; i < tamvANO; i++)
+        vANOordem[i] = vANO[i];
+
+    // Ordena o vetor vANO com 'qsort'
+    qsort(vANOordem, tamvANO, sizeof(int), cmpfunc);
+
+    //for (i = 0; i < tamvANO; i++)
+        //printf("%d\n", vANOordem[i]);
+
+    // Passando pelo ordenado sem repeticoes
+    for(i = 0; i < tamvANO; i++)
+    {
+        // Passando pelo nao ordenado em que as msms posicoes sao dos titulos
+        for (j = 0; j < tamvANO; j++)
+        {
+            // Se eh o ano da vez
+            if(vANO[j] == vANOordem[i])
+            {
+                // Checando nivel do titulo para incrementar na variavel
+                if (strstr(vPER[j], "A1"))
+                    qntA1++;
+                if (strstr(vPER[j], "A2"))
+                    qntA2++;
+                if (strstr(vPER[j], "A3"))
+                    qntA3++;
+                if (strstr(vPER[j], "A4"))
+                    qntA4++;
+                if (strstr(vPER[j], "B1"))
+                    qntB1++;
+                if (strstr(vPER[j], "B2"))
+                    qntB2++;
+                if (strstr(vPER[j], "B3"))
+                    qntB3++;
+                if (strstr(vPER[j], "B4"))
+                    qntB4++;
+
+                ind = 0;
+
+                // Copia a string para uma auxilair
+                strcpy(straux, vPER[j]);
+
+                // Pega o ultimo indice da string
+                while(straux[ind] != '\0')
+                    ind++;
+
+                if (straux[ind - 1] == '-')
+                    qntC++;
+                
+                else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
+                    qntC++;     
+            }
+        }
+
+
+
+        printf("\nAno %d\n", vANOordem[i]);
+        printf("+------------+------------+\n|Conferencias| Periódicos |\n+------------+------------+\n");
+        printf("| A1  : X    | A1  : %d    |\n", qntA1);
+        printf("| A2  : X    | A2  : %d    |\n", qntA2);
+        printf("| A3  : X    | A3  : %d    |\n", qntA3);
+        printf("| A4  : X    | A4  : %d    |\n", qntA4);
+        printf("| B1  : X    | B1  : %d    |\n", qntB1);
+        printf("| B2  : X    | B2  : %d    |\n", qntB2);
+        printf("| B3  : X    | B3  : %d    |\n", qntB3);
+        printf("| B4  : X    | B4  : %d    |\n", qntB4);
+        printf("| C   : X    | C   : %d    |\n", qntC);
+        printf("+------------+------------+\n");
+
+        // Zera as variaveis contadoras
+        qntA1 = 0;
+        qntA2 = 0;
+        qntA3 = 0;
+        qntA4 = 0;
+        qntB1 = 0;
+        qntB2 = 0;
+        qntB3 = 0;
+        qntB4 = 0;
+        qntC = 0;
+    }
+    free(vANOordem);
     free(straux);
 }
