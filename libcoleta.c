@@ -8,7 +8,7 @@
 #define QUANT_PESQ 2
 
 
-// Funcao que verifica os caracteres anteriores aos titulos de acordo com a chave passada.
+// Funcao que verifica se os caracteres atualmente lidos no arquivo sao iguais a chave passada
 // Retorna 1 se os caracteres sao a chave, e 0 senao 
 int eh_titulo(FILE* arq, char c, char* chave)
 {
@@ -79,119 +79,20 @@ void nomePesquisador(FILE* arq, char* str)
     rewind(arq);
 }
 
-/*void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF, int* vANOper, int *tamvANOper, int* vANOconf, int *tamvANOconf)
-{
-    char c;
-    char *str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
-    char chavePER[5] = "STA=";
-    char chaveANOp[15] = "ANO-DO-ARTIGO=";
-    char chaveCONF[16] = "NOME-DO-EVENTO=";
-    
-    // Inicializa a string 'str'
-    strcpy(str, "");
-
-    c = fgetc(arq);
-
-    while (c != EOF)
-    {
-        c = fgetc(arq);
-
-        // Se estamos perto de um periodico
-        if (eh_titulo(arq, c, chavePER))
-        {
-            c = fgetc(arq);
-
-            // Le ate chegar no fim das aspas duplas
-            while (c != '\"')
-            {
-                // Concatenando caracter por caracter na string do vetor de strings
-                strncat(str, &c, 1);
-
-                // Pega o proximo caracter
-                c = fgetc(arq);
-            }
-            
-            // Adiciona o nome do periodico no vetor e incrementa seu tamanho
-            vPER[*tamvPER] = malloc(sizeof(char) * TAMSTRING);
-            strcpy(vPER[*tamvPER], str);
-            (*tamvPER)++;
-
-            // Zera a string
-            strcpy(str, "");
-        }
-
-        // Se estamos perto de uma conferencia
-        else if (eh_titulo(arq, c, chaveCONF))
-        {
-            c = fgetc(arq);
-
-            // Le ate chegar no fim das aspas duplas
-            while (c != '\"')
-            {
-                // Concatenando caracter por caracter na string do vetor de strings
-                strncat(str, &c, 1);
-
-                // Pega o proximo caracter
-                c = fgetc(arq);
-            }
-            
-            // Se a string nao for vazia
-            if (strcmp(str,""))
-            {
-                // Adiciona o nome da conferencia no vetor e incrementa seu tamanho
-                vCONF[*tamvCONF] = malloc(sizeof(char) * TAMSTRING);
-                strcpy(vCONF[*tamvCONF], str);
-                (*tamvCONF)++;
-
-                // Zera a string
-                strcpy(str, "");
-            }
-        }
-
-        // Se estamos perto de um ano de periodico, armazena o nome no vetor
-        else if (eh_titulo(arq, c, chaveANOp))
-        {
-            c = fgetc(arq);
-
-            // Le ate chegar no fim das aspas duplas
-            while (c != '\"')
-            {
-                // Concatenando caracter por caracter na string do vetor de strings
-                strncat(str, &c, 1);
-
-                // Pega o proximo caracter
-                c = fgetc(arq);
-            }
-            
-            // Adiciona o nome do periodico no vetor e incrementa seu tamanho
-            vANO[*tamvANO] = atoi(str);
-            (*tamvANO)++;
-
-            // Zera a string
-            strcpy(str, "");
-        }
-    }
-
-    free(str);
-}*/
-
 void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF, int* vANOper, int *tamvANOper, int* vANOconf, int *tamvANOconf)
 {
     int PegouDados;
     char c;
-    char* str = malloc(sizeof(char) * TAMSTRING);  // String para armazenar cada nome
+    char* str = malloc(sizeof(char) * TAMSTRING);  // String auxiliar para armazenar cada nome
     
     // Inicializa a string 'str'
     strcpy(str, "");
-
-    // fazer do jeito que era antes mas deslocando o ponteiro do arquivo de volta toda vez
-    ////////////////////////////////////////////////////////////////////////////////////////
 
     c = fgetc(arq);
 
     while (c != EOF)
     {
-        // Se estamos perto de um periodico
+        // Se estamos perto de um periodico, entra na tag que contem os dados
         if (eh_titulo(arq, c, "DADOS-BASICOS-DO-ARTIGO"))
         {
             PegouDados = 0;
@@ -212,14 +113,14 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                     // Le ate chegar no fim das aspas duplas
                     while (c != '\"')
                     {
-                        // Concatenando caracter por caracter na string do vetor de strings
+                        // Concatenando caracter por caracter na string auxilair
                         strncat(str, &c, 1);
 
                         // Pega o proximo caracter
                         c = fgetc(arq);
                     }
             
-                    // Adiciona o nome do periodico no vetor e incrementa seu tamanho
+                    // Adiciona ano do periodico no vetor e incrementa seu tamanho
                     vANOper[*tamvANOper] = atoi(str);
                     (*tamvANOper)++;
 
@@ -240,7 +141,7 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                     // Le ate chegar no fim das aspas duplas
                     while (c != '\"')
                     {
-                        // Concatenando caracter por caracter na string do vetor de strings
+                        // Concatenando caracter por caracter na string auxiliar
                         strncat(str, &c, 1);
 
                         // Pega o proximo caracter
@@ -268,7 +169,7 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
             {
                 c = fgetc(arq);
 
-                // Se estamos perto de um ano de periodico, armazena o nome no vetor
+                // Se estamos perto do ano, armazena o no vetor de ano
                 if(eh_titulo(arq, c, "ANO="))
                 {
                     // Ate chegar no começo das aspas duplas
@@ -281,14 +182,14 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                     // Le ate chegar no fim das aspas duplas
                     while (c != '\"')
                     {
-                        // Concatenando caracter por caracter na string do vetor de strings
+                        // Concatenando caracter por caracter na string auxiliar
                         strncat(str, &c, 1);
 
                         // Pega o proximo caracter
                         c = fgetc(arq);
                     }
             
-                    // Adiciona o nome do periodico no vetor e incrementa seu tamanho
+                    // Adiciona ano da conferencia no vetor e incrementa seu tamanho
                     vANOconf[*tamvANOconf] = atoi(str);
                     (*tamvANOconf)++;
 
@@ -296,7 +197,7 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                     strcpy(str, "");
                 }
 
-                // Esta perto do titulo do periodico
+                // Esta perto do titulo da conferencia
                 if (eh_titulo(arq, c, "NOME-DO-EVENTO="))
                 {
                     // Ate chegar no começo das aspas duplas
@@ -309,14 +210,14 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                     // Le ate chegar no fim das aspas duplas
                     while (c != '\"')
                     {
-                        // Concatenando caracter por caracter na string do vetor de strings
+                        // Concatenando caracter por caracter na string auxiliar
                         strncat(str, &c, 1);
 
                         // Pega o proximo caracter
                         c = fgetc(arq);
                     }
             
-                    // Adiciona o nome do periodico no vetor e incrementa seu tamanho
+                    // Adiciona o nome da conferencia no vetor e incrementa seu tamanho
                     vCONF[*tamvCONF] = malloc(sizeof(char) * TAMSTRING);
                     strcpy(vCONF[*tamvCONF], str);
                     (*tamvCONF)++;
@@ -619,7 +520,5 @@ double dist_relativaMIN(char* linha, int distEdit)
 
         rewind(arq);
     }
-
-
 }
 */
