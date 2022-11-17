@@ -395,33 +395,18 @@ void separarSelecionados(FILE* arq, char** v, int tamv)
     }
 }
 
-// Funcao que divide a distancia pelo tamanho da string a ser comparada,
+// Funcao que divide a distancia pelo tamanho da string a ser modificada
 // retorna no minimo 0 (nenhuma edicao necessaria)
-double dist_relativaMIN(char* linha, int distEdit)
+double dist_relativaMIN(char* linha, int distEdit, int tamstr)
 {
-    int ind = 0, i = 0;
-    int tamstr;
     double result;
-
-    while(linha[ind] != '\0')
-        ind++;
-
-    // Se o ultimo nivel nao for C, para tirar o nivel da string, precisamos
-    // que i == 4
-    if (linha[ind - 2] != 'C' && linha[ind - 3] != ' ') 
-        i = 4;
-    // Se nao, i precisa ser == 3
-    else
-        i = 3;
-
-    tamstr = strlen(linha) - i;
 
     result = (double) distEdit/tamstr;
 
     return result;
 }
 
-void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
+void separarSelecionadosDIST(FILE* arq, char** v, int tamv, double dist_min)
 {
 
     // ANOTACOES
@@ -433,13 +418,13 @@ void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
     // abreviacoes e etc, alguns com uma distancia relativa enorme
 
 
-    int indV;
-    double x;
-    int ind, lim = 0;
+    int indV, j;
+    //double x;
+    int ind;
     int distEdit = 0;
+    char* straux = malloc(sizeof(char) * 512);
     char linha[TAMSTRING];
     int NaLista;
-    double dist_min = 0.35;
 
     fgets(linha, TAMSTRING, arq);
 
@@ -455,25 +440,42 @@ void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
         // Varrendo todo o arquivo com os titulos
         while (!feof(arq))
         {
+            // Zera a string auxiliar
+            strcpy(straux, "");
+
             // Pegando o indice do ultimo caracter
             while (linha[ind] != '\0')
                 ind++;
 
-            if (linha[ind - 2] != 'C' && linha[ind - 3] != ' ') 
-                lim = 4;
+            // Pega a string do arquivo mas deixa ela sem o nivel e o '\n'
+            if (linha[ind - 2] != 'C' && linha[ind - 3] != ' ')
+            {
+                for(j = 0; j < (ind - 4); j++)
+                    strncat(straux, &linha[j], 1);
+            } 
             else
-                lim = 3;
+            {
+                for(j = 0; j < (ind - 3); j++)
+                    strncat(straux, &linha[j], 1);
+            }
 
-            distEdit = levenshtein(linha, v[indV]);
-            distEdit = distEdit - lim;          
+            distEdit = levenshtein(straux, v[indV]);          
+
+            /*x = dist_relativaMIN(straux, distEdit, strlen(v[indV]) - 1);
+
+            if (x < dist_min)
+            {
+            printf("%s\n", v[indV]);
+            printf("do arquivo -> %s", linha);
+            printf("reduzida do arq -> %s\n", straux);
+            printf("distancia -> %d\n", distEdit);
+            printf("distancia relativa --> %lf\n\n", x);
+            }*/
 
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
             // Quanto menor dist_relativaMIN eh, mais proximo eh da string
-            if (dist_relativaMIN(linha, distEdit) < dist_min)
+            if (dist_relativaMIN(straux, distEdit, strlen(v[indV]) - 1) < dist_min)
             {
-                x = dist_relativaMIN(linha, distEdit);
-                printf("%s\n", v[indV]);
-    
                 while (linha[ind] != '\0')
                     ind++;
 
@@ -500,10 +502,6 @@ void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
                     NaLista = 1;
                 }
 
-                printf("do arquivo -> %s", linha);
-                printf("distancia -> %d\n", distEdit);
-                printf("distancia relativa --> %lf\n\n", x);
-
                 // Se ja achou e catalogou, sai do loop
                 break;
             }
@@ -520,4 +518,6 @@ void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
 
         rewind(arq);
     }
+
+    free(straux);
 }

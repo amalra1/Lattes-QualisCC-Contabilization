@@ -6,9 +6,12 @@
 #include <dirent.h>
 #include "libcoleta.h"
 #include "libescrita.h"
-#define ARQUIVO "curriculoCASTILHO.xml"
+#define ARQUIVO "curriculoZIVIANI.xml"
+#define TAM_PESQUISADOR 64
 #define PER_MAX 600
 #define CONF_MAX 600
+#define DIST_MIN_PER 0.145  // Distancias relativas minimas relativas aos nomes de periodicos e conferencias
+#define DIST_MIN_CONF 0.21  // da funcao de distancia de edicao (ver SepararSelecionados -> libcoleta.c)
 
 /*
     Contabilização da produção científica em termos de
@@ -29,6 +32,8 @@
     LIDAR COM CARACTERES ESPECIAIS QUE NAO FUNCIONAM NA FUNCAO TOUPPER (Ç, ^, ~ ETC)
     //////////////
 
+    // 98,473 allocs, 98,473 frees, 37,974,414 bytes allocated
+
 */
 
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
@@ -39,12 +44,13 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
     int* vANOper = malloc(sizeof(int) * PER_MAX);  // Aloca vetor de strings para X anos de periodicos
     char** vCONF = malloc(sizeof(char*) * CONF_MAX);  // Aloca vetor de strings para X titulos de conferencias
     int* vANOconf = malloc(sizeof(int) * CONF_MAX);  // Aloca vetor de strings para X anos de conferencias
-    char *pesquisador = malloc(sizeof(char) * 64); // String para armazenar o nome do pesquisador
+    //char *pesquisador = malloc(sizeof(char) * 64); // String para armazenar o nome do pesquisador
+    char pesquisador[TAM_PESQUISADOR];
 
     // Inicializa a string 'pesquisador'
     strcpy(pesquisador, "");
 
-    //nomePesquisador(arqXML, pesquisador);
+    nomePesquisador(arqXML, pesquisador);
 
     coletarTitulos2(arqXML, vPER, &tamvPER, vCONF, &tamvCONF, vANOper, &tamvANOper, vANOconf, &tamvANOconf);
 
@@ -77,11 +83,11 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //separarSelecionados(arqCONF, vCONF, tamvCONF);
 
-    separarSelecionadosDIST(arqCONF, vCONF, tamvCONF);
+    separarSelecionadosDIST(arqCONF, vCONF, tamvCONF, DIST_MIN_CONF);
 
-    //separarSelecionadosDIST(arqPER, vPER, tamvPER);
+    separarSelecionadosDIST(arqPER, vPER, tamvPER, DIST_MIN_PER);
 
-    imprime_vetor(vCONF, tamvCONF);
+    //imprime_vetor(vCONF, tamvCONF);
 
     //imprime_vetor(vPER, tamvPER);
 
@@ -89,7 +95,7 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //imprimeCatalogados(vPER, tamvPER);
 
-    /*printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
+    printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
 
     imprimeSumarizada(vPER, tamvPER); //(1)
 
@@ -114,7 +120,7 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)*/
+    imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)
 
     // Da free em todos os espacos alocados da string 'vPER'
     for (i = 0; i < tamvPER; i++)
@@ -128,7 +134,6 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
     free(vCONF);
     free(vANOper);
     free(vANOconf);
-    free(pesquisador);
 }
 
 int main (int argc, char** argv)

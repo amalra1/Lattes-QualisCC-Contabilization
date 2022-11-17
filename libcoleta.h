@@ -30,6 +30,6 @@ void corrigirNomes(char** v, int tamv, char* chave);
 void separarSelecionados(FILE* arq, char** v, int tamv);
 
 // Separa selecionados com distancia de edicao
-void separarSelecionadosDIST(FILE* arq, char** v, int tamv);
+void separarSelecionadosDIST(FILE* arq, char** v, int tamv, double dist_min);
 
 #endif
