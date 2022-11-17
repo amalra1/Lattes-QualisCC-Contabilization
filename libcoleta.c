@@ -421,7 +421,7 @@ double dist_relativaMIN(char* linha, int distEdit)
     return result;
 }
 
-/*void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
+void separarSelecionadosDIST(FILE* arq, char** v, int tamv)
 {
 
     // ANOTACOES
@@ -434,12 +434,12 @@ double dist_relativaMIN(char* linha, int distEdit)
 
 
     int indV;
-    int ind, lim = 0;
     double x;
+    int ind, lim = 0;
     int distEdit = 0;
     char linha[TAMSTRING];
     int NaLista;
-    double dist_min = 0.28;
+    double dist_min = 0.35;
 
     fgets(linha, TAMSTRING, arq);
 
@@ -472,7 +472,7 @@ double dist_relativaMIN(char* linha, int distEdit)
             if (dist_relativaMIN(linha, distEdit) < dist_min)
             {
                 x = dist_relativaMIN(linha, distEdit);
-                //printf("%s\n", v[indV]);
+                printf("%s\n", v[indV]);
     
                 while (linha[ind] != '\0')
                     ind++;
@@ -500,9 +500,9 @@ double dist_relativaMIN(char* linha, int distEdit)
                     NaLista = 1;
                 }
 
-                //printf("do arquivo -> %s", linha);
-                //printf("distancia -> %d\n", distEdit);
-                //printf("distancia relativa --> %lf\n\n", x);
+                printf("do arquivo -> %s", linha);
+                printf("distancia -> %d\n", distEdit);
+                printf("distancia relativa --> %lf\n\n", x);
 
                 // Se ja achou e catalogou, sai do loop
                 break;
@@ -521,4 +521,3 @@ double dist_relativaMIN(char* linha, int distEdit)
         rewind(arq);
     }
 }
-*/
