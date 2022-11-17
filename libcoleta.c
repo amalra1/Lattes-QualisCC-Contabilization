@@ -184,9 +184,6 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
     // Inicializa a string 'str'
     strcpy(str, "");
 
-    // Inicializa a string 'linha'
-    strcpy(linha, "");
-
     // fazer do jeito que era antes mas deslocando o ponteiro do arquivo de volta toda vez
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -331,10 +328,11 @@ void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *ta
                 }
             }
         }
+
+        c = fgetc(arq);
     }
 
     free(str);
-    free(linha);
 }
 
 // Funcao que transforma todas as strings do vetor em letras maiusculas

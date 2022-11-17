@@ -542,56 +542,96 @@ int cmpfunc (const void * a, const void * b)
    return (*(int*)a - *(int*)b);
 }
 
-void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, int* vANO, int tamvANO)
+// Funcao que retorna quantas vezes um valor se repete em um vetor
+int seRepeteINT(int x, int* v, int tam)
+{
+    int i = 0;
+    int cont = 0;
+
+    for (i = 0; i < tam; i++)
+    {
+        if(v[i] == x)
+            cont++;     
+    }
+
+    // Se cont retornar 0, eh porque nao achou a string no vetor
+    return cont;
+}
+
+void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, int* vANOper, int tamvANOper, int* vANOconf, int tamvANOconf)
 {
     int i, j, ind = 0;
-    int* vANOordem = malloc(sizeof(int) * tamvANO);
+    int tamvANOordem = 0;
+    int* vANOordem = malloc(sizeof(int) * (tamvANOper + tamvANOconf));  // Vetor de todos os anos em ordem sem repeticoes
     char* straux = malloc(sizeof(char) * 512);
-    int qntA1 = 0;
-    int qntA2 = 0;
-    int qntA3 = 0;
-    int qntA4 = 0;
-    int qntB1 = 0;
-    int qntB2 = 0;
-    int qntB3 = 0;
-    int qntB4 = 0;
-    int qntC = 0;
+    int PERqntA1 = 0;
+    int PERqntA2 = 0;
+    int PERqntA3 = 0;
+    int PERqntA4 = 0;
+    int PERqntB1 = 0;
+    int PERqntB2 = 0;
+    int PERqntB3 = 0;
+    int PERqntB4 = 0;
+    int PERqntC = 0;
+    int CONFqntA1 = 0;
+    int CONFqntA2 = 0;
+    int CONFqntA3 = 0;
+    int CONFqntA4 = 0;
+    int CONFqntB1 = 0;
+    int CONFqntB2 = 0;
+    int CONFqntB3 = 0;
+    int CONFqntB4 = 0;
+    int CONFqntC = 0;
 
-    for (i = 0; i < tamvANO; i++)
-        vANOordem[i] = vANO[i];
+    // Adiciona os anos dos periodicos no vetor de ordem evitando repeticoes
+    for (i = 0; i < tamvANOper; i++)
+    {
+        if (!seRepeteINT(vANOper[i], vANOordem, tamvANOordem))
+        {
+            vANOordem[tamvANOordem] = vANOper[i];
+            tamvANOordem++;
+        }
+    }
 
-    // Ordena o vetor vANO com 'qsort'
-    qsort(vANOordem, tamvANO, sizeof(int), cmpfunc);
+    // Adiciona os anos das conferencias no vetor de ordem evitando repeticoes
+    for (i = 0; i < tamvANOconf; i++)
+    {
+        if (!seRepeteINT(vANOconf[i], vANOordem, tamvANOordem))
+        {
+            vANOordem[tamvANOordem] = vANOconf[i];
+            tamvANOordem++;
+        }
+    }
 
-    //for (i = 0; i < tamvANO; i++)
-        //printf("%d\n", vANOordem[i]);
+    // Ordena o vetor vANO de anos com 'qsort'
+    qsort(vANOordem, tamvANOordem, sizeof(int), cmpfunc);
 
     // Passando pelo ordenado sem repeticoes
-    for(i = 0; i < tamvANO; i++)
+    for(i = 0; i < tamvANOordem; i++)
     {
         // Passando pelo nao ordenado em que as msms posicoes sao dos titulos
-        for (j = 0; j < tamvANO; j++)
+        for (j = 0; j < tamvANOper; j++)
         {
             // Se eh o ano da vez
-            if(vANO[j] == vANOordem[i])
+            if(vANOper[j] == vANOordem[i])
             {
                 // Checando nivel do titulo para incrementar na variavel
                 if (strstr(vPER[j], "A1"))
-                    qntA1++;
-                if (strstr(vPER[j], "A2"))
-                    qntA2++;
-                if (strstr(vPER[j], "A3"))
-                    qntA3++;
-                if (strstr(vPER[j], "A4"))
-                    qntA4++;
-                if (strstr(vPER[j], "B1"))
-                    qntB1++;
-                if (strstr(vPER[j], "B2"))
-                    qntB2++;
-                if (strstr(vPER[j], "B3"))
-                    qntB3++;
-                if (strstr(vPER[j], "B4"))
-                    qntB4++;
+                    PERqntA1++;
+                else if (strstr(vPER[j], "A2"))
+                    PERqntA2++;
+                else if (strstr(vPER[j], "A3"))
+                    PERqntA3++;
+                else if (strstr(vPER[j], "A4"))
+                    PERqntA4++;
+                else if (strstr(vPER[j], "B1"))
+                    PERqntB1++;
+                else if (strstr(vPER[j], "B2"))
+                    PERqntB2++;
+                else if (strstr(vPER[j], "B3"))
+                    PERqntB3++;
+                else if (strstr(vPER[j], "B4"))
+                    PERqntB4++;
 
                 ind = 0;
 
@@ -602,40 +642,89 @@ void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, 
                 while(straux[ind] != '\0')
                     ind++;
 
-                if (straux[ind - 1] == '-')
-                    qntC++;
+                if (strstr(straux, "C-"))
+                    PERqntC++;
                 
                 else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
-                    qntC++;     
+                    PERqntC++;     
             }
         }
 
+        // Passando pelo nao ordenado das conferencias em que as msms posicoes sao dos titulos
+        for (j = 0; j < tamvANOconf; j++)
+        {
+            // Se eh o ano da vez
+            if(vANOconf[j] == vANOordem[i])
+            {
+                // Checando nivel do titulo para incrementar na variavel
+                if (strstr(vCONF[j], "A1"))
+                    CONFqntA1++;
+                else if (strstr(vCONF[j], "A2"))
+                    CONFqntA2++;
+                else if (strstr(vCONF[j], "A3"))
+                    CONFqntA3++;
+                else if (strstr(vCONF[j], "A4"))
+                    CONFqntA4++;
+                else if (strstr(vCONF[j], "B1"))
+                    CONFqntB1++;
+                else if (strstr(vCONF[j], "B2"))
+                    CONFqntB2++;
+                else if (strstr(vCONF[j], "B3"))
+                    CONFqntB3++;
+                else if (strstr(vCONF[j], "B4"))
+                    CONFqntB4++;
 
+                ind = 0;
+
+                // Copia a string para uma auxilair
+                strcpy(straux, vCONF[j]);
+
+                // Pega o ultimo indice da string
+                while(straux[ind] != '\0')
+                    ind++;
+
+                if (strstr(straux, "C-"))
+                    CONFqntC++;
+                
+                else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
+                    CONFqntC++;     
+            }
+        }
 
         printf("\nAno %d\n", vANOordem[i]);
         printf("+------------+------------+\n|Conferencias| Periódicos |\n+------------+------------+\n");
-        printf("| A1  : X    | A1  : %d    |\n", qntA1);
-        printf("| A2  : X    | A2  : %d    |\n", qntA2);
-        printf("| A3  : X    | A3  : %d    |\n", qntA3);
-        printf("| A4  : X    | A4  : %d    |\n", qntA4);
-        printf("| B1  : X    | B1  : %d    |\n", qntB1);
-        printf("| B2  : X    | B2  : %d    |\n", qntB2);
-        printf("| B3  : X    | B3  : %d    |\n", qntB3);
-        printf("| B4  : X    | B4  : %d    |\n", qntB4);
-        printf("| C   : X    | C   : %d    |\n", qntC);
+        printf("| A1  : %d    | A1  : %d    |\n", CONFqntA1, PERqntA1);
+        printf("| A2  : %d    | A2  : %d    |\n", CONFqntA2, PERqntA2);
+        printf("| A3  : %d    | A3  : %d    |\n", CONFqntA3, PERqntA3);
+        printf("| A4  : %d    | A4  : %d    |\n", CONFqntA4, PERqntA4);
+        printf("| B1  : %d    | B1  : %d    |\n", CONFqntB1, PERqntB1);
+        printf("| B2  : %d    | B2  : %d    |\n", CONFqntB2, PERqntB2);
+        printf("| B3  : %d    | B3  : %d    |\n", CONFqntB3, PERqntB3);
+        printf("| B4  : %d    | B4  : %d    |\n", CONFqntB4, PERqntB4);
+        printf("| C   : %d    | C   : %d    |\n", CONFqntC, PERqntC);
         printf("+------------+------------+\n");
 
         // Zera as variaveis contadoras
-        qntA1 = 0;
-        qntA2 = 0;
-        qntA3 = 0;
-        qntA4 = 0;
-        qntB1 = 0;
-        qntB2 = 0;
-        qntB3 = 0;
-        qntB4 = 0;
-        qntC = 0;
+        PERqntA1 = 0;
+        PERqntA2 = 0;
+        PERqntA3 = 0;
+        PERqntA4 = 0;
+        PERqntB1 = 0;
+        PERqntB2 = 0;
+        PERqntB3 = 0;
+        PERqntB4 = 0;
+        PERqntC = 0;
+        CONFqntA1 = 0;
+        CONFqntA2 = 0;
+        CONFqntA3 = 0;
+        CONFqntA4 = 0;
+        CONFqntB1 = 0;
+        CONFqntB2 = 0;
+        CONFqntB3 = 0;
+        CONFqntB4 = 0;
+        CONFqntC = 0;
     }
+
     free(vANOordem);
     free(straux);
 }

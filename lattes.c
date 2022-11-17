@@ -61,18 +61,21 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
     //coletarTitulos(arqXML, vPER, &tamvPER, vCONF, &tamvCONF, vANOper, &tamvANOper, vANOconf, &tamvANOconf);
     coletarTitulos2(arqXML, vPER, &tamvPER, vCONF, &tamvCONF, vANOper, &tamvANOper, vANOconf, &tamvANOconf);
 
-    imprime_vetor(vPER, tamvPER);
+    //imprime_vetor(vPER, tamvPER);
 
-    for (i = 0; i < tamvANOper; i++)
-        printf("%d\n", vANOper[i]);
+    //for (i = 0; i < tamvANOper; i++)
+        //printf("%d\n", vANOper[i]);
 
-    imprime_vetor(vCONF, tamvCONF);
+    //imprime_vetor(vCONF, tamvCONF);
 
-    /*
+    //for (i = 0; i < tamvANOconf; i++)
+        //printf("%d\n", vANOconf[i]);
+
+    
     // Nao eh necessario passar o nome das conferencias para maiusculo
     // pois no arquivo delas estao todas normais
-    //corrigirNomes(vPER, tamvPER, "per");
-    //corrigirNomes(vCONF, tamvCONF, "conf");
+    corrigirNomes(vPER, tamvPER, "per");
+    corrigirNomes(vCONF, tamvCONF, "conf");
 
     //imprime_vetor(vPER, tamvPER);
 
@@ -83,9 +86,9 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //printf("\n\n\n\n");
 
-    //separarSelecionados(arqPER, vPER, tamvPER);
+    separarSelecionados(arqPER, vPER, tamvPER);
 
-    //separarSelecionados(arqCONF, vCONF, tamvCONF);
+    separarSelecionados(arqCONF, vCONF, tamvCONF);
 
     //separarSelecionadosDIST(arqCONF, vCONF, tamvCONF);
 
@@ -103,13 +106,13 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //imprimeSumarizada(vPER, tamvPER); //(1)
 
-    printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
+    //printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
     //imprimeSumarizada(vCONF, tamvCONF); //(2)
 
-    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
+    //printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
 
-    imprimeSumarizadaAutoria(pesquisador, vPER, tamvPER, vCONF, tamvCONF); //(3)
+    //imprimeSumarizadaAutoria(pesquisador, vPER, tamvPER, vCONF, tamvCONF); //(3)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
 
@@ -118,13 +121,13 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
     //for (i = 0; i < tamvANO; i++)
         //printf("%d\n", vANO[i]);
 
-    printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
+    //printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
 
-    imprime_tudoC(vPER, tamvPER, vCONF, tamvCONF); //(5)
+    //imprime_tudoC(vPER, tamvPER, vCONF, tamvCONF); //(5)
 
-    printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
+    //printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)*/
+    //imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)*/
 
     // Da free em todos os espacos alocados da string 'vPER'
     for (i = 0; i < tamvPER; i++)
