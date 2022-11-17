@@ -7,6 +7,8 @@
 #include "libcoleta.h"
 #include "libescrita.h"
 #define ARQUIVO "curriculoCASTILHO.xml"
+#define PER_MAX 600
+#define CONF_MAX 600
 
 /*
     Contabilização da produção científica em termos de
@@ -47,10 +49,10 @@
 void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 {
     int tamvPER = 0, tamvCONF = 0, tamvANOper = 0, tamvANOconf = 0, i;
-    char** vPER = malloc(sizeof(char*) * 150);  // Aloca vetor de strings para X titulos de periodicos
-    int* vANOper = malloc(sizeof(int) * 512);  // Aloca vetor de strings para X anos de periodicos
-    char** vCONF = malloc(sizeof(char*) * 512);  // Aloca vetor de strings para X titulos de conferencias
-    int* vANOconf = malloc(sizeof(int) * 512);  // Aloca vetor de strings para X anos de conferencias
+    char** vPER = malloc(sizeof(char*) * PER_MAX);  // Aloca vetor de strings para X titulos de periodicos
+    int* vANOper = malloc(sizeof(int) * PER_MAX);  // Aloca vetor de strings para X anos de periodicos
+    char** vCONF = malloc(sizeof(char*) * CONF_MAX);  // Aloca vetor de strings para X titulos de conferencias
+    int* vANOconf = malloc(sizeof(int) * CONF_MAX);  // Aloca vetor de strings para X anos de conferencias
     char *pesquisador = malloc(sizeof(char) * 64); // String para armazenar o nome do pesquisador
 
     // Inicializa a string 'pesquisador'
@@ -58,7 +60,6 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //nomePesquisador(arqXML, pesquisador);
 
-    //coletarTitulos(arqXML, vPER, &tamvPER, vCONF, &tamvCONF, vANOper, &tamvANOper, vANOconf, &tamvANOconf);
     coletarTitulos2(arqXML, vPER, &tamvPER, vCONF, &tamvCONF, vANOper, &tamvANOper, vANOconf, &tamvANOconf);
 
     //imprime_vetor(vPER, tamvPER);
