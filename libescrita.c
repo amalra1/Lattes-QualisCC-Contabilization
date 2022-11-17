@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define TAMSTRING 128
+#define TAMSTRING 512
 
 void imprime_vetor(char** v, int tamv)
 {
@@ -146,7 +146,7 @@ void paraMinusculo(char** v, int tam)
 
 void imprimeSumarizada(char** v, int tam)
 {
-    int i, j, k, ult, ind = 0, x = 0;
+    int i, j, k, ult, ind = 0;
     int tamlvl = 8, tamvAUX = 0, cont = 0;
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
@@ -233,7 +233,6 @@ void imprimeSumarizada(char** v, int tam)
                 tamvAUX++;
  
                 cont = seRepete(v[i], v, tam);
-                x = x + cont;
 
                 printf(": %d\n", cont);
             }
@@ -242,8 +241,6 @@ void imprimeSumarizada(char** v, int tam)
             ind = 0;
         }
     }
-
-    //printf("\n%d\n", x);
 
     // Da free em todos os espacos alocados da string 'vAUX'
     for (i = 0; i < tamvAUX; i++)
