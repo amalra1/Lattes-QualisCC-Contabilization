@@ -18,3 +18,6 @@ levenshtein.o: levenshtein.c levenshtein.h
 
 clean:
 	rm *.o
+	
+purge: clean
+	rm -f lattes
