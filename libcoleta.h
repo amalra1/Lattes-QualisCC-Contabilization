@@ -9,27 +9,44 @@
     Data de finalizacao -> XX/XX/XXX
 */
 
-// Funcao que pega o nome do pesquisador do arquivo e armazena na string
-void nomePesquisador(FILE* arq, char* str);
+// Estrutura de dados contendo todos os dados
+// necessarios de cada pesquisador
+typedef struct pesquisador {
 
-// Funcao que preenche um vetor de strings com os titulos escolhidos (periodicos/conferencias)
-void coletarTitulos(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF, int* vANOper, int *tamvANOper, int* vANOconf, int *tamvANOconf);
+    char* nome;     // Seu nome
+    char** vPER;    // Vetor com o nome dos Periodicos
+    int tamvPER;  
+    char** vCONF;   // Vetor com o nome das Conferencias
+    int tamvCONF;
+    int* vANOper;   // Vetor com o ano de publicacao em cada Periodico
+    int tamvANOper;
+    int* vANOconf;  // Vetor com o ano de participacao em cada Conferencia
+    int tamvANOconf;
+
+} pesquisador_t;
+
+// Funcao que inicializa a struct de cada pesquisador
+void inicia_pesquisador(pesquisador_t *p);
+
+// Funcao que libera o espaço alocado para cada pesquisador na struct
+void destroi_pesquisador(pesquisador_t *p);
+
+// Funcao que pega o nome do pesquisador do arquivo e armazena na string
+void nomePesquisador(FILE* arq, pesquisador_t *p);
 
 // Coleta os titulos com strtok, ao inves de caracter por caracter
-void coletarTitulos2(FILE* arq, char** vPER, int *tamvPER, char** vCONF, int *tamvCONF, int* vANOper, int *tamvANOper, int* vANOconf, int *tamvANOconf);
+void coletarTitulos(FILE* arq, pesquisador_t *p);
 
 // Funcao que corrige  os nomes de alguns titulos, caracteres especiais e etc
 // Por exemplo o caracter '&' eh escrito como '&amp;'
 // Tambem passa os nomes dos periodicos para maiusculo, pois no arquivo
 // 'qualis-periodicos.txt' estao em maiusculas
-void corrigirNomes(char** v, int tamv, char* chave);
+void corrigirNomes(pesquisador_t *p);
 
-// Funcao que classifica os periodicos de acordo com seus niveis
-// niveis: A1, A2, A3, A4, B1, B2, B3, B4, C e C-.
-// A classificacao 'C-' eh para aqueles que nao foram encontrados na lista
-void separarSelecionados(FILE* arq, char** v, int tamv);
+// Separa as conferencias selecionadas com distancia de edicao
+void catalogarCONFS(FILE* arq, pesquisador_t *p, double dist_min);
 
-// Separa selecionados com distancia de edicao
-void separarSelecionadosDIST(FILE* arq, char** v, int tamv, double dist_min);
+// Separa os periodicos selecionados com distancia de edicao
+void catalogarPERS(FILE* arq, pesquisador_t *p, double dist_min);
 
 #endif

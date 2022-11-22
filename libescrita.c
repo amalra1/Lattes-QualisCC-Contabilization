@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "libcoleta.h"
 
 #define TAMSTRING 512
 
@@ -11,90 +12,6 @@ void imprime_vetor(char** v, int tamv)
 
     for (i = 0; i < tamv; i++)
         printf("%s\n", v[i]);
-}
-
-void imprimeCatalogados(char** v, int tamv)
-{
-    int i, j, k, ind = 0;
-    char niveis[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3" ,"B4"};
-    char* straux = malloc(sizeof(char) * TAMSTRING);
-
-    // Loop com todos os niveis menos o 'C', pois eh preciso um teste mais elaborado
-    // devido a ser um caracter so, todas os periodicos podem apresentar a letra 'C'
-    for (j = 0; j < 8; j++)
-    {
-        printf("\nEstrato %s:\n", niveis[j]);
-        for (i = 0; i < tamv; i++)
-        {
-            // Copia o nome do periodico para uma string auxiliar
-            strcpy(straux, v[i]);
-
-            // Pega o indice do fim da string
-            while (straux[ind] != '\0')
-                ind++;
-
-            // Se estiver com o nivel no fim da string, imprima
-            if (strstr(v[i], niveis[j]))
-            {
-                k = 0;
-
-                // Imprimindo a string toda menos o nivel nela escrito
-                while (k < (ind - 2))
-                {
-                    printf("%c", straux[k]);
-                    k++;
-                }
-                printf("\n");
-            }
-
-            ind = 0;
-        }
-    }
-
-    printf("\nEstrato C:\n");
-    for (i = 0; i < tamv; i++)
-    {
-        // Copia o nome do periodico para uma string auxiliar
-        strcpy(straux, v[i]);
-
-        // Pega o indice do fim da string
-        while (straux[ind] != '\0')
-            ind++;
-
-        // Verifica se tem o nivel C na string
-        // Neste caso, nao temos o '\n', entao '[ind - 1]' eh o C
-        if (straux[ind - 1] == 'C')
-        {
-                k = 0;
-
-                // Imprimindo a string toda menos o nivel nela escrito
-                while (k < (ind - 1))
-                {
-                    printf("%c", straux[k]);
-                    k++;
-                }
-                printf("\n");
-        }
-
-        // Se terminar com 'C-', eh porque eh nao presente na lista, tambem se encaixa
-        if (straux[ind - 1] == '-')
-        {
-                k = 0;
-
-                // Imprimindo a string toda menos o nivel nela escrito
-                while (k < (ind - 2))
-                {
-                    printf("%c", straux[k]);
-                    k++;
-                }
-                printf("\n");
-        }
-
-        ind = 0;
-    }
-
-    printf("\n");
-    free(straux);
 }
 
 // Funcao que retorna quantas vezes uma string se repete em um vetor de strings
@@ -113,38 +30,7 @@ int seRepete(char* str, char** v, int tam)
     return cont;
 }
 
-// Funcao que converte todos os caracteres do vetor de strings para minusculo
-void paraMinusculo(char** v, int tam)
-{
-    int ind, indV; 
-    char* straux = malloc (sizeof(char) * TAMSTRING);
-
-    // Necessario passar os nomes das strings para letras minusculas
-    for (indV = 0; indV < tam; indV++)
-    { 
-        // Copia o nome do periodico para uma string auxiliar
-        strcpy(straux, v[indV]);
-
-        // Zera o indice que apontara para os caracteres da string
-        ind = 0;
-
-        // Varrendo a string ate ela chegar no final
-        while (straux[ind] != '\0')
-        {
-            // Rebaixando o caracter para caixa alta com 'tolower'
-            straux[ind] = tolower(straux[ind]);
-            ind++;
-        }
-
-        // Transfere o auxiliar de volta para o vetor de strings
-        strcpy(v[indV], straux);
-        strcpy(straux, "");
-    }
-
-    free(straux);
-}
-
-void imprimeSumarizada(char** v, int tam)
+void imprimeSumarizadaPER(pesquisador_t *p)
 {
     int i, j, k, ult, ind = 0;
     int tamlvl = 8, tamvAUX = 0, cont = 0;
@@ -157,15 +43,15 @@ void imprimeSumarizada(char** v, int tam)
     {
         printf("\nEstrato %s:\n\n", vlvl[i]);
 
-        for (j = 0; j < tam; j++)
+        for (j = 0; j < p->tamvPER; j++)
         {
             // Se o titulo corresponde ao nivel da vez
-            if (strstr(v[j], vlvl[i]))
+            if (strstr(p->vPER[j], vlvl[i]))
             {
-                if (!seRepete(v[j], vAUX, tamvAUX))
+                if (!seRepete(p->vPER[j], vAUX, tamvAUX))
                 {
                     // Copia o nome para a string auxiliar
-                    strcpy(straux, v[j]);
+                    strcpy(straux, p->vPER[j]);
 
                     // Pega o indice do ultimo caracter
                     while(straux[ind] != '\0')
@@ -185,7 +71,7 @@ void imprimeSumarizada(char** v, int tam)
                     strcpy(vAUX[tamvAUX], straux);
                     tamvAUX++;
 
-                    cont = seRepete(v[j], v, tam);
+                    cont = seRepete(p->vPER[j], p->vPER, p->tamvPER);
 
                     printf(": %d\n", cont);
 
@@ -199,10 +85,10 @@ void imprimeSumarizada(char** v, int tam)
     printf("\nEstrato C:\n\n");
     ind = 0;
 
-    for (i = 0; i < tam; i++)
+    for (i = 0; i < p->tamvPER; i++)
     {
         // Copia o nome para a string auxiliar
-        strcpy(straux, v[i]);
+        strcpy(straux, p->vPER[i]);
 
         // Pega o indice do ultimo caracter
         while(straux[ind] != '\0')
@@ -210,7 +96,7 @@ void imprimeSumarizada(char** v, int tam)
 
         if(straux[ind - 1] == 'C' || strstr(straux, "C-"))
         {
-            if (!seRepete(v[i], vAUX, tamvAUX))
+            if (!seRepete(p->vPER[i], vAUX, tamvAUX))
             {
                 if (strstr(straux, "C-"))
                     ult = 2;
@@ -232,7 +118,7 @@ void imprimeSumarizada(char** v, int tam)
                 strcpy(vAUX[tamvAUX], straux);
                 tamvAUX++;
  
-                cont = seRepete(v[i], v, tam);
+                cont = seRepete(p->vPER[i], p->vPER, p->tamvPER);
 
                 printf(": %d\n", cont);
             }
@@ -250,30 +136,136 @@ void imprimeSumarizada(char** v, int tam)
     free(straux);
 }
 
-void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char** vCONF, int tamvCONF)
+void imprimeSumarizadaCONF(pesquisador_t *p)
+{
+    int i, j, k, ult, ind = 0;
+    int tamlvl = 8, tamvAUX = 0, cont = 0;
+    char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
+    char* straux = malloc(sizeof(char) * TAMSTRING);
+    char** vAUX = malloc(sizeof(char*) * 512);
+
+    // Percorrendo de nivel a nivel
+    for (i = 0; i < tamlvl; i++)
+    {
+        printf("\nEstrato %s:\n\n", vlvl[i]);
+
+        for (j = 0; j < p->tamvCONF; j++)
+        {
+            // Se o titulo corresponde ao nivel da vez
+            if (strstr(p->vCONF[j], vlvl[i]))
+            {
+                if (!seRepete(p->vCONF[j], vAUX, tamvAUX))
+                {
+                    // Copia o nome para a string auxiliar
+                    strcpy(straux, p->vCONF[j]);
+
+                    // Pega o indice do ultimo caracter
+                    while(straux[ind] != '\0')
+                        ind++;
+
+                    k = 0;
+
+                    // Imprimindo a string toda menos o nivel nela escrito, nesse caso 'vlvl[i]'
+                    while (k < (ind - 2))
+                    {
+                        printf("%c", straux[k]);
+                        k++;
+                    }
+
+                    // Adiciona o nome no v_aux e incrementa seu tamanho
+                    vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                    strcpy(vAUX[tamvAUX], straux);
+                    tamvAUX++;
+
+                    cont = seRepete(p->vCONF[j], p->vCONF, p->tamvCONF);
+
+                    printf(": %d\n", cont);
+
+                    // Zera o indice
+                    ind = 0;
+                }
+            }
+        }
+    }
+
+    printf("\nEstrato C:\n\n");
+    ind = 0;
+
+    for (i = 0; i < p->tamvCONF; i++)
+    {
+        // Copia o nome para a string auxiliar
+        strcpy(straux, p->vCONF[i]);
+
+        // Pega o indice do ultimo caracter
+        while(straux[ind] != '\0')
+            ind++;
+
+        if(straux[ind - 1] == 'C' || strstr(straux, "C-"))
+        {
+            if (!seRepete(p->vCONF[i], vAUX, tamvAUX))
+            {
+                if (strstr(straux, "C-"))
+                    ult = 2;
+                
+                else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
+                    ult = 1;
+
+                k = 0;
+
+                // Imprimindo a string toda menos o nivel nela escrito, nesse caso ou 'C' ou 'C-'
+                while (k < (ind - ult))
+                {
+                    printf("%c", straux[k]);
+                    k++;
+                }
+
+                // Adiciona o nome no vAUX e incrementa seu tamanho
+                vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                strcpy(vAUX[tamvAUX], straux);
+                tamvAUX++;
+ 
+                cont = seRepete(p->vCONF[i], p->vCONF, p->tamvCONF);
+
+                printf(": %d\n", cont);
+            }
+
+            // Zera o indice
+            ind = 0;
+        }
+    }
+
+    // Da free em todos os espacos alocados da string 'vAUX'
+    for (i = 0; i < tamvAUX; i++)
+        free(vAUX[i]);
+
+    free(vAUX);
+    free(straux);
+}
+
+void imprimeSumarizadaAutoria(pesquisador_t *p)
 {
     int tamlvl = 8, i, ind, j;
     int contlvlPER = 0, contlvlCONF = 0;
     char* straux = malloc(sizeof(char) * 300);
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
 
-    printf("Pesquisador: %s\n", pesquisador);
+    printf("Pesquisador: %s\n", p->nome);
 
     printf("+------------+------------+\n|Conferencias| Periódicos |\n+------------+------------+\n");
 
     for (i = 0; i < tamlvl; i++)
     {
-        for (j = 0; j < tamvPER; j++)
+        for (j = 0; j < p->tamvPER; j++)
         {
             // Se o titulo do periodico corresponde ao nivel da vez
-            if (strstr(vPER[j], vlvl[i]))
+            if (strstr(p->vPER[j], vlvl[i]))
                 contlvlPER++;
         }
 
-        for (j = 0; j < tamvCONF; j++)
+        for (j = 0; j < p->tamvCONF; j++)
         {
             // Se o titulo da conferencia corresponde ao nivel da vez
-            if (strstr(vCONF[j], vlvl[i]))
+            if (strstr(p->vCONF[j], vlvl[i]))
                 contlvlCONF++;
         }
 
@@ -284,12 +276,12 @@ void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char*
         contlvlCONF = 0;
     }
 
-    for (j = 0; j < tamvPER; j++)
+    for (j = 0; j < p->tamvPER; j++)
     {
         ind = 0;
 
         // Copia a string para uma auxilair
-        strcpy(straux, vPER[j]);
+        strcpy(straux, p->vPER[j]);
 
         // Pega o ultimo indice da string
         while(straux[ind] != '\0')
@@ -302,12 +294,12 @@ void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char*
             contlvlPER++;     
     }
 
-    for (j = 0; j < tamvCONF; j++)
+    for (j = 0; j < p->tamvCONF; j++)
     {
         ind = 0;
 
         // Copia a string para uma auxilair
-        strcpy(straux, vCONF[j]);
+        strcpy(straux, p->vCONF[j]);
 
         // Pega o ultimo indice da string
         while(straux[ind] != '\0')
@@ -320,13 +312,13 @@ void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char*
             contlvlCONF++;     
     }
 
-    printf("| %s  : %d    | %s  : %d     |\n", "C", contlvlCONF, "C", contlvlPER);
+    printf("| %s  : %d     | %s  : %d     |\n", "C", contlvlCONF, "C", contlvlPER);
     printf("+------------+------------+\n");
 
     free(straux);
 }
 
-void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
+void imprime_tudoC(pesquisador_t *p)
 {
     int i, k, ind = 0, tamvAUX = 0;
     char* straux = malloc(sizeof(char) * TAMSTRING);
@@ -336,10 +328,10 @@ void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
 
     printf("Periodicos:\n\n");
 
-    for (i = 0; i < tamvPER; i++)
+    for (i = 0; i < p->tamvPER; i++)
     {
         // Copia o nome para uma string auxiliar
-        strcpy(straux, vPER[i]);
+        strcpy(straux, p->vPER[i]);
 
         // Pega o ultimo indice
         while (straux[ind] != '\0')
@@ -387,10 +379,10 @@ void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
 
     printf("\n\nConferencias:\n\n");
 
-    for (i = 0; i < tamvCONF; i++)
+    for (i = 0; i < p->tamvCONF; i++)
     {
         // Copia o nome para uma string auxiliar
-        strcpy(straux, vCONF[i]);
+        strcpy(straux, p->vCONF[i]);
 
         // Pega o ultimo indice
         while (straux[ind] != '\0')
@@ -436,7 +428,7 @@ void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
     free(straux);
 }
 
-void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCONF)
+void imprime_NaoClassificados(pesquisador_t *p)
 {
     int i, k, ind = 0, tamvAUX = 0;
     char* straux = malloc(sizeof(char) * TAMSTRING);
@@ -445,10 +437,10 @@ void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCO
 
     printf("Periodicos:\n\n");
 
-    for (i = 0; i < tamvPER; i++)
+    for (i = 0; i < p->tamvPER; i++)
     {
         // Copia o nome para uma string auxiliar
-        strcpy(straux, vPER[i]);
+        strcpy(straux, p->vPER[i]);
 
         // Pega o ultimo indice
         while (straux[ind] != '\0')
@@ -490,10 +482,10 @@ void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCO
 
     printf("\n\nConferencias:\n\n");
 
-    for (i = 0; i < tamvCONF; i++)
+    for (i = 0; i < p->tamvCONF; i++)
     {
         // Copia o nome para uma string auxiliar
-        strcpy(straux, vCONF[i]);
+        strcpy(straux, p->vCONF[i]);
 
         // Pega o ultimo indice
         while (straux[ind] != '\0')
@@ -555,11 +547,11 @@ int seRepeteINT(int x, int* v, int tam)
     return cont;
 }
 
-void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, int* vANOper, int tamvANOper, int* vANOconf, int tamvANOconf)
+void imprimeSumarizadaAno(pesquisador_t *p)
 {
     int i, j, ind = 0;
     int tamvANOordem = 0;
-    int* vANOordem = malloc(sizeof(int) * (tamvANOper + tamvANOconf));  // Vetor de todos os anos em ordem sem repeticoes
+    int* vANOordem = malloc(sizeof(int) * (p->tamvANOper + p->tamvANOconf));  // Vetor de todos os anos em ordem sem repeticoes
     char* straux = malloc(sizeof(char) * 512);
     int PERqntA1 = 0;
     int PERqntA2 = 0;
@@ -581,21 +573,21 @@ void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, 
     int CONFqntC = 0;
 
     // Adiciona os anos dos periodicos no vetor de ordem evitando repeticoes
-    for (i = 0; i < tamvANOper; i++)
+    for (i = 0; i < p->tamvANOper; i++)
     {
-        if (!seRepeteINT(vANOper[i], vANOordem, tamvANOordem))
+        if (!seRepeteINT(p->vANOper[i], vANOordem, tamvANOordem))
         {
-            vANOordem[tamvANOordem] = vANOper[i];
+            vANOordem[tamvANOordem] = p->vANOper[i];
             tamvANOordem++;
         }
     }
 
     // Adiciona os anos das conferencias no vetor de ordem evitando repeticoes
-    for (i = 0; i < tamvANOconf; i++)
+    for (i = 0; i < p->tamvANOconf; i++)
     {
-        if (!seRepeteINT(vANOconf[i], vANOordem, tamvANOordem))
+        if (!seRepeteINT(p->vANOconf[i], vANOordem, tamvANOordem))
         {
-            vANOordem[tamvANOordem] = vANOconf[i];
+            vANOordem[tamvANOordem] = p->vANOconf[i];
             tamvANOordem++;
         }
     }
@@ -607,33 +599,33 @@ void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, 
     for(i = 0; i < tamvANOordem; i++)
     {
         // Passando pelo nao ordenado em que as msms posicoes sao dos titulos
-        for (j = 0; j < tamvANOper; j++)
+        for (j = 0; j < p->tamvANOper; j++)
         {
             // Se eh o ano da vez
-            if(vANOper[j] == vANOordem[i])
+            if(p->vANOper[j] == vANOordem[i])
             {
                 // Checando nivel do titulo para incrementar na variavel
-                if (strstr(vPER[j], "A1"))
+                if (strstr(p->vPER[j], "A1"))
                     PERqntA1++;
-                else if (strstr(vPER[j], "A2"))
+                else if (strstr(p->vPER[j], "A2"))
                     PERqntA2++;
-                else if (strstr(vPER[j], "A3"))
+                else if (strstr(p->vPER[j], "A3"))
                     PERqntA3++;
-                else if (strstr(vPER[j], "A4"))
+                else if (strstr(p->vPER[j], "A4"))
                     PERqntA4++;
-                else if (strstr(vPER[j], "B1"))
+                else if (strstr(p->vPER[j], "B1"))
                     PERqntB1++;
-                else if (strstr(vPER[j], "B2"))
+                else if (strstr(p->vPER[j], "B2"))
                     PERqntB2++;
-                else if (strstr(vPER[j], "B3"))
+                else if (strstr(p->vPER[j], "B3"))
                     PERqntB3++;
-                else if (strstr(vPER[j], "B4"))
+                else if (strstr(p->vPER[j], "B4"))
                     PERqntB4++;
 
                 ind = 0;
 
                 // Copia a string para uma auxilair
-                strcpy(straux, vPER[j]);
+                strcpy(straux, p->vPER[j]);
 
                 // Pega o ultimo indice da string
                 while(straux[ind] != '\0')
@@ -648,33 +640,33 @@ void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, 
         }
 
         // Passando pelo nao ordenado das conferencias em que as msms posicoes sao dos titulos
-        for (j = 0; j < tamvANOconf; j++)
+        for (j = 0; j < p->tamvANOconf; j++)
         {
             // Se eh o ano da vez
-            if(vANOconf[j] == vANOordem[i])
+            if(p->vANOconf[j] == vANOordem[i])
             {
                 // Checando nivel do titulo para incrementar na variavel
-                if (strstr(vCONF[j], "A1"))
+                if (strstr(p->vCONF[j], "A1"))
                     CONFqntA1++;
-                else if (strstr(vCONF[j], "A2"))
+                else if (strstr(p->vCONF[j], "A2"))
                     CONFqntA2++;
-                else if (strstr(vCONF[j], "A3"))
+                else if (strstr(p->vCONF[j], "A3"))
                     CONFqntA3++;
-                else if (strstr(vCONF[j], "A4"))
+                else if (strstr(p->vCONF[j], "A4"))
                     CONFqntA4++;
-                else if (strstr(vCONF[j], "B1"))
+                else if (strstr(p->vCONF[j], "B1"))
                     CONFqntB1++;
-                else if (strstr(vCONF[j], "B2"))
+                else if (strstr(p->vCONF[j], "B2"))
                     CONFqntB2++;
-                else if (strstr(vCONF[j], "B3"))
+                else if (strstr(p->vCONF[j], "B3"))
                     CONFqntB3++;
-                else if (strstr(vCONF[j], "B4"))
+                else if (strstr(p->vCONF[j], "B4"))
                     CONFqntB4++;
 
                 ind = 0;
 
                 // Copia a string para uma auxilair
-                strcpy(straux, vCONF[j]);
+                strcpy(straux, p->vCONF[j]);
 
                 // Pega o ultimo indice da string
                 while(straux[ind] != '\0')

@@ -12,27 +12,27 @@
 // Funcao que imprime um vetor de strings
 void imprime_vetor(char** v, int tamv);
 
-// Funcao que imprime os titulos passados de acordo com seus niveis
-void imprimeCatalogados(char** v, int tamv);
-
-// Funcao que imprime os titulos catalogados de acordo com seus niveis
+// Funcao que imprime os periodicos catalogados de acordo com seus niveis
 // e tambem quantas vezes eles apareceram no arquivo do curriculo
-void imprimeSumarizada(char** v, int tam);
+void imprimeSumarizadaPER(pesquisador_t *p);
+
+// Funcao que imprime as conferencias catalogadas de acordo com seus niveis
+// e tambem quantas vezes elas apareceram no arquivo do curriculo
+void imprimeSumarizadaCONF(pesquisador_t *p);
 
 // Funcao que imprime a quantidade periodicos e conferencias de cada autor
 // discrimanados pelos niveis
-void imprimeSumarizadaAutoria(char* pesquisador, char** vPER, int tamvPER, char** vCONF, int tamvCONF);
+void imprimeSumarizadaAutoria(pesquisador_t *p);
 
 // Funcao que imprime todos os titulos catalogados no nivel C
-void imprime_tudoC(char** vPER, int tamvPER, char** vCONF, int tamvCONF);
+void imprime_tudoC(pesquisador_t *p);
 
 // Funcao que imprime todos os titulos 
 // que nao estavam nas listas de classificacao
-void imprime_NaoClassificados(char** vPER, int tamvPER, char** vCONF, int tamvCONF);
-
+void imprime_NaoClassificados(pesquisador_t *p);
 
 // Funcao que imprime a quantidade de periodicos e conferencias
 // catalogadas por anos de publicacao
-void imprimeSumarizadaAno(char** vPER, int tamvPER, char** vCONF, int tamvCONF, int* vANOper, int tamvANOper, int* vANOconf, int tamvANOconf);
+void imprimeSumarizadaAno(pesquisador_t *p);
 
 #endif
