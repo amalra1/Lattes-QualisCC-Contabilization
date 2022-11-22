@@ -6,10 +6,7 @@
 #include <dirent.h>
 #include "libcoleta.h"
 #include "libescrita.h"
-#define ARQUIVO "curriculoZIVIANI.xml"
-#define TAM_PESQUISADOR 64
-#define PER_MAX 600
-#define CONF_MAX 600
+#define ARQUIVO "curriculoMENOTTI.xml"
 #define DIST_MIN_PER 0.145  // Distancias relativas minimas relativas aos nomes de periodicos e conferencias
 #define DIST_MIN_CONF 0.21  // da funcao de distancia de edicao (ver SepararSelecionados -> libcoleta.c)
 
@@ -39,101 +36,67 @@
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
 void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 {
-    int tamvPER = 0, tamvCONF = 0, tamvANOper = 0, tamvANOconf = 0, i;
-    char** vPER = malloc(sizeof(char*) * PER_MAX);  // Aloca vetor de strings para X titulos de periodicos
-    int* vANOper = malloc(sizeof(int) * PER_MAX);  // Aloca vetor de strings para X anos de periodicos
-    char** vCONF = malloc(sizeof(char*) * CONF_MAX);  // Aloca vetor de strings para X titulos de conferencias
-    int* vANOconf = malloc(sizeof(int) * CONF_MAX);  // Aloca vetor de strings para X anos de conferencias
-    //char *pesquisador = malloc(sizeof(char) * 64); // String para armazenar o nome do pesquisador
-    char pesquisador[TAM_PESQUISADOR];
+    pesquisador_t *p = malloc(sizeof(pesquisador_t));
 
-    // Inicializa a string 'pesquisador'
-    strcpy(pesquisador, "");
+    inicia_pesquisador(p);
 
-    nomePesquisador(arqXML, pesquisador);
+    nomePesquisador(arqXML, p);
 
-    coletarTitulos2(arqXML, vPER, &tamvPER, vCONF, &tamvCONF, vANOper, &tamvANOper, vANOconf, &tamvANOconf);
+    //printf("%s\n", p->nome);
 
-    //imprime_vetor(vPER, tamvPER);
+    coletarTitulos(arqXML, p);
 
-    //for (i = 0; i < tamvANOper; i++)
-        //printf("%d\n", vANOper[i]);
+    //imprime_vetor(p->vPER, p->tamvPER);
 
-    //imprime_vetor(vCONF, tamvCONF);
+    //imprime_vetor(p->vCONF, p->tamvCONF);
 
-    //for (i = 0; i < tamvANOconf; i++)
-        //printf("%d\n", vANOconf[i]);
+    //for (i = 0; i < p->tamvANOper; i++)
+        //printf("%d\n", p->vANOper[i]);
 
+    //for (i = 0; i < p->tamvANOconf; i++)
+        //printf("%d\n", p->vANOconf[i]);
     
     // Nao eh necessario passar o nome das conferencias para maiusculo
     // pois no arquivo delas estao todas normais
-    corrigirNomes(vPER, tamvPER, "per");
-    corrigirNomes(vCONF, tamvCONF, "conf");
+    corrigirNomes(p);
 
-    //imprime_vetor(vPER, tamvPER);
+    //imprime_vetor(p->vPER, p->tamvPER);
 
-    //imprime_vetor(vCONF, tamvCONF);
+    //imprime_vetor(p->vCONF, p->tamvCONF);
 
-    //for (i = 0; i < tamvANO; i++)
-        //printf("%d\n", vANO[i]);
+    catalogarCONFS(arqCONF, p, DIST_MIN_CONF);
+    catalogarPERS(arqPER, p, DIST_MIN_PER);
+    
+    //imprime_vetor(p->vCONF, p->tamvCONF);
 
-    //printf("\n\n\n\n");
-
-    //separarSelecionados(arqPER, vPER, tamvPER);
-
-    //separarSelecionados(arqCONF, vCONF, tamvCONF);
-
-    separarSelecionadosDIST(arqCONF, vCONF, tamvCONF, DIST_MIN_CONF);
-
-    separarSelecionadosDIST(arqPER, vPER, tamvPER, DIST_MIN_PER);
-
-    //imprime_vetor(vCONF, tamvCONF);
-
-    //imprime_vetor(vPER, tamvPER);
-
-    //printf("\n\n\n\n");
-
-    //imprimeCatalogados(vPER, tamvPER);
+    //imprime_vetor(p->vPER, p->tamvPER);
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
 
-    imprimeSumarizada(vPER, tamvPER); //(1)
+    imprimeSumarizadaPER(p); //(1)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
-    imprimeSumarizada(vCONF, tamvCONF); //(2)
+    imprimeSumarizadaCONF(p); //(2)
 
     printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
 
-    imprimeSumarizadaAutoria(pesquisador, vPER, tamvPER, vCONF, tamvCONF); //(3)
+    imprimeSumarizadaAutoria(p); //(3)
 
     printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
 
-    //imprimeSumarizadaAno(vPER, tamvPER, vCONF, tamvCONF, vANOper, tamvANOper, vANOconf, tamvANOconf); //(4)
-
-    //for (i = 0; i < tamvANO; i++)
-        //printf("%d\n", vANO[i]);
+    imprimeSumarizadaAno(p); //(4)
 
     printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
 
-    imprime_tudoC(vPER, tamvPER, vCONF, tamvCONF); //(5)
+    imprime_tudoC(p); //(5)
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(vPER, tamvPER, vCONF, tamvCONF); //(6)
+    imprime_NaoClassificados(p); //(6)
 
-    // Da free em todos os espacos alocados da string 'vPER'
-    for (i = 0; i < tamvPER; i++)
-        free(vPER[i]);
-
-    // Da free em todos os espacos alocados da string 'vCONF'
-    for (i = 0; i < tamvCONF; i++)
-        free(vCONF[i]);
-
-    free(vPER);
-    free(vCONF);
-    free(vANOper);
-    free(vANOconf);
+    destroi_pesquisador(p);
+    free(p);
 }
 
 int main (int argc, char** argv)
