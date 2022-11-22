@@ -103,9 +103,11 @@ int main (int argc, char** argv)
 {
     FILE* arqXML, *arqPER, *arqCONF;
     DIR* dir;
+    struct dirent *entry;
     char* nome_arqPER;
     char* nome_arqCONF;
-    char* nome_dir; 
+    char* nome_dir;
+    int tamvp = 0; 
     int opt;
 
     while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
@@ -132,16 +134,6 @@ int main (int argc, char** argv)
         }
     }
 
-    // Abre o arquivo
-    arqXML = fopen(ARQUIVO, "r");
-
-    // Testa se o arquivo abre
-    if (arqXML == NULL)
-    {
-        printf("Impossivel abrir arquivo\n");
-        exit(1);  // Fecha o programa com status 1
-    }
-
     // Abre o arquivo contendo os periodicos classificados
     arqPER = fopen(nome_arqPER, "r");
 
@@ -161,10 +153,37 @@ int main (int argc, char** argv)
         printf("Impossivel abrir arquivo\n");
         exit(1);  // Fecha o programa com status 1
     }
+
+
+    // Abre o diretorio
+    dir = opendir(nome_dir);
+
+    // Testa se o diretorio abre
+    if (dir == NULL)
+    {
+        printf("Impossivel abrir diretorio\n");
+        exit(1);  // Fecha o programa com status 1
+    }
+
+    while ((entry = readdir(dir)) != NULL)
+    [
+        
+    ]
+
+    /*// Abre o arquivo
+    arqXML = fopen(ARQUIVO, "r");
+
+    // Testa se o arquivo abre
+    if (arqXML == NULL)
+    {
+        printf("Impossivel abrir arquivo\n");
+        exit(1);  // Fecha o programa com status 1
+    }*/
+
     
     pegaDados(arqXML, arqPER, arqCONF);
 
-    fclose(arqXML);
+    //fclose(arqXML);
     fclose(arqPER);
     fclose(arqCONF);
 
