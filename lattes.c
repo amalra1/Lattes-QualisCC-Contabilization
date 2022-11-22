@@ -34,19 +34,16 @@
 */
 
 // Funcao que imprime a quantidade de periodicos na tela, separados por niveis
-void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
+void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF, pesquisador_t *p)
 {
-    pesquisador_t *p = malloc(sizeof(pesquisador_t));
-
-    inicia_pesquisador(p);
 
     nomePesquisador(arqXML, p);
-
-    //printf("%s\n", p->nome);
 
     coletarTitulos(arqXML, p);
 
     //imprime_vetor(p->vPER, p->tamvPER);
+
+    //printf("A\nA\nA\nA\nA\n");
 
     //imprime_vetor(p->vCONF, p->tamvCONF);
 
@@ -71,11 +68,11 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     //imprime_vetor(p->vPER, p->tamvPER);
 
-    printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
+    //printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
 
-    imprimeSumarizadaPER(p); //(1)
+    //imprimeSumarizadaPER(p); //(1)
 
-    printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
+    /*printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
 
     imprimeSumarizadaCONF(p); //(2)
 
@@ -93,10 +90,7 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF)
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(p); //(6)
-
-    destroi_pesquisador(p);
-    free(p);
+    imprime_NaoClassificados(p); //(6)*/
 }
 
 int main (int argc, char** argv)
@@ -104,11 +98,14 @@ int main (int argc, char** argv)
     FILE* arqXML, *arqPER, *arqCONF;
     DIR* dir;
     struct dirent *entry;
+
     char* nome_arqPER;
     char* nome_arqCONF;
     char* nome_dir;
+    char* path = malloc(sizeof(char) * 128);
+    char* pathORIGINAL = malloc(sizeof(char) * 128);
     int tamvp = 0; 
-    int opt;
+    int opt, i = 0;
 
     while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
     {
@@ -134,6 +131,15 @@ int main (int argc, char** argv)
         }
     }
 
+    // Criando o path para o arquivo
+    strcpy(path, "");
+    strcpy(path, "./");
+    strcat(path, nome_dir);
+    strcat(path, "/");
+    strcpy(pathORIGINAL, path);
+
+
+
     // Abre o arquivo contendo os periodicos classificados
     arqPER = fopen(nome_arqPER, "r");
 
@@ -154,7 +160,6 @@ int main (int argc, char** argv)
         exit(1);  // Fecha o programa com status 1
     }
 
-
     // Abre o diretorio
     dir = opendir(nome_dir);
 
@@ -165,30 +170,85 @@ int main (int argc, char** argv)
         exit(1);  // Fecha o programa com status 1
     }
 
+
+
+
+    // Conta quantos pesquisadores terão
     while ((entry = readdir(dir)) != NULL)
-    [
-        
-    ]
-
-    /*// Abre o arquivo
-    arqXML = fopen(ARQUIVO, "r");
-
-    // Testa se o arquivo abre
-    if (arqXML == NULL)
     {
-        printf("Impossivel abrir arquivo\n");
-        exit(1);  // Fecha o programa com status 1
-    }*/
+        // Evitando pegar os diretorios ocultos '.' e '..'
+        if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
+            tamvp++;
+    }
 
+    rewinddir(dir);
+
+    pesquisador_t *p[tamvp];  // Alocando vetor de 3 ponteiros para structs
+    pesquisador_t *(*vp)[] = &p;  // Alocando ponteiro para o vetor de structs
+
+    // Inicializa cada pesquisador
+    for(i = 0; i < tamvp; i++)
+        p[i] = malloc(sizeof(pesquisador_t));
+
+    for(i = 0; i < tamvp; i++)
+        inicia_pesquisador((*vp)[i]);
+
+    i = 0;
+
+    while ((entry = readdir(dir)) != NULL)
+    {
+        // Evitando pegar os diretorios ocultos '.' e '..'
+        if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
+        {
+            // Concatenando o nome do arquivo no PATH
+            strcat(path, entry->d_name);
+
+            // Abre o arquivo
+            arqXML = fopen(path, "r");
+
+            // Testa se o arquivo abre
+            if (arqXML == NULL)
+            {
+                printf("Impossivel abrir arquivo\n");
+                exit(1);  // Fecha o programa com status 1
+            }
+
+            pegaDados(arqXML, arqPER, arqCONF, (*vp)[i]);
+            i++;
+
+            // Voltando o path para sem o nome do arquivo
+            strcpy(path, pathORIGINAL);
+            fclose(arqXML);
+        }
+    }
     
-    pegaDados(arqXML, arqPER, arqCONF);
+    closedir(dir);
 
-    //fclose(arqXML);
+    printf("\n\n\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n\n");
+
+    imprimeSumarizadaPER(*vp, tamvp); //(1)
+    
+
+
+
+
+
+
+    for(i = 0; i < tamvp; i++)
+        destroi_pesquisador((*vp)[i]);
+
+    for(i = 0; i < tamvp; i++)
+        free(p[i]);
+
     fclose(arqPER);
     fclose(arqCONF);
 
     free(nome_dir);
     free(nome_arqCONF);
     free(nome_arqPER);
+    
+    free(path);
+    free(pathORIGINAL);
+
     return 0;
 }

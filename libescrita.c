@@ -30,28 +30,48 @@ int seRepete(char* str, char** v, int tam)
     return cont;
 }
 
-void imprimeSumarizadaPER(pesquisador_t *p)
+void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp)
 {
-    int i, j, k, ult, ind = 0;
+    int i, x = 0, j = 0, k, ult, tamvPER = 0, ind = 0;
     int tamlvl = 8, tamvAUX = 0, cont = 0;
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
     char** vAUX = malloc(sizeof(char*) * 512);
+    char** vPER;
+
+    // Vendo qual sera o tamanho necessario do vetor vPER
+    for (i = 0; i < tamvp; i++)
+        tamvPER = tamvPER + vp[i]->tamvPER;
+
+    vPER = malloc(sizeof(char*) * tamvPER + 1);
+
+    // Aqui juntamos os periodicos de todos os pesquisadores em um 
+    // vetor de strings só, para aí podermos imprimi-los catalogados
+    for (i = 0; i < tamvp; i++)
+    {
+        for (j = 0; j < vp[i]->tamvPER; j++)
+        {
+            vPER[x] = malloc(sizeof(char) * (strlen(vp[i]->vPER[j]) + 1));
+            strcpy(vPER[x], vp[i]->vPER[j]);
+            //printf("\n\n%s\n\n", vPER[x]);
+            x++;
+        }
+    }
 
     // Percorrendo de nivel a nivel
     for (i = 0; i < tamlvl; i++)
     {
         printf("\nEstrato %s:\n\n", vlvl[i]);
 
-        for (j = 0; j < p->tamvPER; j++)
+        for (j = 0; j < tamvPER; j++)
         {
             // Se o titulo corresponde ao nivel da vez
-            if (strstr(p->vPER[j], vlvl[i]))
+            if (strstr(vPER[j], vlvl[i]))
             {
-                if (!seRepete(p->vPER[j], vAUX, tamvAUX))
+                if (!seRepete(vPER[j], vAUX, tamvAUX))
                 {
                     // Copia o nome para a string auxiliar
-                    strcpy(straux, p->vPER[j]);
+                    strcpy(straux, vPER[j]);
 
                     // Pega o indice do ultimo caracter
                     while(straux[ind] != '\0')
@@ -71,7 +91,7 @@ void imprimeSumarizadaPER(pesquisador_t *p)
                     strcpy(vAUX[tamvAUX], straux);
                     tamvAUX++;
 
-                    cont = seRepete(p->vPER[j], p->vPER, p->tamvPER);
+                    cont = seRepete(vPER[j], vPER, tamvPER);
 
                     printf(": %d\n", cont);
 
@@ -85,10 +105,10 @@ void imprimeSumarizadaPER(pesquisador_t *p)
     printf("\nEstrato C:\n\n");
     ind = 0;
 
-    for (i = 0; i < p->tamvPER; i++)
+    for (i = 0; i < tamvPER; i++)
     {
         // Copia o nome para a string auxiliar
-        strcpy(straux, p->vPER[i]);
+        strcpy(straux, vPER[i]);
 
         // Pega o indice do ultimo caracter
         while(straux[ind] != '\0')
@@ -96,7 +116,7 @@ void imprimeSumarizadaPER(pesquisador_t *p)
 
         if(straux[ind - 1] == 'C' || strstr(straux, "C-"))
         {
-            if (!seRepete(p->vPER[i], vAUX, tamvAUX))
+            if (!seRepete(vPER[i], vAUX, tamvAUX))
             {
                 if (strstr(straux, "C-"))
                     ult = 2;
@@ -118,7 +138,7 @@ void imprimeSumarizadaPER(pesquisador_t *p)
                 strcpy(vAUX[tamvAUX], straux);
                 tamvAUX++;
  
-                cont = seRepete(p->vPER[i], p->vPER, p->tamvPER);
+                cont = seRepete(vPER[i], vPER, tamvPER);
 
                 printf(": %d\n", cont);
             }
@@ -132,6 +152,11 @@ void imprimeSumarizadaPER(pesquisador_t *p)
     for (i = 0; i < tamvAUX; i++)
         free(vAUX[i]);
 
+    // Da free em todos os espacos alocados da string 'vPER'
+    for (i = 0; i < tamvPER; i++)
+        free(vPER[i]);
+
+    free(vPER);
     free(vAUX);
     free(straux);
 }

@@ -14,7 +14,7 @@ void imprime_vetor(char** v, int tamv);
 
 // Funcao que imprime os periodicos catalogados de acordo com seus niveis
 // e tambem quantas vezes eles apareceram no arquivo do curriculo
-void imprimeSumarizadaPER(pesquisador_t *p);
+void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp);
 
 // Funcao que imprime as conferencias catalogadas de acordo com seus niveis
 // e tambem quantas vezes elas apareceram no arquivo do curriculo
