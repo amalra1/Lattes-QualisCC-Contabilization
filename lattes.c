@@ -6,73 +6,99 @@
 #include <dirent.h>
 #include "libcoleta.h"
 #include "libescrita.h"
-#define ARQUIVO "curriculoMENOTTI.xml"
 #define DIST_MIN_PER 0.145  // Distancias relativas minimas relativas aos nomes de periodicos e conferencias
 #define DIST_MIN_CONF 0.21  // da funcao de distancia de edicao (ver SepararSelecionados -> libcoleta.c)
 
 /*
-    Contabilização da produção científica em termos de
-    artigos científicos publicados em periódicos e 
-    conferências de um grupo de pesquisadores por meio
-    da análise de seus currículos Lattes.
-    
+    Contabilização da produção científica em termos de artigos científicos publicados em
+    periódicos e conferências de um grupo de pesquisadores por meio da análise de seus
+    currículos Lattes.
+
     Desenvolvido por Pedro Amaral Chapelin
     Data de finalização -> XX/XX/XXXX
 
-    utilizei a funcao de distancia de edicao do algoritmo de Levenshtein,
-    peguei a implementacao do link: https://github.com/wooorm/levenshtein.c
+    --O programa funciona da seguinte maneira:--
+
+        (1) --> Recebe uma pasta com arquivos.XML referentes a curriculos de pesquisadores;
+
+        (2) --> Nestes arquivos, coleta o nome dos periódicos em que o pesquisador publicou,
+        e também o nome dos eventos(conferências) que participou;
+
+        (3) --> Depois de coletados, cataloga os titulos de acordo com seus níveis na QUALIS
+        {A1, A2, A3, A4, B1, B2, B3, B4, C}, e também 'C-', nivel criado para se referir a 
+        aqueles que não estão na lista de classificação, portanto, sem classificação;
+
+        (4) --> Imprime as informações sumarizadas do grupo de pesquisadores.
     
-
-    os nao presentes na lista marquei como 'C-'
-    
-    //////////////
-    LIDAR COM CARACTERES ESPECIAIS QUE NAO FUNCIONAM NA FUNCAO TOUPPER (Ç, ^, ~ ETC)
-    //////////////
-
-    // 98,473 allocs, 98,473 frees, 37,974,414 bytes allocated - Menotti
-
+    Este programa utiliza-se de um algoritmo especifico de distância de edição, coletado do 
+    link: https://github.com/wooorm/levenshtein.c
 */
 
-// Funcao que imprime a quantidade de periodicos na tela, separados por niveis
+// Funcao que percorre o diretorio e devolve quantos arquivos possui
+int conta_pesquisadores(DIR* dir)
+{
+    int cont = 0;
+    struct dirent *entry;
+
+    // Conta quantos pesquisadores terão
+    while ((entry = readdir(dir)) != NULL)
+    {
+        // Evitando pegar os diretorios ocultos '.' e '..'
+        if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
+            cont++;
+    }
+
+    // Volta pro começo do arquivo
+    rewinddir(dir);
+
+    return cont;
+}
+
+
+// Funcao que coleta os dados de cada pesquisador
 void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF, pesquisador_t *p)
 {
-
     nomePesquisador(arqXML, p);
 
     coletarTitulos(arqXML, p);
-
-    //imprime_vetor(p->vPER, p->tamvPER);
-
-    //imprime_vetor(p->vCONF, p->tamvCONF);
-
-    //printf("A\nA\nA\nA\nA\n");
-
-    //for (i = 0; i < p->tamvANOper; i++)
-        //printf("%d\n", p->vANOper[i]);
-
-    //for (i = 0; i < p->tamvANOconf; i++)
-        //printf("%d\n", p->vANOconf[i]);
     
     // Nao eh necessario passar o nome das conferencias para maiusculo
     // pois no arquivo delas estao todas normais
     corrigirNomes(p);
 
-    //imprime_vetor(p->vPER, p->tamvPER);
-
-    //imprime_vetor(p->vCONF, p->tamvCONF);
-
     catalogarCONFS(arqCONF, p, DIST_MIN_CONF);
     catalogarPERS(arqPER, p, DIST_MIN_PER);
-    
-    //imprime_vetor(p->vCONF, p->tamvCONF);
+}
 
-    /*printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
+// Funcao que imprime os dados coletados de cada pesquisador
+void imprime_dados(pesquisador_t **vp, int tamvp)
+{
+    int i;
 
-    imprime_tudoC(p); //(5)
+    printf("\n\n\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n\n");
+
+    imprimeSumarizadaPER(vp, tamvp); // (1)
+
+    printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
+
+    imprimeSumarizadaCONF(vp, tamvp); // (2)
+
+    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
+
+    for (i = 0; i < tamvp; i++)
+        imprimeSumarizadaAutoria(vp[i]); // (3)
+
+    printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
+
+    imprimeSumarizadaAno(vp, tamvp); // (4)
+
+    printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
+
+    imprime_tudoC(vp, tamvp); // (5)
 
     printf("\n--------------------------=Todos os periodicos/eventos nao classificados=--------------------------\n\n");
 
-    imprime_NaoClassificados(p); //(6)*/
+    imprime_NaoClassificados(vp, tamvp); // (6)
 }
 
 int main (int argc, char** argv)
@@ -89,31 +115,29 @@ int main (int argc, char** argv)
     int tamvp = 0; 
     int opt, i = 0;
 
+    // Trata os argumentos passados
     while ((opt = getopt(argc, argv, "d:c:p:")) != -1) 
     {
         switch (opt) 
         {
          case 'd':
-            //printf("opcao d tem arg: %s\n", optarg);
             nome_dir = malloc(sizeof(char) * (strlen(optarg) + 1));
             strcpy(nome_dir, optarg);            
             break;
 
          case 'c':
-            //printf("opcao c tem arg: %s\n", optarg);
             nome_arqCONF = malloc(sizeof(char) * (strlen(optarg) + 1));
             strcpy(nome_arqCONF, optarg);
             break;
 
          case 'p':
-            //printf("opcao p tem arg: %s\n", optarg);
             nome_arqPER = malloc(sizeof(char) * (strlen(optarg) + 1));
             strcpy(nome_arqPER, optarg);
             break;
         }
     }
 
-    // Criando o path para o arquivo
+    // Criando o caminho para o arquivo para utilizar na função 'fopen'
     strcpy(path, "");
     strcpy(path, "./");
     strcat(path, nome_dir);
@@ -121,10 +145,8 @@ int main (int argc, char** argv)
     strcpy(pathORIGINAL, path);
 
 
-
     // Abre o arquivo contendo os periodicos classificados
     arqPER = fopen(nome_arqPER, "r");
-
     // Testa se o arquivo abre
     if (arqPER == NULL)
     {
@@ -132,20 +154,18 @@ int main (int argc, char** argv)
         exit(1);  // Fecha o programa com status 1
     }
 
+
     // Abre o arquivo contendo as conferencias classificadas
     arqCONF = fopen(nome_arqCONF, "r");
-
-    // Testa se o arquivo abre
     if (arqCONF == NULL)
     {
         printf("Impossivel abrir arquivo\n");
         exit(1);  // Fecha o programa com status 1
     }
 
+
     // Abre o diretorio
     dir = opendir(nome_dir);
-
-    // Testa se o diretorio abre
     if (dir == NULL)
     {
         printf("Impossivel abrir diretorio\n");
@@ -153,17 +173,7 @@ int main (int argc, char** argv)
     }
 
 
-
-
-    // Conta quantos pesquisadores terão
-    while ((entry = readdir(dir)) != NULL)
-    {
-        // Evitando pegar os diretorios ocultos '.' e '..'
-        if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
-            tamvp++;
-    }
-
-    rewinddir(dir);
+    tamvp = conta_pesquisadores(dir);
 
     pesquisador_t *p[tamvp];  // Alocando vetor de 3 ponteiros para structs
     pesquisador_t *(*vp)[] = &p;  // Alocando ponteiro para o vetor de structs
@@ -206,27 +216,7 @@ int main (int argc, char** argv)
     
     closedir(dir);
 
-    printf("\n\n\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n\n");
-
-    imprimeSumarizadaPER(*vp, tamvp); //(1)
-
-    printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
-
-    imprimeSumarizadaCONF(*vp, tamvp); //(2)
-
-    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
-
-    for (i = 0; i < tamvp; i++)
-        imprimeSumarizadaAutoria((*vp)[i]); //(3)
-
-    printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
-
-    imprimeSumarizadaAno(*vp, tamvp); //(4)
-
-
-    
-
-
+    imprime_dados(*vp, tamvp);
 
     for(i = 0; i < tamvp; i++)
         destroi_pesquisador((*vp)[i]);

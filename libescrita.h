@@ -25,11 +25,11 @@ void imprimeSumarizadaCONF(pesquisador_t **vp, int tamvp);
 void imprimeSumarizadaAutoria(pesquisador_t *p);
 
 // Funcao que imprime todos os titulos catalogados no nivel C
-void imprime_tudoC(pesquisador_t *p);
+void imprime_tudoC(pesquisador_t **vp, int tamvp);
 
 // Funcao que imprime todos os titulos 
 // que nao estavam nas listas de classificacao
-void imprime_NaoClassificados(pesquisador_t *p);
+void imprime_NaoClassificados(pesquisador_t **vp, int tamvp);
 
 // Funcao que imprime a quantidade de periodicos e conferencias
 // catalogadas por anos de publicacao
