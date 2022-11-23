@@ -43,9 +43,9 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF, pesquisador_t *p)
 
     //imprime_vetor(p->vPER, p->tamvPER);
 
-    //printf("A\nA\nA\nA\nA\n");
-
     //imprime_vetor(p->vCONF, p->tamvCONF);
+
+    //printf("A\nA\nA\nA\nA\n");
 
     //for (i = 0; i < p->tamvANOper; i++)
         //printf("%d\n", p->vANOper[i]);
@@ -66,25 +66,7 @@ void pegaDados(FILE* arqXML, FILE* arqPER, FILE* arqCONF, pesquisador_t *p)
     
     //imprime_vetor(p->vCONF, p->tamvCONF);
 
-    //imprime_vetor(p->vPER, p->tamvPER);
-
-    //printf("\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n");
-
-    //imprimeSumarizadaPER(p); //(1)
-
-    /*printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
-
-    imprimeSumarizadaCONF(p); //(2)
-
-    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
-
-    imprimeSumarizadaAutoria(p); //(3)
-
-    printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
-
-    imprimeSumarizadaAno(p); //(4)
-
-    printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
+    /*printf("\n---------------------------=Todos os periodicos e eventos classificados em nivel C=---------------------------\n\n");
 
     imprime_tudoC(p); //(5)
 
@@ -227,10 +209,22 @@ int main (int argc, char** argv)
     printf("\n\n\n---------------------------=Producao sumarizada do grupo por ordem de periodicos=---------------------------\n\n");
 
     imprimeSumarizadaPER(*vp, tamvp); //(1)
+
+    printf("\n---------------------------=Producao sumarizada do grupo por ordem de conferencias=---------------------------\n");
+
+    imprimeSumarizadaCONF(*vp, tamvp); //(2)
+
+    printf("\n---------------------------=Producao dos pesquisadores do grupo por ordem de autoria=---------------------------\n\n");
+
+    for (i = 0; i < tamvp; i++)
+        imprimeSumarizadaAutoria((*vp)[i]); //(3)
+
+    printf("\n---------------------------=Producao sumarizada do grupo por ano=---------------------------\n");
+
+    imprimeSumarizadaAno(*vp, tamvp); //(4)
+
+
     
-
-
-
 
 
 

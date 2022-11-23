@@ -18,7 +18,7 @@ void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp);
 
 // Funcao que imprime as conferencias catalogadas de acordo com seus niveis
 // e tambem quantas vezes elas apareceram no arquivo do curriculo
-void imprimeSumarizadaCONF(pesquisador_t *p);
+void imprimeSumarizadaCONF(pesquisador_t **vp, int tamvp);
 
 // Funcao que imprime a quantidade periodicos e conferencias de cada autor
 // discrimanados pelos niveis
@@ -33,6 +33,6 @@ void imprime_NaoClassificados(pesquisador_t *p);
 
 // Funcao que imprime a quantidade de periodicos e conferencias
 // catalogadas por anos de publicacao
-void imprimeSumarizadaAno(pesquisador_t *p);
+void imprimeSumarizadaAno(pesquisador_t **vp, int tamvp);
 
 #endif
