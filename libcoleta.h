@@ -3,7 +3,7 @@
 
 /* 
     Biblioteca feita para funcoes especificas sobre coleta de 
-    dados de um curriculoXML
+    dados dos curriculos.xml
 
     Feita por Pedro Amaral Chapelin
     Data de finalizacao -> XX/XX/XXX
@@ -43,9 +43,9 @@ void nomePesquisador(FILE* arq, pesquisador_t *p);
 void coletarTitulos(FILE* arq, pesquisador_t *p);
 
 // Funcao que corrige  os nomes de alguns titulos, caracteres especiais e etc
-// Por exemplo o caracter '&' eh escrito como '&amp;'
-// Tambem passa os nomes dos periodicos para maiusculo, pois no arquivo
-// 'qualis-periodicos.txt' estao em maiusculas
+// Por exemplo o caracter '&' eh escrito como '&amp;' no xml. Tambem passa os
+// nomes dos periodicos para maiusculo, pois no arquivo 'qualis-periodicos.txt'
+// estao em maiusculas
 void corrigirNomes(pesquisador_t *p);
 
 // Separa as conferencias selecionadas com distancia de edicao
