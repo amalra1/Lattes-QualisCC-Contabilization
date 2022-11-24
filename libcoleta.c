@@ -34,17 +34,16 @@ void destroi_pesquisador(pesquisador_t *p)
 
     free(p->nome);
 
-    // Dar free em cada string do vetor de strings
+    // Dar free em cada string dos vetores de strings
+
     for (i = 0; i < p->tamvPER; i++)
         free(p->vPER[i]);
     free(p->vPER);
 
-    // Dar free em cada string do vetor de strings
     for (i = 0; i < p->tamvPER; i++)
         free(p->vPERorg[i]);
     free(p->vPERorg);
 
-    // Dar free em cada string do vetor de strings
      for (i = 0; i < p->tamvCONF; i++)
         free(p->vCONF[i]);
     free(p->vCONF);
@@ -90,8 +89,6 @@ void nomePesquisador(FILE* arq, pesquisador_t *p)
     char c;
     int achou = 0;
 
-    //strcpy(p->nome, "");
-
     c = fgetc(arq);
 
     // Enquanto nao chegou no final do arquivo, faz 
@@ -112,7 +109,6 @@ void nomePesquisador(FILE* arq, pesquisador_t *p)
                 // Concatenando caracter por caracter na string 'pesquisador'
                 strncat(p->nome, &c, 1);
 
-                // Pega o proximo caracter
                 c = fgetc(arq);
             }
 
@@ -147,7 +143,6 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
             {
                 c = fgetc(arq);
 
-                // Se estamos perto de um ano de periodico, armazena o nome no vetor
                 if(eh_titulo(arq, c, "ANO-DO-ARTIGO="))
                 {
                     // Ate chegar no começo das aspas duplas
@@ -163,7 +158,6 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
                         // Concatenando caracter por caracter na string auxilair
                         strncat(str, &c, 1);
 
-                        // Pega o proximo caracter
                         c = fgetc(arq);
                     }
             
@@ -178,20 +172,15 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
                 // Esta perto do titulo do periodico
                 if (eh_titulo(arq, c, "STA="))
                 {
-                    // Ate chegar no começo das aspas duplas
                     while (c != '\"')
                         c = fgetc(arq);
 
-                    // Pega o primeiro caracter dentro das aspas                        
                     c = fgetc(arq);
 
-                    // Le ate chegar no fim das aspas duplas
                     while (c != '\"')
                     {
-                        // Concatenando caracter por caracter na string auxiliar
                         strncat(str, &c, 1);
 
-                        // Pega o proximo caracter
                         c = fgetc(arq);
                     }
             
@@ -221,20 +210,15 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
                 // Se estamos perto do ano, armazena o no vetor de ano
                 if(eh_titulo(arq, c, "ANO="))
                 {
-                    // Ate chegar no começo das aspas duplas
                     while (c != '\"')
                         c = fgetc(arq);
-
-                    // Pega o primeiro caracter dentro das aspas                        
+                      
                     c = fgetc(arq);
 
-                    // Le ate chegar no fim das aspas duplas
                     while (c != '\"')
                     {
-                        // Concatenando caracter por caracter na string auxiliar
                         strncat(str, &c, 1);
 
-                        // Pega o proximo caracter
                         c = fgetc(arq);
                     }
             
@@ -249,20 +233,15 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
                 // Esta perto do titulo da conferencia
                 if (eh_titulo(arq, c, "NOME-DO-EVENTO="))
                 {
-                    // Ate chegar no começo das aspas duplas
                     while (c != '\"')
                         c = fgetc(arq);
-
-                    // Pega o primeiro caracter dentro das aspas                        
+                        
                     c = fgetc(arq);
 
-                    // Le ate chegar no fim das aspas duplas
                     while (c != '\"')
                     {
-                        // Concatenando caracter por caracter na string auxiliar
                         strncat(str, &c, 1);
 
-                        // Pega o proximo caracter
                         c = fgetc(arq);
                     }
             
@@ -291,16 +270,15 @@ void paraMaiusculo(char** v, int tamv)
     int ind, indV; 
     char* straux = malloc (sizeof(char) * TAMSTRING);
 
-    // Necessario passar os nomes das strings para letras maiusculas
     for (indV = 0; indV < tamv; indV++)
     { 
         // Copia o nome do periodico para uma string auxiliar
         strcpy(straux, v[indV]);
 
-        // Zera o indice que apontara para os caracteres da string
+        // Zera o indice que apontará para os caracteres da string
         ind = 0;
 
-        // Varrendo a string ate ela chegar no final
+        // Varrendo a string ate ela chegar no ultimo indice
         while (straux[ind] != '\0')
         {
             // Elevando o caracter para caixa alta com 'toupper'
@@ -374,7 +352,6 @@ void corrigirNomes(pesquisador_t *p)
     // Corrigindo os nomes originais dos periodicos
     for (i = 0; i < p->tamvPER; i++)
     {   
-        // Se tiver um '&amp;', substitui por '&'
         if (strstr(p->vPERorg[i], "&amp;"))
             substituiPalavra(&(p->vPERorg[i]), p->vPERorg[i], "&amp;", "&");
     }
@@ -385,7 +362,6 @@ void corrigirNomes(pesquisador_t *p)
     // Corrigindo o nome das conferencias
     for (i = 0; i < p->tamvCONF; i++)
     {
-        // Se tiver um '&amp;', substitui por '&'
         if (strstr(p->vCONF[i], "&amp;"))
             substituiPalavra(&(p->vCONF[i]), p->vCONF[i], "&amp;", "&");
     }
@@ -405,7 +381,6 @@ double dist_relativaMIN(char* linha, int distEdit, int tamstr)
 void catalogarCONFS(FILE* arq, pesquisador_t *p, double dist_min)
 {
     // ANOTACOES
-
 
     // O numero ABSURDO de allocs na memoria depois de passar por 
     // essa funcao eh devido a funcao do levenshtein
@@ -566,7 +541,7 @@ void catalogarPERS(FILE* arq, pesquisador_t *p, double dist_min)
             distEdit = levenshtein(straux, p->vPER[indV]);          
 
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
-            // Quanto menor dist_relativaMIN eh, mais proximo eh da string
+            // quanto menor dist_relativaMIN eh, mais proximo eh da string
             if (dist_relativaMIN(straux, distEdit, strlen(p->vPER[indV]) - 1) < dist_min)
             {
                 while (linha[ind] != '\0')
