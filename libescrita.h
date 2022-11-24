@@ -3,7 +3,7 @@
 
 /* 
     Biblioteca feita para funcoes especificas de impressao de dados
-    especificos coletados de um curriculoXML
+    especificos coletados dos pesquisadores de curriculos.xml
 
     Feita por Pedro Amaral Chapelin
     Data de finalizacao -> XX/XX/XXX
@@ -27,8 +27,8 @@ void imprimeSumarizadaAutoria(pesquisador_t *p);
 // Funcao que imprime todos os titulos catalogados no nivel C
 void imprime_tudoC(pesquisador_t **vp, int tamvp);
 
-// Funcao que imprime todos os titulos 
-// que nao estavam nas listas de classificacao
+// Funcao que imprime todos os titulos que nao estavam nas listas de
+// classificacao
 void imprime_NaoClassificados(pesquisador_t **vp, int tamvp);
 
 // Funcao que imprime a quantidade de periodicos e conferencias
