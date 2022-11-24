@@ -14,12 +14,17 @@
 typedef struct pesquisador {
 
     char* nome;     // Seu nome
+
     char** vPER;    // Vetor com o nome dos Periodicos
     int tamvPER;  
+    char** vPERorg;  // Vetor para armazenar os nomes sem mudanças
+
     char** vCONF;   // Vetor com o nome das Conferencias
     int tamvCONF;
+
     int* vANOper;   // Vetor com o ano de publicacao em cada Periodico
     int tamvANOper;
+
     int* vANOconf;  // Vetor com o ano de participacao em cada Conferencia
     int tamvANOconf;
 

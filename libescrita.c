@@ -32,20 +32,19 @@ int seRepete(char* str, char** v, int tam)
 
 void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp)
 {
-    int i, x = 0, j = 0, k, ult, tamvPER = 0, ind = 0;//, cont = 0;
+    int i, x = 0, j = 0, tamvPER = 0, ind = 0;
     int tamlvl = 8, tamvAUX = 0, cont = 0;
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
     char** vAUX = malloc(sizeof(char*) * 512);
     char** vPER;
+    char** vPERorg;
 
     // Vendo qual sera o tamanho necessario do vetor vPER
     for (i = 0; i < tamvp; i++)
         tamvPER = tamvPER + vp[i]->tamvPER;
 
     vPER = malloc(sizeof(char*) * tamvPER + 1);
-
-    //printf("\n\n%d\n\n", tamvPER);
 
     // Aqui juntamos os periodicos de todos os pesquisadores em um 
     // vetor de strings só, para aí podermos imprimi-los catalogados
@@ -55,7 +54,21 @@ void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp)
         {
             vPER[x] = malloc(sizeof(char) * (strlen(vp[i]->vPER[j]) + 1));
             strcpy(vPER[x], vp[i]->vPER[j]);
-            //printf("\n\n%s\n\n", vPER[x]);
+            x++;
+        }
+    }
+
+    vPERorg = malloc(sizeof(char*) * tamvPER);
+    x = 0;
+
+    // Aqui juntamos os periodicos de todos os pesquisadores em um 
+    // vetor de strings só, para aí podermos imprimi-los catalogados
+    for (i = 0; i < tamvp; i++)
+    {
+        for (j = 0; j < vp[i]->tamvPER; j++)
+        {
+            vPERorg[x] = malloc(sizeof(char) * (strlen(vp[i]->vPERorg[j]) + 1));
+            strcpy(vPERorg[x], vp[i]->vPERorg[j]);
             x++;
         }
     }
@@ -72,40 +85,20 @@ void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp)
             {
                 if (!seRepete(vPER[j], vAUX, tamvAUX))
                 {
-                    // Copia o nome para a string auxiliar
-                    strcpy(straux, vPER[j]);
-
-                    // Pega o indice do ultimo caracter
-                    while(straux[ind] != '\0')
-                        ind++;
-
-                    k = 0;
-
-                    // Imprimindo a string toda menos o nivel nela escrito, nesse caso 'vlvl[i]'
-                    while (k < (ind - 2))
-                    {
-                        printf("%c", straux[k]);
-                        k++;
-                    }
-
                     // Adiciona o nome no v_aux e incrementa seu tamanho
-                    vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
-                    strcpy(vAUX[tamvAUX], straux);
+                    vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(vPER[j]) + 1));
+                    strcpy(vAUX[tamvAUX], vPER[j]);
                     tamvAUX++;
 
                     cont = seRepete(vPER[j], vPER, tamvPER);
 
-                    printf(": %d\n", cont);
-
-                    // Zera o indice
-                    ind = 0;
+                    printf("%s: %d\n", vPERorg[j], cont);
                 }
             }
         }
     }
 
     printf("\nEstrato C:\n\n");
-    ind = 0;
 
     for (i = 0; i < tamvPER; i++)
     {
@@ -120,29 +113,14 @@ void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp)
         {
             if (!seRepete(vPER[i], vAUX, tamvAUX))
             {
-                if (strstr(straux, "C-"))
-                    ult = 2;
-                
-                else if (straux[ind - 1] == 'C' && straux[ind - 2] == ' ')
-                    ult = 1;
-
-                k = 0;
-
-                // Imprimindo a string toda menos o nivel nela escrito, nesse caso ou 'C' ou 'C-'
-                while (k < (ind - ult))
-                {
-                    printf("%c", straux[k]);
-                    k++;
-                }
-
                 // Adiciona o nome no vAUX e incrementa seu tamanho
-                vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
-                strcpy(vAUX[tamvAUX], straux);
+                vAUX[tamvAUX] = malloc(sizeof(char) * (strlen(vPER[i]) + 1));
+                strcpy(vAUX[tamvAUX], vPER[i]);
                 tamvAUX++;
  
                 cont = seRepete(vPER[i], vPER, tamvPER);
 
-                printf(": %d\n", cont);
+                printf("%s: %d\n", vPERorg[i], cont);
             }
 
             // Zera o indice
@@ -154,11 +132,16 @@ void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp)
     for (i = 0; i < tamvAUX; i++)
         free(vAUX[i]);
 
+    // Da free em todos os espacos alocados da string 'vAUX'
+    for (i = 0; i < tamvPER; i++)
+        free(vPERorg[i]);
+
     // Da free em todos os espacos alocados da string 'vPER'
     for (i = 0; i < tamvPER; i++)
         free(vPER[i]);
 
     free(vPER);
+    free(vPERorg);
     free(vAUX);
     free(straux);
 }
@@ -379,6 +362,7 @@ void imprime_tudoC(pesquisador_t **vp, int tamvp)
     char** vPER;
     char** vconfAUX;
     char** vCONF;
+    char** vPERorg;
     int ult = 0;
 
 
@@ -397,19 +381,16 @@ void imprime_tudoC(pesquisador_t **vp, int tamvp)
         {
             vCONF[x] = malloc(sizeof(char) * (strlen(vp[i]->vCONF[j]) + 1));
             strcpy(vCONF[x], vp[i]->vCONF[j]);
-            //printf("\n\n%s\n\n", vCONF[x]);
             x++;
         }
     }
-
 
     // Vendo qual sera o tamanho necessario do vetor vPER
     for (i = 0; i < tamvp; i++)
         tamvPER = tamvPER + vp[i]->tamvPER;
 
-    vPER = malloc(sizeof(char*) * tamvPER + 1);
+    vPER = malloc(sizeof(char*) * tamvPER);
     vperAUX = malloc(sizeof(char*) * tamvPER + 1);
-
 
     x = 0;
 
@@ -421,7 +402,21 @@ void imprime_tudoC(pesquisador_t **vp, int tamvp)
         {
             vPER[x] = malloc(sizeof(char) * (strlen(vp[i]->vPER[j]) + 1));
             strcpy(vPER[x], vp[i]->vPER[j]);
-            //printf("\n\n%s\n\n", vPER[x]);
+            x++;
+        }
+    }
+
+    vPERorg = malloc(sizeof(char*) * tamvPER + 1);
+    x = 0;
+
+    // Aqui juntamos os periodicos de todos os pesquisadores em um 
+    // vetor de strings só, para aí podermos imprimi-los catalogados
+    for (i = 0; i < tamvp; i++)
+    {
+        for (j = 0; j < vp[i]->tamvPER; j++)
+        {
+            vPERorg[x] = malloc(sizeof(char) * (strlen(vp[i]->vPERorg[j]) + 1));
+            strcpy(vPERorg[x], vp[i]->vPERorg[j]);
             x++;
         }
     }
@@ -442,29 +437,14 @@ void imprime_tudoC(pesquisador_t **vp, int tamvp)
         // Se for 'C', imprime
         if (straux[ind - 1] == '-' || straux[ind - 1] == 'C')
         {
-            if (!seRepete(straux, vperAUX, tamvAUX))
+            if (!seRepete(vPER[i], vperAUX, tamvAUX))
             {
-                k = 0;
-
-                if (straux[ind - 1] == '-')
-                    ult = 2;
-                
-                if (straux[ind - 1] == 'C')
-                    ult = 1;
-
-                // Imprimindo a string toda menos o nivel nela escrito
-                while (k < (ind - ult))
-                {
-                    printf("%c", straux[k]);
-                    k++;
-                }
-
                 // Adiciona o nome no vAUX e incrementa seu tamanho
-                vperAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
+                vperAUX[tamvAUX] = malloc(sizeof(char) * (strlen(vPER[i]) + 1));
                 strcpy(vperAUX[tamvAUX], straux);
                 tamvAUX++;
 
-                printf("\n");
+                printf("%s\n", vPERorg[i]);
             }
         }
 
@@ -476,6 +456,11 @@ void imprime_tudoC(pesquisador_t **vp, int tamvp)
     for (i = 0; i < tamvAUX; i++)
         free(vperAUX[i]);
     free(vperAUX);
+
+    // Da free em todos os espacos alocados da string 'vperAUX'
+    for (i = 0; i < tamvPER; i++)
+        free(vPERorg[i]);
+    free(vPERorg);
 
     // Da free em todos os espacos alocados da string 'vPER'
     for (i = 0; i < tamvPER; i++)
@@ -550,6 +535,7 @@ void imprime_NaoClassificados(pesquisador_t **vp, int tamvp)
     char** vconfAUX;
     char** vPER;
     char** vCONF;
+    char** vPERorg;
 
     // Vendo qual sera o tamanho necessario do vetor vCONF
     for (i = 0; i < tamvp; i++)
@@ -576,7 +562,7 @@ void imprime_NaoClassificados(pesquisador_t **vp, int tamvp)
     for (i = 0; i < tamvp; i++)
         tamvPER = tamvPER + vp[i]->tamvPER;
 
-    vPER = malloc(sizeof(char*) * tamvPER + 1);
+    vPER = malloc(sizeof(char*) * tamvPER);
     vperAUX = malloc(sizeof(char*) * tamvPER + 1);
 
 
@@ -595,49 +581,50 @@ void imprime_NaoClassificados(pesquisador_t **vp, int tamvp)
         }
     }
 
+    vPERorg = malloc(sizeof(char*) * tamvPER + 1);
+    x = 0;
+
+    // Aqui juntamos os periodicos de todos os pesquisadores em um 
+    // vetor de strings só, para aí podermos imprimi-los catalogados
+    for (i = 0; i < tamvp; i++)
+    {
+        for (j = 0; j < vp[i]->tamvPER; j++)
+        {
+            vPERorg[x] = malloc(sizeof(char) * (strlen(vp[i]->vPERorg[j]) + 1));
+            strcpy(vPERorg[x], vp[i]->vPERorg[j]);
+            x++;
+        }
+    }
+
 
     printf("Periodicos:\n\n");
 
     for (i = 0; i < tamvPER; i++)
     {
-        // Copia o nome para uma string auxiliar
-        strcpy(straux, vPER[i]);
-
-        // Pega o ultimo indice
-        while (straux[ind] != '\0')
-            ind++;
-
         // Se for 'C-', imprime
-        if (strstr(straux, "C-"))
+        if (strstr(vPER[i], "C-"))
         {
-            if (!seRepete(straux, vperAUX, tamvAUX))
+            if (!seRepete(vPER[i], vperAUX, tamvAUX))
             {
-                k = 0;
-
-                // Imprimindo a string toda menos o nivel nela escrito, neste caso, 'C-'
-                while (k < (ind - 2))
-                {
-                    printf("%c", straux[k]);
-                    k++;
-                }
-
                 // Adiciona o nome no v_aux e incrementa seu
-                vperAUX[tamvAUX] = malloc(sizeof(char) * (strlen(straux) + 1));
-                strcpy(vperAUX[tamvAUX], straux);
+                vperAUX[tamvAUX] = malloc(sizeof(char) * (strlen(vPER[i]) + 1));
+                strcpy(vperAUX[tamvAUX], vPER[i]);
                 tamvAUX++;
 
-                printf("\n");
+                printf("%s\n", vPERorg[i]);
             }
         }
-
-        // Zera o indice
-        ind = 0;
     }
 
     // Da free em todos os espacos alocados da string 'vperAUX'
     for (i = 0; i < tamvAUX; i++)
         free(vperAUX[i]);
     free(vperAUX);
+
+    // Da free em todos os espacos alocados da string 'vperAUX'
+    for (i = 0; i < tamvPER; i++)
+        free(vPERorg[i]);
+    free(vPERorg);
 
     // Da free em todos os espacos alocados da string 'vPER'
     for (i = 0; i < tamvPER; i++)

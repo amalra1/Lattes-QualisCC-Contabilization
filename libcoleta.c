@@ -15,6 +15,7 @@ void inicia_pesquisador(pesquisador_t *p)
     strcpy(p->nome, "");
 
     p->vPER = malloc(sizeof(char*) * PER_MAX);
+    p->vPERorg = malloc(sizeof(char*) * PER_MAX);
     p->tamvPER = 0;
 
     p->vCONF =  malloc(sizeof(char*) * CONF_MAX);
@@ -37,6 +38,11 @@ void destroi_pesquisador(pesquisador_t *p)
     for (i = 0; i < p->tamvPER; i++)
         free(p->vPER[i]);
     free(p->vPER);
+
+    // Dar free em cada string do vetor de strings
+    for (i = 0; i < p->tamvPER; i++)
+        free(p->vPERorg[i]);
+    free(p->vPERorg);
 
     // Dar free em cada string do vetor de strings
      for (i = 0; i < p->tamvCONF; i++)
@@ -191,7 +197,9 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
             
                     // Adiciona o nome do periodico no vetor e incrementa seu tamanho
                     p->vPER[p->tamvPER] = malloc(sizeof(char) * TAMSTRING);
+                    p->vPERorg[p->tamvPER] = malloc(sizeof(char) * TAMSTRING);
                     strcpy(p->vPER[p->tamvPER], str);
+                    strcpy(p->vPERorg[p->tamvPER], str);
                     p->tamvPER++;
 
                     // Zera a string
@@ -355,6 +363,7 @@ void corrigirNomes(pesquisador_t *p)
 {   
     int i;
 
+    // Corrigindo nomes de periodicos
     for (i = 0; i < p->tamvPER; i++)
     {   
         // Se tiver um '&amp;', substitui por '&'
@@ -362,8 +371,18 @@ void corrigirNomes(pesquisador_t *p)
             substituiPalavra(&(p->vPER[i]), p->vPER[i], "&amp;", "&");
     }
 
+    // Corrigindo os nomes originais dos periodicos
+    for (i = 0; i < p->tamvPER; i++)
+    {   
+        // Se tiver um '&amp;', substitui por '&'
+        if (strstr(p->vPERorg[i], "&amp;"))
+            substituiPalavra(&(p->vPERorg[i]), p->vPERorg[i], "&amp;", "&");
+    }
+
+    // Alterando os nomes dos periodicos para todas maiusculas
     paraMaiusculo(p->vPER, p->tamvPER);
 
+    // Corrigindo o nome das conferencias
     for (i = 0; i < p->tamvCONF; i++)
     {
         // Se tiver um '&amp;', substitui por '&'
