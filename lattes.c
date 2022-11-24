@@ -138,7 +138,7 @@ int main (int argc, char** argv)
     }
 
     // Criando o caminho para o arquivo para utilizar na função 'fopen'
-    strcpy(path, "");
+    //strcpy(path, "");
     strcpy(path, "./");
     strcat(path, nome_dir);
     strcat(path, "/");
@@ -175,18 +175,17 @@ int main (int argc, char** argv)
 
     tamvp = conta_pesquisadores(dir);
 
-    pesquisador_t *p[tamvp];  // Alocando vetor de 3 ponteiros para structs
-    pesquisador_t *(*vp)[] = &p;  // Alocando ponteiro para o vetor de structs
+    pesquisador_t *p[tamvp];  // Vetor de 3 ponteiros para structs
+    pesquisador_t *(*vp)[] = &p;  // Ponteiro para o vetor de structs
 
     // Inicializa cada pesquisador
     for(i = 0; i < tamvp; i++)
         p[i] = malloc(sizeof(pesquisador_t));
-
     for(i = 0; i < tamvp; i++)
         inicia_pesquisador((*vp)[i]);
 
+    // Varrendo todo o diretorio
     i = 0;
-
     while ((entry = readdir(dir)) != NULL)
     {
         // Evitando pegar os diretorios ocultos '.' e '..'
@@ -197,8 +196,6 @@ int main (int argc, char** argv)
 
             // Abre o arquivo
             arqXML = fopen(path, "r");
-
-            // Testa se o arquivo abre
             if (arqXML == NULL)
             {
                 printf("Impossivel abrir arquivo\n");
