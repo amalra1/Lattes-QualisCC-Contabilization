@@ -6,7 +6,7 @@
 #include <dirent.h>
 #include "libcoleta.h"
 #include "libescrita.h"
-#define DIST_MIN_PER 0.145  // Distancias relativas minimas relativas aos nomes de periodicos e conferencias
+#define DIST_MIN_PER  0.145   //0.145  // Distancias relativas minimas relativas aos nomes de periodicos e conferencias
 #define DIST_MIN_CONF 0.21  // da funcao de distancia de edicao (ver SepararSelecionados -> libcoleta.c)
 
 /*
@@ -138,7 +138,6 @@ int main (int argc, char** argv)
     }
 
     // Criando o caminho para o arquivo para utilizar na função 'fopen'
-    //strcpy(path, "");
     strcpy(path, "./");
     strcat(path, nome_dir);
     strcat(path, "/");
@@ -186,6 +185,8 @@ int main (int argc, char** argv)
 
     // Varrendo todo o diretorio
     i = 0;
+
+    printf("\nObtendo dados do grupo de pesquisadores: %s\n\n", nome_dir);
     while ((entry = readdir(dir)) != NULL)
     {
         // Evitando pegar os diretorios ocultos '.' e '..'
@@ -202,7 +203,9 @@ int main (int argc, char** argv)
                 exit(1);  // Fecha o programa com status 1
             }
 
+            printf("Pesquisador (%d/%d).... ", i + 1, tamvp);
             pegaDados(arqXML, arqPER, arqCONF, (*vp)[i]);
+            printf("Concluido.\n");
             i++;
 
             // Voltando o path para sem o nome do arquivo
@@ -210,6 +213,8 @@ int main (int argc, char** argv)
             fclose(arqXML);
         }
     }
+
+    printf("\nVarredura dos dados concluída, realizando impressões:\n");
     
     closedir(dir);
 

@@ -126,6 +126,8 @@ void imprimeSumarizadaPER(pesquisador_t **vp, int tamvp)
         }
     }
 
+    //printf("TAMANHO PERIODICOS --> %d\n", tamvPER);
+
     // Da free em todos os espacos alocados nos vetores de strings
     for (i = 0; i < tamvAUX; i++)
         free(vAUX[i]);
@@ -148,7 +150,7 @@ void imprimeSumarizadaCONF(pesquisador_t **vp, int tamvp)
     int tamlvl = 8, tamvAUX = 0, tamvCONF = 0;
     char vlvl[9][3] = {"A1", "A2", "A3", "A4", "B1", "B2", "B3", "B4"};
     char* straux = malloc(sizeof(char) * TAMSTRING);
-    char** vAUX = malloc(sizeof(char*) * 512);
+    char** vAUX = malloc(sizeof(char*) * 1000);
     char** vCONF;
 
     // Vendo qual sera o tamanho necessario do vetor vCONF
@@ -165,7 +167,6 @@ void imprimeSumarizadaCONF(pesquisador_t **vp, int tamvp)
         {
             vCONF[x] = malloc(sizeof(char) * (strlen(vp[i]->vCONF[j]) + 1));
             strcpy(vCONF[x], vp[i]->vCONF[j]);
-            //printf("\n\n%s\n\n", vCONF[x]);
             x++;
         }
     }
@@ -259,6 +260,8 @@ void imprimeSumarizadaCONF(pesquisador_t **vp, int tamvp)
             ind = 0;
         }
     }
+
+    //printf("TAMANHO CONFERENCIAS --> %d\n", tamvCONF);
 
     // Da free em todos os espacos alocados nos vetores de strings
     for (i = 0; i < tamvAUX; i++)

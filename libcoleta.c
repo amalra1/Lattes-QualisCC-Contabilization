@@ -7,7 +7,7 @@
 
 #define TAMSTRING 512
 #define PER_MAX 600
-#define CONF_MAX 600
+#define CONF_MAX 1000
 
 void inicia_pesquisador(pesquisador_t *p)
 {
@@ -183,7 +183,7 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
 
                         c = fgetc(arq);
                     }
-            
+
                     // Adiciona o nome do periodico no vetor e incrementa seu tamanho
                     p->vPER[p->tamvPER] = malloc(sizeof(char) * TAMSTRING);
                     p->vPERorg[p->tamvPER] = malloc(sizeof(char) * TAMSTRING);
@@ -200,7 +200,7 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
         }
 
         // Se estamos perto de uma conferencia
-        else if (eh_titulo(arq, c, "DADOS-BASICOS-DA-PARTICIPACAO-EM-C") || eh_titulo(arq, c, "DADOS-BASICOS-DA-PARTICIPACAO-EM-S") || eh_titulo(arq, c, "DADOS-BASICOS-DA-PARTICIPACAO-EM-E"))
+        else if (eh_titulo(arq, c, "TRABALHO-EM-EVENTOS "))
         {
             PegouDados = 0;
             while(!PegouDados)
@@ -208,7 +208,7 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
                 c = fgetc(arq);
 
                 // Se estamos perto do ano, armazena o no vetor de ano
-                if(eh_titulo(arq, c, "ANO="))
+                if(eh_titulo(arq, c, "ANO-DO-TRABALHO="))
                 {
                     while (c != '\"')
                         c = fgetc(arq);
@@ -245,6 +245,7 @@ void coletarTitulos(FILE* arq, pesquisador_t *p)
                         c = fgetc(arq);
                     }
             
+                   
                     // Adiciona o nome da conferencia no vetor e incrementa seu tamanho
                     p->vCONF[p->tamvCONF] = malloc(sizeof(char) * TAMSTRING);
                     strcpy(p->vCONF[p->tamvCONF], str);
@@ -369,7 +370,7 @@ void corrigirNomes(pesquisador_t *p)
 
 // Funcao que divide a distancia pelo tamanho da string a ser modificada
 // retorna no minimo 0 (nenhuma edicao necessaria)
-double dist_relativaMIN(char* linha, int distEdit, int tamstr)
+double dist_relativaMIN(int distEdit, int tamstr)
 {
     double result;
 
@@ -393,7 +394,7 @@ void catalogarCONFS(FILE* arq, pesquisador_t *p, double dist_min)
 
 
     int indV, j;
-    //double x;
+    double x;
     int ind;
     int distEdit = 0;
     char* straux = malloc(sizeof(char) * 512);
@@ -435,20 +436,22 @@ void catalogarCONFS(FILE* arq, pesquisador_t *p, double dist_min)
 
             distEdit = levenshtein(straux, p->vCONF[indV]);          
 
-            /*x = dist_relativaMIN(straux, distEdit, strlen(v[indV]) - 1);
+            /*x = dist_relativaMIN(straux, distEdit, strlen(p->vCONF[indV]) - 1);
 
             if (x < dist_min)
             {
-            printf("%s\n", v[indV]);
+            printf("%s\n", p->vCONF[indV]);
             printf("do arquivo -> %s", linha);
             printf("reduzida do arq -> %s\n", straux);
             printf("distancia -> %d\n", distEdit);
             printf("distancia relativa --> %lf\n\n", x);
             }*/
 
+            x = dist_relativaMIN(distEdit, strlen(straux));
+
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
             // Quanto menor dist_relativaMIN eh, mais proximo eh da string
-            if (dist_relativaMIN(straux, distEdit, strlen(p->vCONF[indV]) - 1) < dist_min)
+            if (x < dist_min)
             {
                 while (linha[ind] != '\0')
                     ind++;
@@ -500,6 +503,8 @@ void catalogarPERS(FILE* arq, pesquisador_t *p, double dist_min)
 {
     int indV, j;
     int ind;
+    double x;
+   //double y;
     int distEdit = 0;
     char* straux = malloc(sizeof(char) * 512);
     char linha[TAMSTRING];
@@ -538,11 +543,25 @@ void catalogarPERS(FILE* arq, pesquisador_t *p, double dist_min)
                     strncat(straux, &linha[j], 1);
             }
 
-            distEdit = levenshtein(straux, p->vPER[indV]);          
+            distEdit = levenshtein(straux, p->vPER[indV]);
+
+            //y = dist_relativaMIN(straux, distEdit, strlen(p->vPER[indV]) - 1);
+
+            /*if (x < dist_min)
+            {
+            printf("%s\n", p->vPER[indV]);
+            printf("do arquivo -> %s", linha);
+            printf("reduzida do arq -> %s\n", straux);
+            printf("distancia -> %d\n", distEdit);
+            printf("distancia relativa com o tamstring do pesquisador --> %lf\n\n", x);
+            printf("distancia relativa com o tamstring do arquivo --> %lf\n\n", y);
+            }*/          
+
+            x = dist_relativaMIN(distEdit, strlen(straux));
 
             // Se os nomes forem iguais, adiciona o nivel no final de 'v[i]'
             // quanto menor dist_relativaMIN eh, mais proximo eh da string
-            if (dist_relativaMIN(straux, distEdit, strlen(p->vPER[indV]) - 1) < dist_min)
+            if (x < dist_min)
             {
                 while (linha[ind] != '\0')
                     ind++;
