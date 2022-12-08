@@ -1,8 +1,11 @@
 CC = gcc
 CFLAGS = -Wall -std=c99
 
-lattes: lattes.o libcoleta.o libescrita.o levenshtein.o
-	$(CC) $(CFLAGS) lattes.o libcoleta.o libescrita.o levenshtein.o -o lattes
+# Arquivos objeto:
+OBJ = lattes.o libcoleta.o libescrita.o levenshtein.o
+
+lattes: $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o lattes
 
 lattes.o: lattes.c
 	$(CC) $(CFLAGS) -c lattes.c
