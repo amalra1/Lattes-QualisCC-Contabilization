@@ -15,7 +15,7 @@
     currículos Lattes.
 
     Desenvolvido por Pedro Amaral Chapelin
-    Data de finalização -> XX/XX/XXXX
+    Data de finalização -> 02/12/2022
 
     --O programa funciona da seguinte maneira:--
 
