@@ -4,7 +4,7 @@
 feito para a disciplina de Programação 2, com o professor David Menotti:
 http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
 
-## Como ele funciona?
+## Utilização e funcionamento
   
   **-> Instalação**  
   
