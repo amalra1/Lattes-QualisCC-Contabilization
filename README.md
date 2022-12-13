@@ -26,6 +26,21 @@ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
   curriculoPesq3.xml
   
   ```  
+  Nestes arquivos, coleta o nome dos periódicos em que o pesquisador publicou,
+  e também o nome dos eventos(conferências) que participou;
+  
+  Depois de coletados, cataloga os títulos de acordo com seus níveis na QUALIS
+  {A1, A2, A3, A4, B1, B2, B3, B4, C}, e também 'C-', nivel criado para se referir a 
+  aqueles que não estão na lista de classificação, portanto, sem classificação.
+  
+  E por fim, imprime as informações da seguinte maneira:
+  --> Sumarizada de periódicos de acordo com os níveis;
+  --> Sumarizada de conferências de acordo com os níveis;
+  --> Sumarizada das produções de cada pesquisador de acordo com os níveis;
+  --> Sumarizada das produções de acordo com o ano de suas realizações;
+  --> Sumarizada de todas as produções classificadas em nível C;
+  --> Sumarizada de todas as produções Não Classificadas.
+  
 
 # Informações adicionais
 
