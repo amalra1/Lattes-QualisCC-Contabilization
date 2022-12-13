@@ -5,8 +5,17 @@ feito para a disciplina de Programação 2, com o professor David Menotti:
 http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
 
 ## Como ele funciona?
+  
+  **-> Instalação**  
+  
+  Garanta que todos os arquivos deste repositório estejam juntos no mesmo lugar, fácil com o comando do git:
+  
+  ```
+  git clone git@github.com:amalra1/ProjLattes.git
+  ```
+  Após isso, compile com o comando no terminal, *make*  
 
-  **-> Fonte de chamada:**
+  **-> Fonte de chamada:**  
   
   ```bash
   
