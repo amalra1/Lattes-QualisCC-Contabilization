@@ -1,23 +1,10 @@
 # ProjLattes
-Trabalho Lattes (CNPq) e Qualis (CAPES) de Prog 2, http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
 
+  Contabilização da Classificação da Produção Científica no Lattes usando o Qualis-CC,
+feito para a disciplina de Programação 2, com o professor David Menotti:
+http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
+
+# Informações adicionais
+
+  O programa utiliza uma função de distância de edição, extraída do link:
 https://github.com/tonytonyjan/jaro_winkler#compare-with-other-gems
-
-# Comandos GIT
-git status
--> Mostra tudo que foi feito recentemente
-
-git add 'arquivo'
--> Ao criar um arquivo dentro da pasta, executar esse comando para adicioná-lo no GitHub
-
-git commit -m 'descrição'
--> Adiciona uma descrição ao que foi feito mais recentemente, 'Adiciona o arquivo exemplo.txt'
- 
-git push -u origin main (FAZER GIT COMMIT -M ANTES SENÃO NÃO FUNCIONA)
--> 'Empurra' tudo que foi alterado para o GitHub
-
-git clone 'link ssh github'
--> Pega tudo do GitHub e joga na pasta
-
-git branch
--> Mostra todas as branches do repositório do git, nesse caso ainda estou usando só a main
