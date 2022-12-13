@@ -13,6 +13,19 @@ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
   ./lattes -d [nome_do_diretório] -c qualis_conf.txt -p qualis_periodicos.txt
   
   ```
+  O diretório em questão precisa conter apenas os arquivos .XML gerados dos currículos lattes 
+  dos pesquisadores, por exemplo:
+  
+  ```bash
+  
+  ~/ cd algoritmos
+  ~/algoritmos ls
+  
+  curriculoPesq1.xml
+  curriculoPesq2.xml
+  curriculoPesq3.xml
+  
+  ```  
 
 # Informações adicionais
 
