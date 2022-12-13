@@ -6,7 +6,7 @@
 #include <dirent.h>
 #include "libcoleta.h"
 #include "libescrita.h"
-#define DIST_MIN_PER  0.145   //0.145  // Distancias relativas minimas relativas aos nomes de periodicos e conferencias
+#define DIST_MIN_PER  0.145   //0.145  // Distancias relativas minimas relativas aos nomes de periodicos e conferências
 #define DIST_MIN_CONF 0.21  // da funcao de distancia de edicao (ver SepararSelecionados -> libcoleta.c)
 
 /*
