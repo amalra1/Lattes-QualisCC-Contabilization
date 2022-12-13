@@ -7,4 +7,4 @@ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
 # Informações adicionais
 
   O programa utiliza uma função de distância de edição, extraída do link:
-https://github.com/tonytonyjan/jaro_winkler#compare-with-other-gems
+https://github.com/wooorm/levenshtein.c
