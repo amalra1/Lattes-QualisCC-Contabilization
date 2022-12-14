@@ -1,13 +1,9 @@
 # O que o programa faz?
 
   Contabilização da Classificação da Produção Científica no Lattes usando o Qualis-CC,
-feito durante a disciplina de Programação 2.  
-  
-http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
+feito durante a disciplina de [Programação 2](http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis).  
 
-<br /><br />
 ## Utilização e funcionamento
-<br />
   
 * **Instalação**  
   
@@ -20,7 +16,7 @@ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
   
   Após isso, compile com o comando no terminal, `make`
   
-  <br /><br />
+  <br />
   
 * **Fonte de chamada:**  
   
@@ -62,8 +58,7 @@ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
 
 ## Informações adicionais
 
-  O programa utiliza uma função de distância de edição, extraída do link:
-https://github.com/wooorm/levenshtein.c
+  O programa utiliza uma função de distância de edição, extraída do [link](https://github.com/wooorm/levenshtein.c).
 
 ## Mudanças previstas
 
@@ -73,4 +68,7 @@ https://github.com/wooorm/levenshtein.c
  - [ ] Alterar a estrutura de dados **pesquisador** para uma mais eficiente;
  
  - [ ] Alterar o método de catalogação para um mais eficiente.
+
+ - [ ] Alterar a fonte de chamada para receber o caminho dos arquivos ao 
+       invés de seus nomes.
  
