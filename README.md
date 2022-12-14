@@ -14,8 +14,8 @@ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
   ```
   git clone git@github.com:amalra1/ProjLattes.git
   ```
-  Após isso, compile com o comando no terminal, *make*  
-
+  Após isso, compile com o comando no terminal, `make`  
+  
   **-> Fonte de chamada:**  
   
   ```bash
@@ -44,12 +44,12 @@ http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
   aqueles que não estão na lista de classificação, portanto, sem classificação.  
     
   E por fim, imprime as informações da seguinte maneira:  
-  --> Sumarizada de periódicos de acordo com os níveis;  
-  --> Sumarizada de conferências de acordo com os níveis;  
-  --> Sumarizada das produções de cada pesquisador de acordo com os níveis;  
-  --> Sumarizada das produções de acordo com o ano de suas realizações;  
-  --> Sumarizada de todas as produções classificadas em nível C;  
-  --> Sumarizada de todas as produções Não Classificadas.  
+  > Sumarizada de periódicos de acordo com os níveis;  
+  > Sumarizada de conferências de acordo com os níveis;  
+  > Sumarizada das produções de cada pesquisador de acordo com os níveis;  
+  > Sumarizada das produções de acordo com o ano de suas realizações;  
+  > Sumarizada de todas as produções classificadas em nível C;  
+  > Sumarizada de todas as produções Não Classificadas.  
   
 
 ## Informações adicionais
