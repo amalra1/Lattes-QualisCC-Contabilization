@@ -1,7 +1,8 @@
 # O que o projeto faz?
 
   Contabilização da Classificação da Produção Científica no Lattes usando o Qualis-CC,
-feito para a disciplina de Programação 2, com o professor David Menotti:
+feito durante a disciplina de Programação 2.  
+  
 http://wiki.inf.ufpr.br/maziero/doku.php?id=prog2:lattes-qualis
 
 ## Utilização e funcionamento
