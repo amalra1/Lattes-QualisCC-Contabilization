@@ -1,4 +1,4 @@
-# O que o projeto faz?
+# O que o programa faz?
 
   Contabilização da Classificação da Produção Científica no Lattes usando o Qualis-CC,
 feito durante a disciplina de Programação 2.  
